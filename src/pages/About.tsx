@@ -193,7 +193,7 @@ const About = () => {
                       <img
                         src={member.image}
                         alt={`${member.name} - ${member.role} of HUMSJ`}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
                         onError={(e) => {
                           e.currentTarget.style.display = "none";
                           e.currentTarget.nextElementSibling?.classList.remove(
