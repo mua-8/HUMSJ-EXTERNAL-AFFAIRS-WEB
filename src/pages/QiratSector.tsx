@@ -43,24 +43,24 @@ const QiratSector = () => {
     <Layout>
       {/* Hero Section */}
       <section className="relative min-h-[40vh] flex items-center overflow-hidden bg-[#f0fafa]">
-        {/* Subtle pattern - #29b6b0 (Faith & Service color) */}
+        {/* Subtle pattern - #25A7A1 (Faith & Service color) */}
         <div className="absolute inset-0 pattern-squares-teal" />
         {/* Decorative corner squares - 10-20% opacity */}
-        <div className="absolute top-16 left-16 w-14 h-14 rounded-xl bg-[#29b6b0]/[0.15] rotate-6" />
-        <div className="absolute top-12 right-20 w-10 h-10 rounded-lg bg-[#29b6b0]/[0.10] -rotate-12" />
-        <div className="absolute bottom-16 right-12 w-12 h-12 rounded-xl bg-[#29b6b0]/[0.12] rotate-45" />
+        <div className="absolute top-16 left-16 w-14 h-14 rounded-xl bg-[#25A7A1]/[0.15] rotate-6" />
+        <div className="absolute top-12 right-20 w-10 h-10 rounded-lg bg-[#25A7A1]/[0.10] -rotate-12" />
+        <div className="absolute bottom-16 right-12 w-12 h-12 rounded-xl bg-[#25A7A1]/[0.12] rotate-45" />
 
         <div className="container mx-auto px-4 py-20 relative z-10">
           <Link
             to="/external-affairs"
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-[#29b6b0] transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-gray-500 hover:text-[#25A7A1] transition-colors mb-6"
           >
             <ArrowLeft size={16} />
             Back to External Affairs
           </Link>
 
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-[#29b6b0] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#25A7A1] flex items-center justify-center">
               <BookOpen className="w-8 h-8 text-white" />
             </div>
             <div>
@@ -82,16 +82,16 @@ const QiratSector = () => {
       {/* Leadership Section */}
       <section className="py-8 bg-white border-b">
         <div className="container mx-auto px-4">
-          <Card className="max-w-2xl mx-auto border-l-4 border-l-[#29b6b0]">
+          <Card className="max-w-2xl mx-auto border-l-4 border-l-[#25A7A1]">
             <CardContent className="p-6">
               <div className="flex items-center gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#29b6b0] to-[#239e99] flex items-center justify-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#25A7A1] to-[#1F8B86] flex items-center justify-center">
                   <BookOpen className="w-8 h-8 text-white" />
                 </div>
                 <div className="flex-1">
                   <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Head of Qirat Sub-Sector</p>
                   <p className="text-xl font-serif font-bold text-gray-800">Mohammed Ahmed</p>
-                  <p className="text-sm text-[#29b6b0] font-medium">3rd Year Computer Science Student</p>
+                  <p className="text-sm text-[#25A7A1] font-medium">3rd Year Computer Science Student</p>
                   <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
                     <span className="flex items-center gap-1">📞 +251 91 XXX XXXX</span>
                     <span className="flex items-center gap-1">✉️ qirat@humsj.org</span>
@@ -107,7 +107,7 @@ const QiratSector = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25A7A1]/10 border border-[#25A7A1]/20 text-[#25A7A1] mb-4">
               <Sparkles size={16} />
               <span className="text-sm font-medium">Program Overview</span>
             </div>
@@ -139,7 +139,7 @@ const QiratSector = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#29b6b0]/10 border border-[#29b6b0]/20 text-[#29b6b0] mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25A7A1]/10 border border-[#25A7A1]/20 text-[#25A7A1] mb-4">
               <Mic size={16} />
               <span className="text-sm font-medium">Inspirational Gatherings</span>
             </div>
@@ -183,8 +183,8 @@ const QiratSector = () => {
           <div className="max-w-md mx-auto mt-12">
             <Card variant="gradient" className="text-center animate-fade-in-up delay-300">
               <CardHeader>
-                <div className="w-14 h-14 mx-auto mb-2 rounded-2xl bg-primary/20 flex items-center justify-center">
-                  <DollarSign className="w-7 h-7 text-primary" />
+                <div className="w-14 h-14 mx-auto mb-2 rounded-2xl bg-[#25A7A1]/20 flex items-center justify-center">
+                  <DollarSign className="w-7 h-7 text-[#25A7A1]" />
                 </div>
                 <CardTitle>Total Required Budget</CardTitle>
               </CardHeader>
@@ -209,8 +209,8 @@ const QiratSector = () => {
               <Card variant="elevated" className="animate-fade-in-up">
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <BookOpen size={20} className="text-primary" />
+                    <div className="w-10 h-10 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                      <BookOpen size={20} className="text-[#25A7A1]" />
                     </div>
                     <CardTitle>Nuraniya Program</CardTitle>
                   </div>
@@ -240,8 +240,8 @@ const QiratSector = () => {
               <Card variant="elevated" className="animate-fade-in-up delay-100">
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                      <GraduationCap size={20} className="text-[#29b6b0]" />
+                    <div className="w-10 h-10 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                      <GraduationCap size={20} className="text-[#25A7A1]" />
                     </div>
                     <CardTitle>Advanced Program</CardTitle>
                   </div>
@@ -253,15 +253,15 @@ const QiratSector = () => {
                   </p>
                   <ul className="space-y-2">
                     <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#29b6b0]" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#25A7A1]" />
                       Quran memorization (Hifz)
                     </li>
                     <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#29b6b0]" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#25A7A1]" />
                       Advanced Tajweed application
                     </li>
                     <li className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#29b6b0]" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#25A7A1]" />
                       Beautiful recitation (Tarteel)
                     </li>
                   </ul>
@@ -272,12 +272,57 @@ const QiratSector = () => {
         </div>
       </section>
 
+      {/* Enrollment Section */}
+      <section className="py-16 bg-white shadow-inner">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl font-serif font-bold text-foreground mb-6">How to Enroll</h2>
+                <div className="space-y-6">
+                  {[
+                    { step: "1", title: "Choose Your Program", desc: "Select between the foundational Nuraniya or Advanced Quran program." },
+                    { step: "2", title: "Fill the Form", desc: "Provide your basic information through our online enrollment system." },
+                    { step: "3", title: "Wait for Contact", desc: "Our coordinators will reach out to confirm your placement and schedule." }
+                  ].map((item) => (
+                    <div key={item.step} className="flex gap-4">
+                      <div className="w-8 h-8 rounded-full bg-[#25A7A1] text-white flex items-center justify-center font-bold shrink-0">
+                        {item.step}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-foreground">{item.title}</h4>
+                        <p className="text-sm text-muted-foreground">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  size="lg"
+                  className="mt-8 bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                  onClick={() => openModal("student")}
+                >
+                  Start Enrollment Form
+                </Button>
+              </div>
+              <div className="relative">
+                <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl rotate-3">
+                  <img src="/images/events/qirat/qiraty.jpg" alt="Qirat class" className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-2xl bg-[#25A7A1] flex items-center justify-center -rotate-6 shadow-xl hidden md:flex">
+                  <GraduationCap className="w-16 h-16 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Event Gallery Section */}
       <EventGallery
         title="Our Activities"
         subtitle="Highlights from our Quranic education programs and recitation sessions"
         images={qiratEventImages}
-        accentColor="#29b6b0"
+        accentColor="#25A7A1"
       />
 
       {/* CTA Section */}
@@ -290,11 +335,15 @@ const QiratSector = () => {
             Help us expand our Qirat programs and reach more students eager to learn the Quran.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
+            <Button variant="hero" size="lg" onClick={() => openModal("student")} className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white">
+              <GraduationCap size={20} className="mr-2" />
+              Register as Student
+            </Button>
             <Button variant="hero" size="lg" onClick={() => openModal("donor")}>
-              <Calendar size={20} />
+              <Calendar size={20} className="mr-2" />
               Donate to Programs
             </Button>
-            <Button variant="outline" size="lg" onClick={() => openModal("teacher")}>
+            <Button variant="outline" size="lg" onClick={() => openModal("teacher")} className="border-[#25A7A1] text-[#25A7A1] hover:bg-[#25A7A1]/10">
               Join as Teacher
             </Button>
           </div>

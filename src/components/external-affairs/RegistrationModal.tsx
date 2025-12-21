@@ -183,7 +183,7 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onClose, 
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle className="font-serif text-2xl text-[#29b6b0]">{getTitle()}</DialogTitle>
+                    <DialogTitle className="font-serif text-2xl text-[#25A7A1]">{getTitle()}</DialogTitle>
                     <DialogDescription>
                         Fill out the form below to {type === "student" ? "enroll" : "register"}. We will contact you shortly.
                     </DialogDescription>
@@ -205,10 +205,10 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onClose, 
                     {renderContent()}
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose} className="border-[#29b6b0] text-[#29b6b0]" disabled={isSubmitting}>
+                        <Button type="button" variant="outline" onClick={onClose} className="border-[#25A7A1] text-[#25A7A1]" disabled={isSubmitting}>
                             Cancel
                         </Button>
-                        <Button type="submit" className="bg-[#29b6b0] hover:bg-[#239e99] text-white" disabled={isSubmitting}>
+                        <Button type="submit" className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white" disabled={isSubmitting}>
                             {isSubmitting ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

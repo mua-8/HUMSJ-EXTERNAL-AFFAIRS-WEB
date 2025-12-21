@@ -182,7 +182,7 @@ const QiratDashboard = () => {
     switch (level) {
       case "beginner": return "bg-green-100 text-green-600";
       case "intermediate": return "bg-blue-100 text-blue-600";
-      case "advanced": return "bg-purple-100 text-purple-600";
+      case "advanced": return "bg-[#25A7A1]/20 text-[#25A7A1]";
       case "hafiz": return "bg-amber-100 text-amber-600";
       default: return "bg-gray-100 text-gray-600";
     }
@@ -196,7 +196,7 @@ const QiratDashboard = () => {
           <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
           <div>
             <h2 className="font-serif font-bold text-white">HUMSJ</h2>
-            <p className="text-xs text-white/80">🔵 Qirat Sector</p>
+            <p className="text-xs text-white/80">🟢 Qirat Sector</p>
           </div>
         </div>
 
@@ -234,7 +234,7 @@ const QiratDashboard = () => {
       <main className="lg:ml-64 flex-1 p-6 lg:p-8">
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">
-            🔵 Qirat Sector Dashboard
+            🟢 Qirat Sector Dashboard
           </h1>
           <p className="text-[#64748b]">Manage Quran recitation programs</p>
         </div>
@@ -271,8 +271,8 @@ const QiratDashboard = () => {
                     <Star size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{stats.advancedStudents}</p>
-                    <p className="text-sm text-gray-500">Advanced Program</p>
+                    <p className="text-2xl font-bold">{stats.hafizStudents}</p>
+                    <p className="text-sm text-gray-500">Hafiz Students</p>
                   </div>
                 </CardContent>
               </Card>
@@ -282,8 +282,8 @@ const QiratDashboard = () => {
                     <Award size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{stats.attendanceRate}%</p>
-                    <p className="text-sm text-gray-500">Avg. Attendance</p>
+                    <p className="text-2xl font-bold">92%</p>
+                    <p className="text-sm text-gray-500">Attendance Rate</p>
                   </div>
                 </CardContent>
               </Card>
@@ -428,7 +428,7 @@ const QiratDashboard = () => {
                       <TableRow key={student.id} className="hover:bg-gray-50">
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm font-bold">
+                            <div className="w-8 h-8 rounded-full bg-[#25A7A1] flex items-center justify-center text-white text-sm font-bold">
                               {student.name.charAt(0)}
                             </div>
                             {student.name}
@@ -444,7 +444,7 @@ const QiratDashboard = () => {
                           <div className="flex items-center gap-2">
                             <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
                               <div
-                                className="h-full bg-purple-500 rounded-full"
+                                className="h-full bg-[#25A7A1] rounded-full"
                                 style={{ width: `${student.progress}%` }}
                               />
                             </div>
@@ -453,7 +453,7 @@ const QiratDashboard = () => {
                         </TableCell>
                         <TableCell>
                           <Badge className={
-                            student.status === "active" ? "bg-green-100 text-green-600" :
+                            student.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" :
                               student.status === "graduated" ? "bg-amber-100 text-amber-600" :
                                 "bg-gray-100 text-gray-600"
                           }>
@@ -462,7 +462,7 @@ const QiratDashboard = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-purple-500">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                               <Eye size={16} />
                             </Button>
                             <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
@@ -532,7 +532,7 @@ const QiratDashboard = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-purple-500">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                               <Eye size={16} />
                             </Button>
                             <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
@@ -553,9 +553,9 @@ const QiratDashboard = () => {
         {activeTab === "resources" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+              <Card className="bg-gradient-to-br from-[#25A7A1] to-[#1F8B86] text-white">
                 <CardContent className="pt-6">
-                  <p className="text-purple-100">Total Resources</p>
+                  <p className="text-white/80">Total Resources</p>
                   <p className="text-3xl font-bold">{stats.totalResources}</p>
                 </CardContent>
               </Card>
@@ -613,7 +613,7 @@ const QiratDashboard = () => {
                         <TableCell>{new Date(resource.uploadDate).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-purple-500">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                               <Download size={16} />
                             </Button>
                             <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
@@ -639,7 +639,7 @@ const QiratDashboard = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Quran Competitions</CardTitle>
-                <Button className="bg-purple-600 hover:bg-purple-700">
+                <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]">
                   <Plus size={16} className="mr-2" />
                   Add Competition
                 </Button>
@@ -675,7 +675,7 @@ const QiratDashboard = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-purple-500">
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                             <Eye size={16} />
                           </Button>
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
@@ -703,11 +703,11 @@ const QiratDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                  <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
-                    <p className="text-sm text-purple-600">Total Students</p>
-                    <p className="text-2xl font-bold text-purple-700">{stats.totalStudents}</p>
+                  <div className="p-4 bg-gradient-to-br from-[#25A7A1]/10 to-[#25A7A1]/20 rounded-xl border border-[#25A7A1]/20">
+                    <p className="text-sm text-[#25A7A1]">Total Students</p>
+                    <p className="text-2xl font-bold text-[#25A7A1]">{stats.totalStudents}</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                  <div className="p-4 bg-green-50 rounded-xl border border-green-200">
                     <p className="text-sm text-green-600">Active Students</p>
                     <p className="text-2xl font-bold text-green-700">{stats.activeStudents}</p>
                   </div>
@@ -722,7 +722,7 @@ const QiratDashboard = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <Button onClick={() => exportToCSV(students, "qirat_students_report")} className="bg-purple-600 hover:bg-purple-700">
+                  <Button onClick={() => exportToCSV(students, "qirat_students_report")} className="bg-[#25A7A1] hover:bg-[#1F8B86]">
                     <Download size={16} className="mr-2" />
                     Export Students Report
                   </Button>
@@ -755,7 +755,7 @@ const QiratDashboard = () => {
                         </div>
                         <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all duration-500"
+                            className="h-full bg-gradient-to-r from-[#25A7A1] to-[#1F8B86] rounded-full transition-all duration-500"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
