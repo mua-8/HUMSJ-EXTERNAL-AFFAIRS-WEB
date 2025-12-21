@@ -213,10 +213,12 @@ const CharitySector = () => {
             Help us continue serving our community.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button variant="hero" size="lg" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              <Heart size={20} />
-              Donate Now
-            </Button>
+            <Link to="/student-sadaqah">
+              <Button variant="hero" size="lg">
+                <Heart size={20} />
+                Student Sadaqah
+              </Button>
+            </Link>
             <Link to="/contact">
               <Button variant="outline" size="lg">
                 Contact Us

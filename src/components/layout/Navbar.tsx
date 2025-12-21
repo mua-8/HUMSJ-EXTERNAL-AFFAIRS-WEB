@@ -11,6 +11,7 @@ const navLinks = [
   { name: "About Us", path: "/about" },
   { name: "External Affairs", path: "/external-affairs" },
   { name: "Events", path: "/events" },
+  { name: "Donate", path: "/student-sadaqah" },
   { name: "Contact", path: "/contact" },
 ];
 

@@ -4,12 +4,17 @@ import {
   onAuthStateChanged, 
   signOut as firebaseSignOut 
 } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+
+// User roles
+export type UserRole = "super_admin" | "charity_amir" | "academic_amir" | "qirat_amir" | "user";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAdmin: boolean;
+  role: UserRole;
   signOut: () => Promise<void>;
 }
 
@@ -27,21 +32,38 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Role mapping by email
+const getRoleByEmail = (email: string | null): UserRole => {
+  if (!email) return "user";
+  
+  const roleMap: Record<string, UserRole> = {
+    "admin@humsj.org": "super_admin",
+    "superadmin@humsj.org": "super_admin",
+    "charity@humsj.org": "charity_amir",
+    "academic@humsj.org": "academic_amir",
+    "qirat@humsj.org": "qirat_amir",
+  };
+  
+  return roleMap[email.toLowerCase()] || "super_admin"; // Default authenticated users to super_admin for now
+};
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [role, setRole] = useState<UserRole>("user");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       
       if (user) {
-        // Check if user is admin (you can customize this logic)
-        // For now, any authenticated user is considered admin
-        setIsAdmin(true);
+        const userRole = getRoleByEmail(user.email);
+        setRole(userRole);
+        setIsAdmin(userRole !== "user");
       } else {
         setIsAdmin(false);
+        setRole("user");
       }
       
       setLoading(false);
@@ -55,6 +77,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       await firebaseSignOut(auth);
       setUser(null);
       setIsAdmin(false);
+      setRole("user");
     } catch (error) {
       console.error("Sign out error:", error);
       throw error;
@@ -65,6 +88,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     user,
     loading,
     isAdmin,
+    role,
     signOut,
   };
 

@@ -17,11 +17,14 @@ import CharitySector from "./pages/CharitySector";
 import QiratSector from "./pages/QiratSector";
 import AcademicSector from "./pages/AcademicSector";
 import Donate from "./pages/Donate";
+import StudentSadaqah from "./pages/StudentSadaqah";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages (Secret)
 import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
+import CharityDashboard from "./pages/admin/CharityDashboard";
+import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -46,17 +49,38 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/donate" element={<Donate />} />
+            <Route path="/student-sadaqah" element={<StudentSadaqah />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
             
             {/* Secret Admin Login - Not linked anywhere on the site */}
             <Route path="/humsj-admin-portal" element={<AdminLogin />} />
             
-            {/* Protected Admin Dashboard */}
+            {/* Protected Admin Dashboard - Super Admin */}
             <Route
               path="/admin"
               element={
                 <ProtectedRoute>
+                  <SuperAdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Old Events Dashboard */}
+            <Route
+              path="/admin/events"
+              element={
+                <ProtectedRoute>
                   <Admin />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Sector Dashboards */}
+            <Route
+              path="/admin/charity"
+              element={
+                <ProtectedRoute>
+                  <CharityDashboard />
                 </ProtectedRoute>
               }
             />

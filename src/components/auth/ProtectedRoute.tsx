@@ -1,13 +1,30 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  allowedRoles?: UserRole[];
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user, loading, isAdmin } = useAuth();
+// Role-based route access mapping
+const getDefaultRouteForRole = (role: UserRole): string => {
+  switch (role) {
+    case "super_admin":
+      return "/admin";
+    case "charity_amir":
+      return "/admin/charity";
+    case "academic_amir":
+      return "/admin/academic";
+    case "qirat_amir":
+      return "/admin/qirat";
+    default:
+      return "/";
+  }
+};
+
+const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
+  const { user, loading, isAdmin, role } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -21,9 +38,19 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
+  // Not authenticated or not an admin
   if (!user || !isAdmin) {
-    // Redirect to home page, save the attempted URL
     return <Navigate to="/" state={{ from: location }} replace />;
+  }
+
+  // Check role-based access if allowedRoles is specified
+  if (allowedRoles && allowedRoles.length > 0) {
+    // Super admin can access everything
+    if (role !== "super_admin" && !allowedRoles.includes(role)) {
+      // Redirect to their appropriate dashboard
+      const defaultRoute = getDefaultRouteForRole(role);
+      return <Navigate to={defaultRoute} replace />;
+    }
   }
 
   return <>{children}</>;
