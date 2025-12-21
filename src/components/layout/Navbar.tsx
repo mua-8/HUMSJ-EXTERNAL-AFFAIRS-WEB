@@ -73,7 +73,7 @@ const Navbar = () => {
 
           {/* Auth Buttons - Only show for logged in admins */}
           <div className="hidden md:flex items-center gap-3">
-            {user && isAdmin ? (
+            {user && isAdmin && (
               <>
                 <Link to="/admin">
                   <Button
@@ -95,15 +95,6 @@ const Navbar = () => {
                   Sign Out
                 </Button>
               </>
-            ) : (
-              <Link to="/donate">
-                <Button
-                  size="sm"
-                  className="bg-[#d4af37] hover:bg-[#c9a22f] text-white"
-                >
-                  Donate
-                </Button>
-              </Link>
             )}
           </div>
 
@@ -135,7 +126,7 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-white/20">
-                {user && isAdmin ? (
+                {user && isAdmin && (
                   <>
                     <Link to="/admin" onClick={() => setIsOpen(false)}>
                       <Button
@@ -158,12 +149,6 @@ const Navbar = () => {
                       Sign Out
                     </Button>
                   </>
-                ) : (
-                  <Link to="/donate" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full bg-[#d4af37] hover:bg-[#c9a22f] text-white">
-                      Donate Now
-                    </Button>
-                  </Link>
                 )}
               </div>
             </div>
