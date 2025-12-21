@@ -45,62 +45,107 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import humjsLogo from "@/assets/humjs-logo.png";
+import {
+  subscribeToStudents,
+  addStudent,
+  updateStudent,
+  deleteStudent,
+  subscribeToPrograms,
+  addProgram,
+  updateProgram,
+  deleteProgram,
+  FirestoreStudent as Student,
+  FirestoreProgram as Program
+} from "@/lib/firestore";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 type ActiveTab = "overview" | "students" | "programs" | "reports";
 
-// Types
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  program: string;
-  enrollmentDate: string;
-  status: "active" | "graduated" | "inactive";
-}
-
-interface Program {
-  id: string;
-  name: string;
-  instructor: string;
-  students: number;
-  day: string;
-  time: string;
-  status: "active" | "completed" | "upcoming";
-  type: "study_circle" | "workshop" | "course";
-}
-
-
-// Sample data
-const sampleStudents: Student[] = [
-  { id: "1", name: "Ahmed Mohammed", email: "ahmed@example.com", phone: "+251911234567", program: "Tafsir Al-Quran", enrollmentDate: "2024-09-01", status: "active" },
-  { id: "2", name: "Fatima Ibrahim", email: "fatima@example.com", phone: "+251912345678", program: "Hadith Studies", enrollmentDate: "2024-09-15", status: "active" },
-  { id: "3", name: "Yusuf Ali", email: "yusuf@example.com", phone: "+251913456789", program: "Fiqh Basics", enrollmentDate: "2024-08-01", status: "active" },
-  { id: "4", name: "Mariam Hassan", email: "mariam@example.com", phone: "+251914567890", program: "Seerah", enrollmentDate: "2024-10-01", status: "active" },
-  { id: "5", name: "Omar Abdullah", email: "omar@example.com", phone: "+251915678901", program: "Islamic Finance Workshop", enrollmentDate: "2024-07-01", status: "graduated" },
-];
-
-const samplePrograms: Program[] = [
-  { id: "1", name: "Tafsir Al-Quran", instructor: "Uztaz Ahmed", students: 45, day: "Monday", time: "4:00 PM", status: "active", type: "study_circle" },
-  { id: "2", name: "Hadith Studies", instructor: "Uztaz Ibrahim", students: 32, day: "Wednesday", time: "5:00 PM", status: "active", type: "study_circle" },
-  { id: "3", name: "Fiqh Basics", instructor: "Uztaz Yusuf", students: 28, day: "Thursday", time: "4:30 PM", status: "active", type: "study_circle" },
-  { id: "4", name: "Seerah", instructor: "Uztaz Mohammed", students: 38, day: "Saturday", time: "10:00 AM", status: "active", type: "study_circle" },
-  { id: "5", name: "Islamic Finance Workshop", instructor: "Dr. Khalid", students: 65, day: "One-time", time: "Jan 15, 2025", status: "upcoming", type: "workshop" },
-  { id: "6", name: "Time Management in Islam", instructor: "Uztaz Bilal", students: 45, day: "One-time", time: "Jan 22, 2025", status: "upcoming", type: "workshop" },
-  { id: "7", name: "Da'wah Training", instructor: "Uztaz Hamza", students: 52, day: "Completed", time: "Dec 10, 2024", status: "completed", type: "workshop" },
-];
+// Sample data removed for live implementation
 
 
 const AcademicDashboard = () => {
   const { toast } = useToast();
   const { signOut, user } = useAuth();
   const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
-  const [students, setStudents] = useState<Student[]>(sampleStudents);
-  const [programs, setPrograms] = useState<Program[]>(samplePrograms);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [isAddProgramOpen, setIsAddProgramOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+
+  // Form states
+  const [studentForm, setStudentForm] = useState({ name: "", email: "", phone: "", program: "", status: "active" as const });
+  const [programForm, setProgramForm] = useState({ name: "", instructor: "", type: "study_circle", day: "", time: "", status: "active" as const, description: "" });
+
+  useEffect(() => {
+    const unsubStudents = subscribeToStudents((data) => {
+      setStudents(data.filter(s => s.sector === "academic"));
+      setIsLoading(false);
+    });
+
+    const unsubPrograms = subscribeToPrograms((data) => {
+      setPrograms(data.filter(p => p.sector === "academic"));
+    });
+
+    return () => {
+      unsubStudents();
+      unsubPrograms();
+    };
+  }, []);
+
+  const handleAddStudent = async () => {
+    try {
+      await addStudent({
+        ...studentForm,
+        sector: "academic",
+        enrollmentDate: new Date().toISOString(),
+      });
+      toast({ title: "Student Added", description: "New student has been enrolled successfully." });
+      setIsAddStudentOpen(false);
+      setStudentForm({ name: "", email: "", phone: "", program: "", status: "active" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to add student.", variant: "destructive" });
+    }
+  };
+
+  const handleAddProgram = async () => {
+    try {
+      await addProgram({
+        ...programForm,
+        sector: "academic",
+        students: 0,
+      });
+      toast({ title: "Program Created", description: "New academic program has been created." });
+      setIsAddProgramOpen(false);
+      setProgramForm({ name: "", instructor: "", type: "study_circle", day: "", time: "", status: "active", description: "" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to create program.", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteStudent = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this student?")) return;
+    try {
+      await deleteStudent(id);
+      toast({ title: "Student Deleted", description: "Student record removed." });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete student.", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteProgram = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this program?")) return;
+    try {
+      await deleteProgram(id);
+      toast({ title: "Program Deleted", description: "Program record removed." });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete program.", variant: "destructive" });
+    }
+  };
 
   const stats = {
     totalStudents: students.length,
@@ -360,44 +405,59 @@ const AcademicDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredStudents.map((student) => (
-                      <TableRow key={student.id} className="hover:bg-gray-50">
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#25A7A1] flex items-center justify-center text-white text-sm font-bold">
-                              {student.name.charAt(0)}
-                            </div>
-                            {student.name}
-                          </div>
-                        </TableCell>
-                        <TableCell>{student.email}</TableCell>
-                        <TableCell>{student.phone}</TableCell>
-                        <TableCell>{student.program}</TableCell>
-                        <TableCell>{new Date(student.enrollmentDate).toLocaleDateString()}</TableCell>
-                        <TableCell>
-                          <Badge className={
-                            student.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" :
-                              student.status === "graduated" ? "bg-[#25A7A1]/20 text-[#25A7A1]" :
-                                "bg-gray-100 text-gray-600"
-                          }>
-                            {student.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
-                              <Eye size={16} />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
-                              <Edit size={16} />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500">
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
-                        </TableCell>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading students...</TableCell>
                       </TableRow>
-                    ))}
+                    ) : filteredStudents.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No students found.</TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredStudents.map((student) => (
+                        <TableRow key={student.id} className="hover:bg-gray-50">
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-[#25A7A1] flex items-center justify-center text-white text-sm font-bold">
+                                {student.name.charAt(0)}
+                              </div>
+                              {student.name}
+                            </div>
+                          </TableCell>
+                          <TableCell>{student.email || student.phone}</TableCell>
+                          <TableCell>{student.phone}</TableCell>
+                          <TableCell>{student.program}</TableCell>
+                          <TableCell>{new Date(student.enrollmentDate).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <Badge className={
+                              student.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" :
+                                student.status === "graduated" ? "bg-green-100 text-green-600" :
+                                  "bg-gray-100 text-gray-600"
+                            }>
+                              {student.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
+                                <Eye size={16} />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
+                                <Edit size={16} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                onClick={() => handleDeleteStudent(student.id!)}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </div>
@@ -431,38 +491,56 @@ const AcademicDashboard = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {programs.map((program) => (
-                    <TableRow key={program.id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium">{program.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="capitalize">
-                          {program.type.replace("_", " ")}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{program.instructor}</TableCell>
-                      <TableCell>{program.day} {program.time}</TableCell>
-                      <TableCell>{program.students}</TableCell>
-                      <TableCell>
-                        <Badge className={
-                          program.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" :
-                            program.status === "upcoming" ? "bg-blue-100 text-blue-600" :
-                              "bg-gray-100 text-gray-600"
-                        }>
-                          {program.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
-                            <Eye size={16} />
-                          </Button>
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
-                            <Edit size={16} />
-                          </Button>
-                        </div>
-                      </TableCell>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading programs...</TableCell>
                     </TableRow>
-                  ))}
+                  ) : programs.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No programs found.</TableCell>
+                    </TableRow>
+                  ) : (
+                    programs.map((program) => (
+                      <TableRow key={program.id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">{program.name}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="capitalize">
+                            {program.type.replace("_", " ")}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{program.instructor}</TableCell>
+                        <TableCell>{program.day} {program.time}</TableCell>
+                        <TableCell>{program.students}</TableCell>
+                        <TableCell>
+                          <Badge className={
+                            program.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" :
+                              program.status === "upcoming" ? "bg-amber-100 text-amber-600 font-medium" :
+                                "bg-gray-100 text-gray-600"
+                          }>
+                            {program.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
+                              <Eye size={16} />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
+                              <Edit size={16} />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 text-red-500 hover:bg-red-50"
+                              onClick={() => handleDeleteProgram(program.id!)}
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -546,26 +624,55 @@ const AcademicDashboard = () => {
               <DialogTitle>Add New Student</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <Input placeholder="Full Name" />
-              <Input placeholder="Email" type="email" />
-              <Input placeholder="Phone" />
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Program" />
-                </SelectTrigger>
-                <SelectContent>
-                  {programs.filter(p => p.status === "active").map(p => (
-                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Label>Full Name</Label>
+                <Input
+                  placeholder="Full Name"
+                  value={studentForm.name}
+                  onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input
+                  placeholder="Email"
+                  type="email"
+                  value={studentForm.email}
+                  onChange={(e) => setStudentForm({ ...studentForm, email: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Phone</Label>
+                <Input
+                  placeholder="Phone"
+                  value={studentForm.phone}
+                  onChange={(e) => setStudentForm({ ...studentForm, phone: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Program</Label>
+                <Select
+                  value={studentForm.program}
+                  onValueChange={(value) => setStudentForm({ ...studentForm, program: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Program" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {programs.map(p => (
+                      <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddStudentOpen(false)}>Cancel</Button>
-              <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => {
-                toast({ title: "Student Added", description: "New student has been enrolled." });
-                setIsAddStudentOpen(false);
-              }}>
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86]"
+                onClick={handleAddStudent}
+                disabled={!studentForm.name || !studentForm.program}
+              >
                 Add Student
               </Button>
             </DialogFooter>
@@ -578,29 +685,74 @@ const AcademicDashboard = () => {
             <DialogHeader>
               <DialogTitle>Add New Program</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <Input placeholder="Program Name" />
-              <Input placeholder="Instructor" />
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Program Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="study_circle">Study Circle</SelectItem>
-                  <SelectItem value="workshop">Workshop</SelectItem>
-                  <SelectItem value="course">Course</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input placeholder="Day (e.g., Monday)" />
-              <Input placeholder="Time (e.g., 4:00 PM)" />
+            <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
+              <div className="space-y-2">
+                <Label>Program Name</Label>
+                <Input
+                  placeholder="Program Name"
+                  value={programForm.name}
+                  onChange={(e) => setProgramForm({ ...programForm, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Instructor</Label>
+                <Input
+                  placeholder="Instructor"
+                  value={programForm.instructor}
+                  onChange={(e) => setProgramForm({ ...programForm, instructor: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Program Type</Label>
+                <Select
+                  value={programForm.type}
+                  onValueChange={(value: any) => setProgramForm({ ...programForm, type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Program Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="study_circle">Study Circle</SelectItem>
+                    <SelectItem value="workshop">Workshop</SelectItem>
+                    <SelectItem value="course">Course</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Day</Label>
+                  <Input
+                    placeholder="e.g., Monday"
+                    value={programForm.day}
+                    onChange={(e) => setProgramForm({ ...programForm, day: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Time</Label>
+                  <Input
+                    placeholder="e.g., 4:00 PM"
+                    value={programForm.time}
+                    onChange={(e) => setProgramForm({ ...programForm, time: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  placeholder="Program details..."
+                  value={programForm.description}
+                  onChange={(e) => setProgramForm({ ...programForm, description: e.target.value })}
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddProgramOpen(false)}>Cancel</Button>
-              <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => {
-                toast({ title: "Program Added", description: "New program has been created." });
-                setIsAddProgramOpen(false);
-              }}>
-                Add Program
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86]"
+                onClick={handleAddProgram}
+                disabled={!programForm.name || !programForm.instructor}
+              >
+                Create Program
               </Button>
             </DialogFooter>
           </DialogContent>

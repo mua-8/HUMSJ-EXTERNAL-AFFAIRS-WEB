@@ -58,110 +58,172 @@ import {
   subscribeToRegistrations,
   updateRegistration,
   deleteRegistration,
-  FirestoreRegistration
+  FirestoreRegistration,
+  subscribeToStudents,
+  addStudent,
+  updateStudent,
+  deleteStudent,
+  subscribeToPrograms,
+  addProgram,
+  updateProgram,
+  deleteProgram,
+  subscribeToResources,
+  addResource,
+  deleteResource,
+  subscribeToCompetitions,
+  addCompetition,
+  deleteCompetition,
+  FirestoreStudent as QiratStudent,
+  FirestoreProgram as Activity,
+  FirestoreResource as Resource,
+  FirestoreCompetition as Competition
 } from "@/lib/firestore";
+import { Label } from "@/components/ui/label";
 
 type ActiveTab = "overview" | "students" | "enrollments" | "activities" | "resources" | "competitions" | "reports";
 
 // Types
-interface QiratStudent {
-  id: string;
-  name: string;
-  phone: string;
-  level: "beginner" | "intermediate" | "advanced" | "hafiz";
-  class: string;
-  instructor: string;
-  juzCompleted: number;
-  enrollmentDate: string;
-  status: "active" | "graduated" | "on_hold";
-  progress: number;
-}
-
-interface Activity {
-  id: string;
-  title: string;
-  type: "recitation" | "competition" | "exam" | "event";
-  date: string;
-  participants: number;
-  status: "upcoming" | "ongoing" | "completed";
-  description: string;
-}
-
-interface Resource {
-  id: string;
-  title: string;
-  type: "audio" | "video" | "document" | "book";
-  category: string;
-  downloads: number;
-  uploadDate: string;
-}
-
-interface Competition {
-  id: string;
-  title: string;
-  date: string;
-  participants: number;
-  status: "upcoming" | "ongoing" | "completed";
-  prize: string;
-  category: string;
-}
-
-// Sample data
-const sampleStudents: QiratStudent[] = [
-  { id: "1", name: "Abdullah Hassan", phone: "+251911234567", level: "advanced", class: "Hifz Program", instructor: "Hafiz Mohammed", juzCompleted: 15, enrollmentDate: "2024-01-15", status: "active", progress: 50 },
-  { id: "2", name: "Khadija Omar", phone: "+251912345678", level: "intermediate", class: "Tajweed Basics", instructor: "Qari Abdulrahman", juzCompleted: 3, enrollmentDate: "2024-06-01", status: "active", progress: 30 },
-  { id: "3", name: "Bilal Ahmed", phone: "+251913456789", level: "beginner", class: "Tarteel Class", instructor: "Qari Yusuf", juzCompleted: 1, enrollmentDate: "2024-09-01", status: "active", progress: 10 },
-  { id: "4", name: "Amina Ibrahim", phone: "+251914567890", level: "hafiz", class: "Qirat Styles", instructor: "Qari Ibrahim", juzCompleted: 30, enrollmentDate: "2023-01-01", status: "graduated", progress: 100 },
-  { id: "5", name: "Yusuf Mohammed", phone: "+251915678901", level: "advanced", class: "Hifz Program", instructor: "Hafiz Mohammed", juzCompleted: 22, enrollmentDate: "2023-06-01", status: "active", progress: 73 },
-];
-
-const sampleActivities: Activity[] = [
-  { id: "1", title: "Weekly Quran Circle", type: "recitation", date: "Every Friday", participants: 45, status: "ongoing", description: "Community Quran recitation and reflection" },
-  { id: "2", title: "Ramadan Quran Competition", type: "competition", date: "2025-03-15", participants: 120, status: "upcoming", description: "Annual Quran competition during Ramadan" },
-  { id: "3", title: "Tajweed Exam Level 2", type: "exam", date: "2025-01-20", participants: 35, status: "upcoming", description: "Intermediate level Tajweed assessment" },
-  { id: "4", title: "Hifz Graduation Ceremony", type: "event", date: "2024-12-15", participants: 200, status: "completed", description: "Graduation ceremony for Hafiz students" },
-];
-
-const sampleResources: Resource[] = [
-  { id: "1", title: "Tajweed Rules - Complete Guide", type: "document", category: "Tajweed", downloads: 245, uploadDate: "2024-06-15" },
-  { id: "2", title: "Surah Al-Baqarah - Mishary Rashid", type: "audio", category: "Recitation", downloads: 532, uploadDate: "2024-07-01" },
-  { id: "3", title: "Makharij Al-Huruf Video Course", type: "video", category: "Tajweed", downloads: 189, uploadDate: "2024-08-10" },
-  { id: "4", title: "Hifz Schedule Template", type: "document", category: "Memorization", downloads: 156, uploadDate: "2024-09-01" },
-  { id: "5", title: "Qirat Styles - Hafs & Warsh", type: "audio", category: "Qirat", downloads: 89, uploadDate: "2024-10-15" },
-];
-
-const sampleCompetitions: Competition[] = [
-  { id: "1", title: "Annual Quran Competition", date: "2025-02-15", participants: 85, status: "upcoming", prize: "10,000 ETB", category: "Hifz" },
-  { id: "2", title: "Tajweed Excellence Award", date: "2025-03-01", participants: 45, status: "upcoming", prize: "5,000 ETB", category: "Tajweed" },
-  { id: "3", title: "Youth Qirat Contest", date: "2025-04-10", participants: 60, status: "upcoming", prize: "7,500 ETB", category: "Recitation" },
-  { id: "4", title: "Ramadan Qirat Contest 2024", date: "2024-04-10", participants: 120, status: "completed", prize: "15,000 ETB", category: "Recitation" },
-];
+// Sample data removed for live implementation
 
 const QiratDashboard = () => {
   const { toast } = useToast();
   const { signOut, user } = useAuth();
   const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
-  const [students, setStudents] = useState<QiratStudent[]>(sampleStudents);
-  const [activities, setActivities] = useState<Activity[]>(sampleActivities);
-  const [resources, setResources] = useState<Resource[]>(sampleResources);
-  const [competitions, setCompetitions] = useState<Competition[]>(sampleCompetitions);
+  const [students, setStudents] = useState<QiratStudent[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const [registrations, setRegistrations] = useState<FirestoreRegistration[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [isAddActivityOpen, setIsAddActivityOpen] = useState(false);
   const [isAddResourceOpen, setIsAddResourceOpen] = useState(false);
-  const [registrations, setRegistrations] = useState<FirestoreRegistration[]>([]);
+  const [isAddCompetitionOpen, setIsAddCompetitionOpen] = useState(false);
+
+  // Form states
+  const [studentForm, setStudentForm] = useState({ name: "", phone: "", level: "beginner" as const, program: "Hifz Program", instructor: "", juzCompleted: 0, status: "active" as const });
+  const [activityForm, setActivityForm] = useState({ name: "", type: "recitation", day: "", time: "", status: "upcoming" as const, description: "" });
+  const [resourceForm, setResourceForm] = useState({ title: "", type: "document" as const, category: "Tajweed" });
+  const [competitionForm, setCompetitionForm] = useState({ title: "", date: "", prize: "", category: "Hifz", status: "upcoming" as const });
+
+  useEffect(() => {
+    const unsubReg = subscribeToRegistrations((data) => {
+      setRegistrations(data.filter(r => r.sector === "qirat" && r.type === "student"));
+    });
+
+    const unsubStudents = subscribeToStudents((data) => {
+      setStudents(data.filter(s => s.sector === "qirat") as any);
+      setIsLoading(false);
+    });
+
+    const unsubPrograms = subscribeToPrograms((data) => {
+      setActivities(data.filter(p => p.sector === "qirat") as any);
+    });
+
+    const unsubResources = subscribeToResources((data) => {
+      setResources(data.filter(r => r.sector === "qirat") as any);
+    });
+
+    const unsubCompetitions = subscribeToCompetitions((data) => {
+      setCompetitions(data);
+    });
+
+    return () => {
+      unsubReg();
+      unsubStudents();
+      unsubPrograms();
+      unsubResources();
+      unsubCompetitions();
+    };
+  }, []);
+
+  // CRUD Handlers
+  const handleAddStudent = async () => {
+    try {
+      await addStudent({
+        ...studentForm,
+        sector: "qirat",
+        progress: (studentForm.juzCompleted / 30) * 100,
+        enrollmentDate: new Date().toISOString(),
+      } as any);
+      toast({ title: "Student Added", description: "Student enrolled in Qirat program." });
+      setIsAddStudentOpen(false);
+      setStudentForm({ name: "", phone: "", level: "beginner", program: "Hifz Program", instructor: "", juzCompleted: 0, status: "active" });
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to add student.", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteStudent = async (id: string) => {
+    if (!confirm("Delete student record?")) return;
+    await deleteStudent(id);
+    toast({ title: "Deleted", description: "Student record removed." });
+  };
+
+  const handleAddActivity = async () => {
+    try {
+      await addProgram({
+        ...activityForm,
+        sector: "qirat",
+        students: 0,
+      } as any);
+      toast({ title: "Activity Added", description: "New Qirat activity created." });
+      setIsAddActivityOpen(false);
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to add activity.", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteActivity = async (id: string) => {
+    if (!confirm("Delete activity?")) return;
+    await deleteProgram(id);
+  };
+
+  const handleAddResource = async () => {
+    try {
+      await addResource({
+        ...resourceForm,
+        sector: "qirat",
+        downloads: 0,
+        uploadDate: new Date().toISOString(),
+      } as any);
+      toast({ title: "Resource Uploaded", description: "New material added to Qirat library." });
+      setIsAddResourceOpen(false);
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to upload resource.", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteResource = async (id: string) => {
+    if (!confirm("Delete resource?")) return;
+    await deleteResource(id);
+  };
+
+  const handleAddCompetition = async () => {
+    try {
+      await addCompetition({
+        ...competitionForm,
+        participants: 0,
+      } as any);
+      toast({ title: "Competition Added", description: "New competition scheduled." });
+      setIsAddCompetitionOpen(false);
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to schedule competition.", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteCompetition = async (id: string) => {
+    if (!confirm("Delete competition?")) return;
+    await deleteCompetition(id);
+  };
   const [isRegLoading, setIsRegLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = subscribeToRegistrations((data) => {
-      // Filter for qirat sector and student type
-      const qiratRegistrations = data.filter(r => r.sector === "qirat" && r.type === "student");
-      setRegistrations(qiratRegistrations);
+    if (registrations) {
       setIsRegLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+    }
+  }, [registrations]);
 
   const handleApproveRegistration = async (id: string) => {
     try {
@@ -475,57 +537,72 @@ const QiratDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredStudents.map((student) => (
-                      <TableRow key={student.id} className="hover:bg-gray-50">
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#25A7A1] flex items-center justify-center text-white text-sm font-bold">
-                              {student.name.charAt(0)}
-                            </div>
-                            {student.name}
-                          </div>
-                        </TableCell>
-                        <TableCell>{student.phone}</TableCell>
-                        <TableCell>{student.class}</TableCell>
-                        <TableCell>{student.instructor}</TableCell>
-                        <TableCell>
-                          <Badge className={getLevelColor(student.level)}>{student.level}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-[#25A7A1] rounded-full"
-                                style={{ width: `${student.progress}%` }}
-                              />
-                            </div>
-                            <span className="text-xs text-gray-500">{student.juzCompleted}/30</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={
-                            student.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" :
-                              student.status === "graduated" ? "bg-amber-100 text-amber-600" :
-                                "bg-gray-100 text-gray-600"
-                          }>
-                            {student.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
-                              <Eye size={16} />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
-                              <Edit size={16} />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500">
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
-                        </TableCell>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading qirat students...</TableCell>
                       </TableRow>
-                    ))}
+                    ) : filteredStudents.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No students found.</TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredStudents.map((student) => (
+                        <TableRow key={student.id} className="hover:bg-gray-50">
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-[#25A7A1] flex items-center justify-center text-white text-sm font-bold">
+                                {student.name.charAt(0)}
+                              </div>
+                              {student.name}
+                            </div>
+                          </TableCell>
+                          <TableCell>{student.phone}</TableCell>
+                          <TableCell>{student.program}</TableCell>
+                          <TableCell>{student.instructor}</TableCell>
+                          <TableCell>
+                            <Badge className={getLevelColor(student.level as any)}>{student.level}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-[#25A7A1] rounded-full"
+                                  style={{ width: `${student.progress}%` }}
+                                />
+                              </div>
+                              <span className="text-xs text-gray-500">{student.juzCompleted}/30</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={
+                              student.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" :
+                                student.status === "graduated" ? "bg-amber-100 text-amber-600" :
+                                  "bg-gray-100 text-gray-600"
+                            }>
+                              {student.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
+                                <Eye size={16} />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
+                                <Edit size={16} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                onClick={() => handleDeleteStudent(student.id!)}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </div>
@@ -666,40 +743,55 @@ const QiratDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {activities.map((activity) => (
-                      <TableRow key={activity.id} className="hover:bg-gray-50">
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{activity.title}</p>
-                            <p className="text-xs text-gray-500">{activity.description}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="capitalize">{activity.type}</Badge>
-                        </TableCell>
-                        <TableCell>{activity.date}</TableCell>
-                        <TableCell>{activity.participants}</TableCell>
-                        <TableCell>
-                          <Badge className={
-                            activity.status === "upcoming" ? "bg-blue-100 text-blue-600" :
-                              activity.status === "ongoing" ? "bg-green-100 text-green-600" :
-                                "bg-gray-100 text-gray-600"
-                          }>
-                            {activity.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
-                              <Eye size={16} />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
-                              <Edit size={16} />
-                            </Button>
-                          </div>
-                        </TableCell>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Loading activities...</TableCell>
                       </TableRow>
-                    ))}
+                    ) : activities.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No activities found.</TableCell>
+                      </TableRow>
+                    ) : (
+                      activities.map((activity) => (
+                        <TableRow key={activity.id} className="hover:bg-gray-50">
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{activity.name}</p>
+                              <p className="text-xs text-gray-500">{activity.description}</p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="capitalize">{activity.type}</Badge>
+                          </TableCell>
+                          <TableCell>{activity.day} {activity.time}</TableCell>
+                          <TableCell>{activity.students}</TableCell>
+                          <TableCell>
+                            <Badge className={
+                              activity.status === "upcoming" ? "bg-blue-100 text-blue-600" :
+                                activity.status === "active" ? "bg-green-100 text-green-600" :
+                                  "bg-gray-100 text-gray-600"
+                            }>
+                              {activity.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
+                                <Eye size={16} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                onClick={() => handleDeleteActivity(activity.id!)}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -760,30 +852,42 @@ const QiratDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {resources.map((resource) => (
-                      <TableRow key={resource.id} className="hover:bg-gray-50">
-                        <TableCell className="font-medium">{resource.title}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="capitalize">{resource.type}</Badge>
-                        </TableCell>
-                        <TableCell>{resource.category}</TableCell>
-                        <TableCell>{resource.downloads}</TableCell>
-                        <TableCell>{new Date(resource.uploadDate).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
-                              <Download size={16} />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
-                              <Edit size={16} />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500">
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
-                        </TableCell>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Loading resources...</TableCell>
                       </TableRow>
-                    ))}
+                    ) : resources.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No resources found.</TableCell>
+                      </TableRow>
+                    ) : (
+                      resources.map((resource) => (
+                        <TableRow key={resource.id} className="hover:bg-gray-50">
+                          <TableCell className="font-medium">{resource.title}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="capitalize">{resource.type}</Badge>
+                          </TableCell>
+                          <TableCell>{resource.category}</TableCell>
+                          <TableCell>{resource.downloads}</TableCell>
+                          <TableCell>{new Date(resource.uploadDate).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
+                                <Download size={16} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                onClick={() => handleDeleteResource(resource.id!)}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -933,36 +1037,84 @@ const QiratDashboard = () => {
               <DialogTitle>Add New Qirat Student</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <Input placeholder="Full Name" />
-              <Input placeholder="Phone Number" />
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Class" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="hifz">Hifz Program</SelectItem>
-                  <SelectItem value="tajweed">Tajweed Basics</SelectItem>
-                  <SelectItem value="qirat">Qirat Styles</SelectItem>
-                  <SelectItem value="tarteel">Tarteel Class</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="beginner">Beginner</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="advanced">Advanced</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Label>Full Name</Label>
+                <Input
+                  placeholder="Full Name"
+                  value={studentForm.name}
+                  onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Phone Number</Label>
+                <Input
+                  placeholder="Phone Number"
+                  value={studentForm.phone}
+                  onChange={(e) => setStudentForm({ ...studentForm, phone: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Class/Program</Label>
+                <Select
+                  value={studentForm.program}
+                  onValueChange={(value) => setStudentForm({ ...studentForm, program: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Hifz Program">Hifz Program</SelectItem>
+                    <SelectItem value="Tajweed Basics">Tajweed Basics</SelectItem>
+                    <SelectItem value="Qirat Styles">Qirat Styles</SelectItem>
+                    <SelectItem value="Tarteel Class">Tarteel Class</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Level</Label>
+                  <Select
+                    value={studentForm.level}
+                    onValueChange={(value: any) => setStudentForm({ ...studentForm, level: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Beginner</SelectItem>
+                      <SelectItem value="intermediate">Intermediate</SelectItem>
+                      <SelectItem value="advanced">Advanced</SelectItem>
+                      <SelectItem value="hafiz">Hafiz</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Juz Completed</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="30"
+                    value={studentForm.juzCompleted}
+                    onChange={(e) => setStudentForm({ ...studentForm, juzCompleted: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Instructor (Optional)</Label>
+                <Input
+                  placeholder="Instructor Name"
+                  value={studentForm.instructor}
+                  onChange={(e) => setStudentForm({ ...studentForm, instructor: e.target.value })}
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddStudentOpen(false)}>Cancel</Button>
-              <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => {
-                toast({ title: "Student Added", description: "New Qirat student has been enrolled." });
-                setIsAddStudentOpen(false);
-              }}>
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                onClick={handleAddStudent}
+                disabled={!studentForm.name || !studentForm.phone}
+              >
                 Add Student
               </Button>
             </DialogFooter>
@@ -976,28 +1128,84 @@ const QiratDashboard = () => {
               <DialogTitle>Add New Activity</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <Input placeholder="Activity Title" />
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Activity Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recitation">Recitation Circle</SelectItem>
-                  <SelectItem value="competition">Competition</SelectItem>
-                  <SelectItem value="exam">Exam</SelectItem>
-                  <SelectItem value="event">Event</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input type="date" />
-              <Textarea placeholder="Description" />
+              <div className="space-y-2">
+                <Label>Activity Title</Label>
+                <Input
+                  placeholder="Activity Title"
+                  value={activityForm.name}
+                  onChange={(e) => setActivityForm({ ...activityForm, name: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Type</Label>
+                  <Select
+                    value={activityForm.type}
+                    onValueChange={(value: any) => setActivityForm({ ...activityForm, type: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="recitation">Recitation Circle</SelectItem>
+                      <SelectItem value="competition">Competition</SelectItem>
+                      <SelectItem value="exam">Exam</SelectItem>
+                      <SelectItem value="event">Event</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <Select
+                    value={activityForm.status}
+                    onValueChange={(value: any) => setActivityForm({ ...activityForm, status: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="upcoming">Upcoming</SelectItem>
+                      <SelectItem value="active">Active/Ongoing</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Day/Date</Label>
+                  <Input
+                    placeholder="e.g., Every Friday"
+                    value={activityForm.day}
+                    onChange={(e) => setActivityForm({ ...activityForm, day: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Time</Label>
+                  <Input
+                    placeholder="e.g., 4:00 PM"
+                    value={activityForm.time}
+                    onChange={(e) => setActivityForm({ ...activityForm, time: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  placeholder="Activity details..."
+                  value={activityForm.description}
+                  onChange={(e) => setActivityForm({ ...activityForm, description: e.target.value })}
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddActivityOpen(false)}>Cancel</Button>
-              <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => {
-                toast({ title: "Activity Added", description: "New activity has been created." });
-                setIsAddActivityOpen(false);
-              }}>
-                Add Activity
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                onClick={handleAddActivity}
+                disabled={!activityForm.name}
+              >
+                Create Activity
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1010,28 +1218,123 @@ const QiratDashboard = () => {
               <DialogTitle>Upload New Resource</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <Input placeholder="Resource Title" />
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Resource Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="audio">Audio</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
-                  <SelectItem value="document">Document</SelectItem>
-                  <SelectItem value="book">Book</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input placeholder="Category (e.g., Tajweed, Recitation)" />
-              <Input type="file" />
+              <div className="space-y-2">
+                <Label>Resource Title</Label>
+                <Input
+                  placeholder="e.g., Tajweed Rules PDF"
+                  value={resourceForm.title}
+                  onChange={(e) => setResourceForm({ ...resourceForm, title: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Type</Label>
+                  <Select
+                    value={resourceForm.type}
+                    onValueChange={(value: any) => setResourceForm({ ...resourceForm, type: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="audio">Audio</SelectItem>
+                      <SelectItem value="video">Video</SelectItem>
+                      <SelectItem value="document">Document</SelectItem>
+                      <SelectItem value="book">Book</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <Select
+                    value={resourceForm.category}
+                    onValueChange={(value: any) => setResourceForm({ ...resourceForm, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Tajweed">Tajweed</SelectItem>
+                      <SelectItem value="Recitation">Recitation</SelectItem>
+                      <SelectItem value="Memorization">Memorization</SelectItem>
+                      <SelectItem value="Qirat">Qirat Styles</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <Input type="file" className="cursor-pointer" />
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddResourceOpen(false)}>Cancel</Button>
-              <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => {
-                toast({ title: "Resource Uploaded", description: "New resource has been added." });
-                setIsAddResourceOpen(false);
-              }}>
-                Upload
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                onClick={handleAddResource}
+                disabled={!resourceForm.title}
+              >
+                Upload Resource
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Competition Dialog */}
+        <Dialog open={isAddCompetitionOpen} onOpenChange={setIsAddCompetitionOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Schedule New Competition</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Competition Title</Label>
+                <Input
+                  placeholder="e.g., Ramadan Quran Contest"
+                  value={competitionForm.title}
+                  onChange={(e) => setCompetitionForm({ ...competitionForm, title: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Date</Label>
+                  <Input
+                    type="date"
+                    value={competitionForm.date}
+                    onChange={(e) => setCompetitionForm({ ...competitionForm, date: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <Select
+                    value={competitionForm.category}
+                    onValueChange={(value) => setCompetitionForm({ ...competitionForm, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Hifz">Hifz</SelectItem>
+                      <SelectItem value="Tajweed">Tajweed</SelectItem>
+                      <SelectItem value="Recitation">Recitation</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Prize Details</Label>
+                <Input
+                  placeholder="e.g., 10,000 ETB + Trophy"
+                  value={competitionForm.prize}
+                  onChange={(e) => setCompetitionForm({ ...competitionForm, prize: e.target.value })}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsAddCompetitionOpen(false)}>Cancel</Button>
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                onClick={handleAddCompetition}
+                disabled={!competitionForm.title || !competitionForm.date}
+              >
+                Schedule Competition
               </Button>
             </DialogFooter>
           </DialogContent>

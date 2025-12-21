@@ -56,32 +56,63 @@ import {
   updateDonationStatus,
   deleteDonation,
 } from "@/lib/donations";
+import {
+  subscribeToDistributions,
+  addDistribution,
+  updateDistribution,
+  deleteDistribution,
+  subscribeToEvents,
+  addEvent,
+  updateEvent,
+  deleteEvent,
+  FirestoreDistribution,
+  FirestoreEvent
+} from "@/lib/firestore";
+import { Label } from "@/components/ui/label";
 import humjsLogo from "@/assets/humjs-logo.png";
 
-type ActiveTab = "donations" | "reports" | "payment-methods";
+type ActiveTab = "donations" | "distributions" | "events" | "reports" | "payment-methods";
 
 const CharityDashboard = () => {
   const { toast } = useToast();
   const { signOut, user } = useAuth();
   const [activeTab, setActiveTab] = useState<ActiveTab>("donations");
   const [donations, setDonations] = useState<Donation[]>([]);
+  const [distributions, setDistributions] = useState<FirestoreDistribution[]>([]);
+  const [events, setEvents] = useState<FirestoreEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isAddDistributionOpen, setIsAddDistributionOpen] = useState(false);
+  const [isAddEventOpen, setIsAddEventOpen] = useState(false);
+  const [distributionForm, setDistributionForm] = useState({ title: "", description: "", date: "", items: "", beneficiaries: 0, status: "planned" as "planned" | "ongoing" | "completed" });
+  const [eventForm, setEventForm] = useState({ title: "", description: "", date: "", location: "", type: "event" as any, sector: "charity" as any });
   const [responseMessage, setResponseMessage] = useState("");
   const [reportPeriod, setReportPeriod] = useState<"monthly" | "yearly">("monthly");
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
-    const unsubscribe = subscribeToDonations((data) => {
+    const unsubDonations = subscribeToDonations((data) => {
       setDonations(data);
       setIsLoading(false);
     });
 
-    return () => unsubscribe();
+    const unsubDistributions = subscribeToDistributions((data) => {
+      setDistributions(data);
+    });
+
+    const unsubEvents = subscribeToEvents((data) => {
+      setEvents(data.filter(e => e.sector === "charity"));
+    });
+
+    return () => {
+      unsubDonations();
+      unsubDistributions();
+      unsubEvents();
+    };
   }, []);
 
   const handleConfirm = async (id: string) => {
@@ -103,12 +134,53 @@ const CharityDashboard = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this donation record?")) return;
     try {
       await deleteDonation(id);
       toast({ title: "Deleted", description: "The donation record has been deleted." });
     } catch (error) {
       toast({ title: "Error", description: "Failed to delete donation.", variant: "destructive" });
     }
+  };
+
+  const handleAddDistribution = async () => {
+    try {
+      await addDistribution({
+        ...distributionForm,
+        items: distributionForm.items.split(",").map(i => i.trim()),
+      });
+      toast({ title: "Distribution Added", description: "Aid distribution has been scheduled." });
+      setIsAddDistributionOpen(false);
+      setDistributionForm({ title: "", description: "", date: "", items: "", beneficiaries: 0, status: "planned" });
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to add distribution.", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteDistribution = async (id: string) => {
+    if (!confirm("Delete distribution record?")) return;
+    await deleteDistribution(id);
+    toast({ title: "Deleted", description: "Distribution record removed." });
+  };
+
+  const handleAddEvent = async () => {
+    try {
+      await addEvent({
+        ...eventForm,
+        category: "Charity",
+        time: "10:00 AM", // Default
+        image: "/images/charity-default.jpg"
+      } as any);
+      toast({ title: "Event Added", description: "Charity event has been created." });
+      setIsAddEventOpen(false);
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to create event." });
+    }
+  };
+
+  const handleDeleteEvent = async (id: string) => {
+    if (!confirm("Delete event?")) return;
+    await deleteEvent(id);
   };
 
   const handleViewDetails = (donation: Donation) => {
@@ -303,6 +375,26 @@ const CharityDashboard = () => {
           >
             <Heart size={18} />
             Donations
+          </button>
+          <button
+            onClick={() => setActiveTab("distributions")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === "distributions"
+              ? "bg-white/20 text-white shadow-lg"
+              : "text-white/70 hover:bg-white/10 hover:text-white"
+              }`}
+          >
+            <PieChart size={18} />
+            Distributions
+          </button>
+          <button
+            onClick={() => setActiveTab("events")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === "events"
+              ? "bg-white/20 text-white shadow-lg"
+              : "text-white/70 hover:bg-white/10 hover:text-white"
+              }`}
+          >
+            <Calendar size={18} />
+            Events
           </button>
           <button
             onClick={() => setActiveTab("reports")}
@@ -535,6 +627,152 @@ const CharityDashboard = () => {
               )}
             </CardContent>
           </Card>
+        )}
+
+        {/* Distributions Tab */}
+        {activeTab === "distributions" && (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Aid & Resource Distributions</CardTitle>
+                    <p className="text-sm text-gray-500 mt-1">Track items and resources delivered to beneficiaries</p>
+                  </div>
+                  <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddDistributionOpen(true)}>
+                    <Plus size={16} className="mr-2" />
+                    New Distribution
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Items Distributed</TableHead>
+                      <TableHead>Beneficiaries</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {distributions.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No distributions recorded.</TableCell>
+                      </TableRow>
+                    ) : (
+                      distributions.map((dist) => (
+                        <TableRow key={dist.id} className="hover:bg-gray-50">
+                          <TableCell className="font-medium">{dist.title}</TableCell>
+                          <TableCell>{new Date(dist.date).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {dist.items.map((item, i) => (
+                                <Badge key={i} variant="outline" className="text-[10px]">{item}</Badge>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell>{dist.beneficiaries || 0}</TableCell>
+                          <TableCell>
+                            <Badge className={
+                              dist.status === "completed" ? "bg-green-100 text-green-600" :
+                                dist.status === "ongoing" ? "bg-blue-100 text-blue-600" :
+                                  "bg-gray-100 text-gray-600"
+                            }>
+                              {dist.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
+                                <Eye size={16} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                onClick={() => handleDeleteDistribution(dist.id!)}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Events Tab */}
+        {activeTab === "events" && (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Charity Events & Programs</CardTitle>
+                    <p className="text-sm text-gray-500 mt-1">Manage fundraising and awareness events</p>
+                  </div>
+                  <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddEventOpen(true)}>
+                    <Plus size={16} className="mr-2" />
+                    Create Event
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Event Name</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {events.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No events found.</TableCell>
+                      </TableRow>
+                    ) : (
+                      events.map((event) => (
+                        <TableRow key={event.id} className="hover:bg-gray-50">
+                          <TableCell className="font-medium">{event.title}</TableCell>
+                          <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
+                          <TableCell>{event.location}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="capitalize">{event.type}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
+                                <Eye size={16} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                onClick={() => handleDeleteEvent(event.id!)}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {/* Reports Tab */}
@@ -812,6 +1050,156 @@ const CharityDashboard = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>
               Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Distribution Dialog */}
+      <Dialog open={isAddDistributionOpen} onOpenChange={setIsAddDistributionOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Distribution</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Distribution Title</Label>
+              <Input
+                placeholder="e.g., Monthly Food Aid"
+                value={distributionForm.title}
+                onChange={(e) => setDistributionForm({ ...distributionForm, title: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Date</Label>
+                <Input
+                  type="date"
+                  value={distributionForm.date}
+                  onChange={(e) => setDistributionForm({ ...distributionForm, date: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select
+                  value={distributionForm.status}
+                  onValueChange={(v: any) => setDistributionForm({ ...distributionForm, status: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="planned">Planned</SelectItem>
+                    <SelectItem value="ongoing">Ongoing</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Items (comma separated)</Label>
+              <Input
+                placeholder="e.g., Rice, Oil, Sugar"
+                value={distributionForm.items}
+                onChange={(e) => setDistributionForm({ ...distributionForm, items: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Number of Beneficiaries</Label>
+              <Input
+                type="number"
+                value={distributionForm.beneficiaries}
+                onChange={(e) => setDistributionForm({ ...distributionForm, beneficiaries: parseInt(e.target.value) || 0 })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                placeholder="Details of the distribution..."
+                value={distributionForm.description}
+                onChange={(e) => setDistributionForm({ ...distributionForm, description: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddDistributionOpen(false)}>Cancel</Button>
+            <Button
+              className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+              onClick={handleAddDistribution}
+              disabled={!distributionForm.title || !distributionForm.date}
+            >
+              Record Distribution
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Event Dialog */}
+      <Dialog open={isAddEventOpen} onOpenChange={setIsAddEventOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Charity Event</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Event Name</Label>
+              <Input
+                placeholder="Event Title"
+                value={eventForm.title}
+                onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Date</Label>
+                <Input
+                  type="date"
+                  value={eventForm.date}
+                  onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Event Type</Label>
+                <Select
+                  value={eventForm.type}
+                  onValueChange={(v: any) => setEventForm({ ...eventForm, type: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="event">General Event</SelectItem>
+                    <SelectItem value="workshop">Workshop</SelectItem>
+                    <SelectItem value="seminar">Seminar</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Location</Label>
+              <Input
+                placeholder="Venue location"
+                value={eventForm.location}
+                onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                placeholder="Event details..."
+                value={eventForm.description}
+                onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddEventOpen(false)}>Cancel</Button>
+            <Button
+              className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+              onClick={handleAddEvent}
+              disabled={!eventForm.title || !eventForm.date}
+            >
+              Create Event
             </Button>
           </DialogFooter>
         </DialogContent>

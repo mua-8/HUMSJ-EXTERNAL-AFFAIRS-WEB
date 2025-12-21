@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
     Megaphone,
@@ -54,88 +54,63 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import humjsLogo from "@/assets/humjs-logo.png";
+import {
+    subscribeToStudents,
+    addStudent,
+    updateStudent,
+    deleteStudent,
+    subscribeToEvents,
+    addEvent,
+    updateEvent,
+    deleteEvent,
+    subscribeToNewMuslims,
+    addNewMuslim,
+    deleteNewMuslim,
+    FirestoreStudent,
+    FirestoreEvent,
+    FirestoreNewMuslim
+} from "@/lib/firestore";
 
 type ActiveTab = "overview" | "participants" | "events" | "new-muslims" | "reports";
-
-// Types
-interface DawaParticipant {
-    id: string;
-    name: string;
-    phone: string;
-    email: string;
-    program: "awareness" | "mentorship" | "interfaith" | "new_muslim";
-    role: "participant" | "volunteer" | "speaker";
-    registrationDate: string;
-    status: "active" | "inactive" | "pending";
-    notes: string;
-}
-
-interface DawaEvent {
-    id: string;
-    title: string;
-    type: "lecture" | "seminar" | "workshop" | "campaign" | "dialogue";
-    date: string;
-    venue: string;
-    expectedParticipants: number;
-    actualParticipants: number;
-    status: "upcoming" | "ongoing" | "completed" | "cancelled";
-    description: string;
-    speaker: string;
-}
-
-interface NewMuslim {
-    id: string;
-    name: string;
-    phone: string;
-    email: string;
-    shahadadDate: string;
-    mentor: string;
-    progress: number;
-    coursesCompleted: string[];
-    status: "active" | "graduated" | "needs_support";
-    notes: string;
-}
-
-// Sample data
-const sampleParticipants: DawaParticipant[] = [
-    { id: "1", name: "Hassan Omar", phone: "+251911234567", email: "hassan@email.com", program: "mentorship", role: "volunteer", registrationDate: "2024-01-15", status: "active", notes: "Experienced mentor" },
-    { id: "2", name: "Fatima Ahmed", phone: "+251912345678", email: "fatima@email.com", program: "awareness", role: "participant", registrationDate: "2024-06-01", status: "active", notes: "" },
-    { id: "3", name: "Ibrahim Hassan", phone: "+251913456789", email: "ibrahim@email.com", program: "interfaith", role: "speaker", registrationDate: "2024-03-15", status: "active", notes: "Islamic studies background" },
-    { id: "4", name: "Aisha Mohammed", phone: "+251914567890", email: "aisha@email.com", program: "new_muslim", role: "volunteer", registrationDate: "2024-08-01", status: "active", notes: "Supports new Muslims" },
-];
-
-const sampleEvents: DawaEvent[] = [
-    { id: "1", title: "Islamic Awareness Week", type: "campaign", date: "2025-03-01", venue: "University Campus", expectedParticipants: 500, actualParticipants: 0, status: "upcoming", description: "Week-long awareness program", speaker: "Multiple" },
-    { id: "2", title: "Youth Leadership Seminar", type: "seminar", date: "2025-02-15", venue: "Main Hall", expectedParticipants: 100, actualParticipants: 0, status: "upcoming", description: "Leadership development for Muslim youth", speaker: "Ustaz Abdulrahman" },
-    { id: "3", title: "Foundations of Islam Workshop", type: "workshop", date: "2024-11-20", venue: "Prayer Hall", expectedParticipants: 50, actualParticipants: 45, status: "completed", description: "Basics of Islamic belief and practice", speaker: "Ustaz Mohammed" },
-    { id: "4", title: "Interfaith Dialogue Forum", type: "dialogue", date: "2024-10-15", venue: "Conference Room", expectedParticipants: 80, actualParticipants: 75, status: "completed", description: "Building understanding between faiths", speaker: "Panel Discussion" },
-];
-
-const sampleNewMuslims: NewMuslim[] = [
-    { id: "1", name: "Ahmed (formerly John)", phone: "+251915678901", email: "ahmed@email.com", shahadadDate: "2024-06-15", mentor: "Hassan Omar", progress: 75, coursesCompleted: ["Shahada Basics", "Prayer", "Fasting"], status: "active", notes: "Making great progress" },
-    { id: "2", name: "Maryam (formerly Sarah)", phone: "+251916789012", email: "maryam@email.com", shahadadDate: "2024-09-01", mentor: "Aisha Mohammed", progress: 40, coursesCompleted: ["Shahada Basics"], status: "active", notes: "Needs additional support" },
-    { id: "3", name: "Yusuf (formerly David)", phone: "+251917890123", email: "yusuf@email.com", shahadadDate: "2023-12-01", mentor: "Ibrahim Hassan", progress: 100, coursesCompleted: ["Shahada Basics", "Prayer", "Fasting", "Quran Reading", "Islamic History"], status: "graduated", notes: "Now helps other new Muslims" },
-];
 
 const DawaDashboard = () => {
     const { toast } = useToast();
     const { signOut, user } = useAuth();
     const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
-    const [participants, setParticipants] = useState<DawaParticipant[]>(sampleParticipants);
-    const [events, setEvents] = useState<DawaEvent[]>(sampleEvents);
-    const [newMuslims, setNewMuslims] = useState<NewMuslim[]>(sampleNewMuslims);
+    const [participants, setParticipants] = useState<FirestoreStudent[]>([]);
+    const [events, setEvents] = useState<FirestoreEvent[]>([]);
+    const [newMuslims, setNewMuslims] = useState<FirestoreNewMuslim[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [isAddParticipantOpen, setIsAddParticipantOpen] = useState(false);
     const [isAddEventOpen, setIsAddEventOpen] = useState(false);
     const [isAddNewMuslimOpen, setIsAddNewMuslimOpen] = useState(false);
 
     // Registration form states
-    const [regName, setRegName] = useState("");
-    const [regPhone, setRegPhone] = useState("");
-    const [regEmail, setRegEmail] = useState("");
-    const [regProgram, setRegProgram] = useState("");
-    const [regRole, setRegRole] = useState("");
-    const [regNotes, setRegNotes] = useState("");
+    const [participantForm, setParticipantForm] = useState({ name: "", phone: "", email: "", program: "", level: "beginner", instructor: "", notes: "" });
+    const [eventForm, setEventForm] = useState({ title: "", description: "", date: "", location: "", type: "lecture" as any });
+    const [newMuslimForm, setNewMuslimForm] = useState({ name: "", phone: "", email: "", shahadaDate: "", mentor: "", status: "active" as any, progress: 0, notes: "" });
+
+    useEffect(() => {
+        const unsubStudents = subscribeToStudents((data) => {
+            setParticipants(data.filter(s => s.sector === "dawa"));
+            setIsLoading(false);
+        });
+
+        const unsubEvents = subscribeToEvents((data) => {
+            setEvents(data.filter(e => e.sector === "dawa"));
+        });
+
+        const unsubNewMuslims = subscribeToNewMuslims((data) => {
+            setNewMuslims(data);
+        });
+
+        return () => {
+            unsubStudents();
+            unsubEvents();
+            unsubNewMuslims();
+        };
+    }, []);
 
     const stats = {
         totalParticipants: participants.length,
@@ -168,62 +143,72 @@ const DawaDashboard = () => {
         toast({ title: "Export Successful", description: `Data exported to ${filename}.csv` });
     };
 
-    const handleAddParticipant = () => {
-        if (!regName || !regPhone || !regProgram) {
-            toast({ title: "Error", description: "Please fill in all required fields", variant: "destructive" });
-            return;
+    const handleAddParticipant = async () => {
+        try {
+            await addStudent({
+                ...participantForm,
+                sector: "dawa",
+                enrollmentDate: new Date().toISOString().split("T")[0],
+                status: "active"
+            });
+            toast({ title: "Success", description: "Participant registered successfully" });
+            setIsAddParticipantOpen(false);
+            setParticipantForm({ name: "", phone: "", email: "", program: "", level: "beginner", instructor: "", notes: "" });
+        } catch (e) {
+            toast({ title: "Error", description: "Failed to add participant", variant: "destructive" });
         }
-
-        const newParticipant: DawaParticipant = {
-            id: Date.now().toString(),
-            name: regName,
-            phone: regPhone,
-            email: regEmail,
-            program: regProgram as DawaParticipant["program"],
-            role: (regRole || "participant") as DawaParticipant["role"],
-            registrationDate: new Date().toISOString().split("T")[0],
-            status: "pending",
-            notes: regNotes,
-        };
-
-        setParticipants([...participants, newParticipant]);
-        toast({ title: "Success", description: "Participant registered successfully" });
-        setIsAddParticipantOpen(false);
-        resetRegForm();
     };
 
-    const resetRegForm = () => {
-        setRegName("");
-        setRegPhone("");
-        setRegEmail("");
-        setRegProgram("");
-        setRegRole("");
-        setRegNotes("");
+    const handleAddEvent = async () => {
+        try {
+            await addEvent({
+                ...eventForm,
+                sector: "dawa",
+                status: "approved",
+                category: "Dawa"
+            } as any);
+            toast({ title: "Success", description: "Event created successfully" });
+            setIsAddEventOpen(false);
+            setEventForm({ title: "", description: "", date: "", location: "", type: "lecture" });
+        } catch (e) {
+            toast({ title: "Error", description: "Failed to create event" });
+        }
     };
 
-    const handleApprove = (id: string) => {
-        setParticipants(participants.map(p =>
-            p.id === id ? { ...p, status: "active" } : p
-        ));
+    const handleAddNewMuslim = async () => {
+        try {
+            await addNewMuslim({
+                ...newMuslimForm,
+                coursesCompleted: []
+            });
+            toast({ title: "Success", description: "New Muslim record added" });
+            setIsAddNewMuslimOpen(false);
+            setNewMuslimForm({ name: "", phone: "", email: "", shahadaDate: "", mentor: "", status: "active", progress: 0, notes: "" });
+        } catch (e) {
+            toast({ title: "Error", description: "Failed to add record" });
+        }
+    };
+
+    const handleApprove = async (id: string) => {
+        await updateStudent(id, { status: "active" });
         toast({ title: "Approved", description: "Participant has been approved" });
     };
 
-    const handleReject = (id: string) => {
-        setParticipants(participants.map(p =>
-            p.id === id ? { ...p, status: "inactive" } : p
-        ));
+    const handleReject = async (id: string) => {
+        await updateStudent(id, { status: "inactive" });
         toast({ title: "Rejected", description: "Participant has been rejected", variant: "destructive" });
     };
 
-    const handleDelete = (id: string, type: "participant" | "event" | "newMuslim") => {
-        if (type === "participant") {
-            setParticipants(participants.filter(p => p.id !== id));
-        } else if (type === "event") {
-            setEvents(events.filter(e => e.id !== id));
-        } else {
-            setNewMuslims(newMuslims.filter(n => n.id !== id));
+    const handleDelete = async (id: string, type: "participant" | "event" | "newMuslim") => {
+        if (!confirm("Are you sure?")) return;
+        try {
+            if (type === "participant") await deleteStudent(id);
+            else if (type === "event") await deleteEvent(id);
+            else await deleteNewMuslim(id);
+            toast({ title: "Deleted", description: "Record has been deleted" });
+        } catch (e) {
+            toast({ title: "Error", description: "Failed to delete" });
         }
-        toast({ title: "Deleted", description: "Record has been deleted" });
     };
 
     const navItems = [
@@ -374,7 +359,7 @@ const DawaDashboard = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Heart size={20} className="text-purple-500" />
+                                        <Heart size={20} className="text-[#25A7A1]" />
                                         New Muslims Progress
                                     </CardTitle>
                                 </CardHeader>
@@ -409,7 +394,7 @@ const DawaDashboard = () => {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Megaphone size={20} className="text-[#f59e0b]" />
+                                    <Megaphone size={20} className="text-[#25A7A1]" />
                                     Program Participation
                                 </CardTitle>
                             </CardHeader>
@@ -418,8 +403,8 @@ const DawaDashboard = () => {
                                     {["awareness", "mentorship", "interfaith", "new_muslim"].map((program) => {
                                         const count = participants.filter(p => p.program === program).length;
                                         return (
-                                            <div key={program} className="text-center p-4 bg-gray-50 rounded-xl">
-                                                <p className="text-2xl font-bold text-[#f59e0b]">{count}</p>
+                                            <div key={program} className="text-center p-4 bg-[#25A7A1]/5 rounded-xl border border-[#25A7A1]/10">
+                                                <p className="text-2xl font-bold text-[#25A7A1]">{count}</p>
                                                 <p className="text-sm text-gray-500 capitalize">{program.replace("_", " ")}</p>
                                             </div>
                                         );
@@ -476,7 +461,7 @@ const DawaDashboard = () => {
                                             <TableRow key={participant.id} className="hover:bg-gray-50">
                                                 <TableCell className="font-medium">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-8 h-8 rounded-full bg-[#f59e0b] flex items-center justify-center text-white text-sm font-bold">
+                                                        <div className="w-8 h-8 rounded-full bg-[#25A7A1] flex items-center justify-center text-white text-sm font-bold">
                                                             {participant.name.charAt(0)}
                                                         </div>
                                                         {participant.name}
@@ -493,7 +478,7 @@ const DawaDashboard = () => {
                                                 <TableCell>
                                                     <Badge className={
                                                         participant.status === "active" ? "bg-green-100 text-green-600" :
-                                                            participant.status === "pending" ? "bg-amber-100 text-amber-600" :
+                                                            (participant.status as string) === "pending" ? "bg-[#25A7A1]/10 text-[#25A7A1]" :
                                                                 "bg-gray-100 text-gray-600"
                                                     }>
                                                         {participant.status}
@@ -501,7 +486,7 @@ const DawaDashboard = () => {
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     <div className="flex justify-end gap-1">
-                                                        {participant.status === "pending" && (
+                                                        {(participant.status as string) === "pending" && (
                                                             <>
                                                                 <Button
                                                                     size="icon"
@@ -606,7 +591,7 @@ const DawaDashboard = () => {
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     <div className="flex justify-end gap-1">
-                                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-[#f59e0b]">
+                                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                                                             <Eye size={16} />
                                                         </Button>
                                                         <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
@@ -616,7 +601,7 @@ const DawaDashboard = () => {
                                                             size="icon"
                                                             variant="ghost"
                                                             className="h-8 w-8 text-red-500"
-                                                            onClick={() => handleDelete(event.id, "event")}
+                                                            onClick={() => handleDelete(event.id!, "event")}
                                                         >
                                                             <Trash2 size={16} />
                                                         </Button>
@@ -692,13 +677,13 @@ const DawaDashboard = () => {
                                                         </div>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{new Date(muslim.shahadadDate).toLocaleDateString()}</TableCell>
+                                                <TableCell>{new Date(muslim.shahadaDate).toLocaleDateString()}</TableCell>
                                                 <TableCell>{muslim.mentor}</TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
                                                             <div
-                                                                className="h-full bg-[#f59e0b] rounded-full"
+                                                                className="h-full bg-[#25A7A1] rounded-full"
                                                                 style={{ width: `${muslim.progress}%` }}
                                                             />
                                                         </div>
@@ -719,7 +704,7 @@ const DawaDashboard = () => {
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     <div className="flex justify-end gap-1">
-                                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-[#f59e0b]">
+                                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                                                             <Eye size={16} />
                                                         </Button>
                                                         <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
@@ -729,7 +714,7 @@ const DawaDashboard = () => {
                                                             size="icon"
                                                             variant="ghost"
                                                             className="h-8 w-8 text-red-500"
-                                                            onClick={() => handleDelete(muslim.id, "newMuslim")}
+                                                            onClick={() => handleDelete(muslim.id!, "newMuslim")}
                                                         >
                                                             <Trash2 size={16} />
                                                         </Button>
@@ -764,13 +749,13 @@ const DawaDashboard = () => {
                                         <p className="text-sm text-blue-600">Events Completed</p>
                                         <p className="text-2xl font-bold text-blue-700">{stats.completedEvents}</p>
                                     </div>
-                                    <div className="p-4 bg-gradient-to-br from-green-500/10 to-green-500/5 rounded-xl">
-                                        <p className="text-sm text-green-600">People Reached</p>
-                                        <p className="text-2xl font-bold text-green-700">{stats.totalReached}</p>
+                                    <div className="p-4 bg-gradient-to-br from-[#25A7A1]/10 to-[#25A7A1]/5 rounded-xl">
+                                        <p className="text-sm text-[#25A7A1]">People Reached</p>
+                                        <p className="text-2xl font-bold text-[#25A7A1]">{stats.totalReached}</p>
                                     </div>
-                                    <div className="p-4 bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-xl">
-                                        <p className="text-sm text-purple-600">New Muslims</p>
-                                        <p className="text-2xl font-bold text-purple-700">{stats.newMuslimsSupported}</p>
+                                    <div className="p-4 bg-gradient-to-br from-[#25A7A1]/10 to-[#25A7A1]/5 rounded-xl">
+                                        <p className="text-sm text-[#25A7A1]">New Muslims</p>
+                                        <p className="text-2xl font-bold text-[#25A7A1]">{stats.newMuslimsSupported}</p>
                                     </div>
                                 </div>
 
@@ -808,7 +793,7 @@ const DawaDashboard = () => {
                                                 </div>
                                                 <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                                                     <div
-                                                        className="h-full bg-gradient-to-r from-[#f59e0b] to-[#d97706] rounded-full transition-all duration-500"
+                                                        className="h-full bg-gradient-to-r from-[#25A7A1] to-[#1F8B86] rounded-full transition-all duration-500"
                                                         style={{ width: `${percentage}%` }}
                                                     />
                                                 </div>
@@ -829,36 +814,36 @@ const DawaDashboard = () => {
                         </DialogHeader>
                         <div className="space-y-4 py-4">
                             <div>
-                                <Label htmlFor="name">Full Name *</Label>
+                                <Label>Full Name *</Label>
                                 <Input
-                                    id="name"
                                     placeholder="Enter full name"
-                                    value={regName}
-                                    onChange={(e) => setRegName(e.target.value)}
+                                    value={participantForm.name}
+                                    onChange={(e) => setParticipantForm({ ...participantForm, name: e.target.value })}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="phone">Phone Number *</Label>
+                                <Label>Phone Number *</Label>
                                 <Input
-                                    id="phone"
                                     placeholder="+251 9XX XXX XXX"
-                                    value={regPhone}
-                                    onChange={(e) => setRegPhone(e.target.value)}
+                                    value={participantForm.phone}
+                                    onChange={(e) => setParticipantForm({ ...participantForm, phone: e.target.value })}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="email">Email</Label>
+                                <Label>Email</Label>
                                 <Input
-                                    id="email"
                                     type="email"
                                     placeholder="email@example.com"
-                                    value={regEmail}
-                                    onChange={(e) => setRegEmail(e.target.value)}
+                                    value={participantForm.email}
+                                    onChange={(e) => setParticipantForm({ ...participantForm, email: e.target.value })}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="program">Program *</Label>
-                                <Select value={regProgram} onValueChange={setRegProgram}>
+                                <Label>Program *</Label>
+                                <Select
+                                    value={participantForm.program}
+                                    onValueChange={(v) => setParticipantForm({ ...participantForm, program: v })}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select program" />
                                     </SelectTrigger>
@@ -871,32 +856,129 @@ const DawaDashboard = () => {
                                 </Select>
                             </div>
                             <div>
-                                <Label htmlFor="role">Role</Label>
-                                <Select value={regRole} onValueChange={setRegRole}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select role" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="participant">Participant</SelectItem>
-                                        <SelectItem value="volunteer">Volunteer</SelectItem>
-                                        <SelectItem value="speaker">Speaker</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div>
-                                <Label htmlFor="notes">Notes</Label>
+                                <Label>Notes</Label>
                                 <Textarea
-                                    id="notes"
                                     placeholder="Any additional notes..."
-                                    value={regNotes}
-                                    onChange={(e) => setRegNotes(e.target.value)}
+                                    value={participantForm.notes}
+                                    onChange={(e) => setParticipantForm({ ...participantForm, notes: e.target.value })}
                                 />
                             </div>
                         </div>
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setIsAddParticipantOpen(false)}>Cancel</Button>
-                            <Button className="bg-[#f59e0b] hover:bg-[#d97706]" onClick={handleAddParticipant}>
+                            <Button
+                                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                                onClick={handleAddParticipant}
+                                disabled={!participantForm.name || !participantForm.phone || !participantForm.program}
+                            >
                                 Register Participant
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Add Event Dialog */}
+                <Dialog open={isAddEventOpen} onOpenChange={setIsAddEventOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Create Dawa Event</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <div>
+                                <Label>Event Title</Label>
+                                <Input
+                                    placeholder="Event Name"
+                                    value={eventForm.title}
+                                    onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <Label>Date</Label>
+                                <Input
+                                    type="date"
+                                    value={eventForm.date}
+                                    onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <Label>Location</Label>
+                                <Input
+                                    placeholder="Venue"
+                                    value={eventForm.location}
+                                    onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <Label>Description</Label>
+                                <Textarea
+                                    placeholder="Event Details"
+                                    value={eventForm.description}
+                                    onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsAddEventOpen(false)}>Cancel</Button>
+                            <Button
+                                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                                onClick={handleAddEvent}
+                                disabled={!eventForm.title || !eventForm.date}
+                            >
+                                Create Event
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Add New Muslim Dialog */}
+                <Dialog open={isAddNewMuslimOpen} onOpenChange={setIsAddNewMuslimOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Add New Muslim Record</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label>Name</Label>
+                                    <Input
+                                        value={newMuslimForm.name}
+                                        onChange={(e) => setNewMuslimForm({ ...newMuslimForm, name: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <Label>Shahada Date</Label>
+                                    <Input
+                                        type="date"
+                                        value={newMuslimForm.shahadaDate}
+                                        onChange={(e) => setNewMuslimForm({ ...newMuslimForm, shahadaDate: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <Label>Mentor</Label>
+                                <Input
+                                    placeholder="Mentor Name"
+                                    value={newMuslimForm.mentor}
+                                    onChange={(e) => setNewMuslimForm({ ...newMuslimForm, mentor: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <Label>Progress (0-100)</Label>
+                                <Input
+                                    type="number"
+                                    value={newMuslimForm.progress}
+                                    onChange={(e) => setNewMuslimForm({ ...newMuslimForm, progress: parseInt(e.target.value) || 0 })}
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsAddNewMuslimOpen(false)}>Cancel</Button>
+                            <Button
+                                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                                onClick={handleAddNewMuslim}
+                                disabled={!newMuslimForm.name || !newMuslimForm.shahadaDate}
+                            >
+                                Save Record
                             </Button>
                         </DialogFooter>
                     </DialogContent>
