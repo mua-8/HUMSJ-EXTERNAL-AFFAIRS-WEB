@@ -9,6 +9,11 @@ import {
   LogOut,
   Plus,
   TrendingUp,
+  Search,
+  Edit,
+  Trash2,
+  Eye,
+  Download,
   BarChart3,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
