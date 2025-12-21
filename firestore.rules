@@ -8,65 +8,77 @@ service cloud.firestore {
     }
     
     // Helper function to check if user is admin
-    // For now, any authenticated user can manage events
+    // For now, any authenticated user with a valid UID has access
     function isAdmin() {
       return isAuthenticated();
     }
     
-    // Public read access for events, announcements, etc.
+    // EVENTS: Public can read, authenticated admins can manage
     match /events/{eventId} {
       allow read: if true;
-      allow create, update, delete: if isAuthenticated();
+      allow create, update, delete: if isAdmin();
     }
     
-    // Public read for sectors info
+    // STUDENTS / PARTICIPANTS: Centralized collection for Qirat, Dawa, Academic
+    match /students/{studentId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // NEW MUSLIMS: Dawa specific
+    match /newMuslims/{muslimId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // PROGRAMS / COURSES: Centralized management
+    match /programs/{programId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // RESOURCES: Learning materials
+    match /resources/{resourceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // DISTRIBUTIONS: Charity sector management
+    match /distributions/{distributionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // REGISTRATIONS: Public can submit, admins manage
+    match /registrations/{registrationId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if true; 
+    }
+    
+    // DONATIONS: Public can submit, admins manage
+    match /donations/{donationId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if true;
+    }
+    
+    // SECTORS & SETTINGS: App configuration
     match /sectors/{sectorId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     
-    // Admin-only collections
-    match /admin/{document=**} {
-      allow read, write: if isAuthenticated();
-    }
-    
-    // Members data - admin only
-    match /members/{memberId} {
-      allow read: if isAuthenticated() || request.auth.uid == memberId;
-      allow write: if isAuthenticated();
-    }
-    
-    // Donations - admin only for full access
-    match /donations/{donationId} {
-      allow read: if isAuthenticated();
-      allow create: if true; // Anyone can submit a donation record
-      allow update, delete: if isAuthenticated();
-    }
-    
-    // Event submissions - users can create, admins can manage
-    match /eventSubmissions/{submissionId} {
-      allow read: if isAuthenticated() || request.auth.uid == resource.data.submittedBy;
-      allow create: if isAuthenticated();
-      allow update, delete: if isAuthenticated();
-    }
-    
-    // Gallery images metadata
+    // GALLERY: Public viewing
     match /gallery/{imageId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     
-    // Registrations
-    match /registrations/{registrationId} {
-      allow read: if isAuthenticated();
-      allow create: if true; // Public can register via sector pages
-      allow update, delete: if isAuthenticated();
+    // USER PROFILES: Users can read/write their own, admins all
+    match /users/{userId} {
+      allow read, write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
     }
-    
-    // Distributions - Admin management
-    match /distributions/{distributionId} {
-      allow read: if true; // Allow public to see distribution data
-      allow create, update, delete: if isAuthenticated();
+
+    // LEGACY: Support for /admin/ path if used by older components
+    match /admin/{document=**} {
+      allow read, write: if isAdmin();
     }
   }
 }
