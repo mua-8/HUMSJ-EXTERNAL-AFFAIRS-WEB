@@ -61,22 +61,22 @@ const Footer = () => {
               Contact Us
             </h4>
             <ul className="space-y-3">
-              <li className="flex items-start gap-3 text-sm text-white/80">
-                <MapPin size={18} className="text-white mt-0.5 flex-shrink-0" />
-                <span>Haramaya University, Dire Dawa, Ethiopia</span>
+              <li className="flex items-start gap-3 text-sm">
+                <MapPin size={18} className="text-[#29b6b0] mt-0.5 flex-shrink-0" />
+                <span className="text-white">Haramaya University, Dire Dawa, Ethiopia</span>
               </li>
-              <li className="flex items-center gap-3 text-sm text-white/80">
-                <Mail size={18} className="text-white flex-shrink-0" />
+              <li className="flex items-center gap-3 text-sm">
+                <Mail size={18} className="text-[#29b6b0] flex-shrink-0" />
                 <a
                   href="mailto:info@humsj.org"
-                  className="hover:text-white transition-colors"
+                  className="text-white hover:text-[#29b6b0] transition-colors"
                 >
                   info@humsj.org
                 </a>
               </li>
-              <li className="flex items-center gap-3 text-sm text-white/80">
-                <Phone size={18} className="text-white flex-shrink-0" />
-                <span>+251 123 456 789</span>
+              <li className="flex items-center gap-3 text-sm">
+                <Phone size={18} className="text-[#29b6b0] flex-shrink-0" />
+                <span className="text-white">+251 123 456 789</span>
               </li>
             </ul>
           </div>
