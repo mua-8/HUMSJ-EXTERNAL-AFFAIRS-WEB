@@ -77,7 +77,7 @@ const sectors = [
     description: "Focuses on educating Quran and 'Dini' (religious education) to the society's children and university students.",
     abstract: "The Qirat Sub-Sector is dedicated to Quranic education for the community. Currently serving 125 students divided into two programs: the Foundational Nuraniya Program (55 students) teaching basic Quranic reading, and the Advanced Quran Memorization/Recitation Program (70 students) for those pursuing Hifz and advanced Tajweed. Regular Muhadara (educational gatherings) are organized to inspire and unite students through Islamic teachings.",
     link: "/external-affairs/qirat",
-    color: "from-[#29b6b0] to-[#239e99]",
+    color: "from-[#25A7A1] to-[#1F8B86]",
     stats: ["125 Students", "55 Nuraniya", "70 Advanced"],
     leadership: sectorLeadership.qirat,
   },
@@ -87,7 +87,7 @@ const sectors = [
     description: "Collects money from different sources (Students, Sponsors, Star-Shining Association) and distributes aid to the needy.",
     abstract: "The Charity Sub-Sector collects funds from three main sources: (1) Students who donate monthly according to their ability, (2) Sponsors from the community, and (3) Star-Shining Association - an association of Muslim students who previously studied at Haramaya University but have now graduated and are working in different parts of the country. The collected funds are used to help various segments of the community in need during Ramadan, Eid al-Fitr, Eid al-Adha, and throughout the year supporting orphans, elderly, needy students, and students with disabilities.",
     link: "/external-affairs/charity",
-    color: "from-[#29b6b0] to-[#239e99]",
+    color: "from-[#25A7A1] to-[#1F8B86]",
     stats: ["80,000+ ETB Budget", "50+ Beneficiaries", "3 Funding Sources"],
     leadership: sectorLeadership.charity,
   },
@@ -97,7 +97,7 @@ const sectors = [
     description: "Works on preparation and compilation of all Dawa programs, spreading Islamic knowledge and awareness.",
     abstract: "The Dawa Sub-Sector is responsible for preparing and organizing all Islamic awareness and outreach programs. Activities include organizing Islamic lectures and seminars, youth mentorship programs, new Muslim support initiatives, and community engagement events. The sector works to strengthen the relationship between HUMSJ and the broader society through education and positive engagement.",
     link: "/external-affairs/dawa",
-    color: "from-[#29b6b0] to-[#239e99]",
+    color: "from-[#25A7A1] to-[#1F8B86]",
     stats: ["15+ Events/Year", "500+ Reached", "Multiple Programs"],
     leadership: sectorLeadership.dawa,
   },
@@ -126,13 +126,13 @@ const SocialAffairs = () => {
         <div className="absolute bottom-20 left-20 w-10 h-10 rounded-lg bg-[#29b6b0]/[0.08] rotate-45" />
 
         <div className="container mx-auto px-4 py-24 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#29b6b0]/10 border border-[#29b6b0]/20 text-[#29b6b0] mb-6 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25A7A1]/10 border border-[#25A7A1]/20 text-[#25A7A1] mb-6 animate-fade-in">
             <Globe size={16} />
             <span className="text-sm font-medium">HUMSJ Social Affairs Sector</span>
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-[#1f2937] mb-6 animate-fade-in-up">
-            Social Affairs <span className="text-[#29b6b0]">Sector</span>
+            Social Affairs <span className="text-[#25A7A1]">Sector</span>
           </h1>
 
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8 animate-fade-in-up delay-100">
@@ -148,8 +148,8 @@ const SocialAffairs = () => {
               { icon: Calendar, label: "Events/Year", value: "25+" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="w-12 h-12 mx-auto mb-2 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                  <stat.icon className="w-6 h-6 text-[#29b6b0]" />
+                <div className="w-12 h-12 mx-auto mb-2 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                  <stat.icon className="w-6 h-6 text-[#25A7A1]" />
                 </div>
                 <p className="text-2xl font-serif font-bold text-[#1f2937]">{stat.value}</p>
                 <p className="text-sm text-gray-500">{stat.label}</p>
@@ -164,8 +164,8 @@ const SocialAffairs = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center gap-3 justify-center mb-8">
-              <div className="w-12 h-12 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                <History className="w-6 h-6 text-[#29b6b0]" />
+              <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                <History className="w-6 h-6 text-[#25A7A1]" />
               </div>
               <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
                 About HUMSJ & This Sector
@@ -195,16 +195,16 @@ const SocialAffairs = () => {
             </div>
 
             {/* Sector Head Card */}
-            <Card className="max-w-2xl mx-auto border-t-4 border-t-[#29b6b0] mb-12">
+            <Card className="max-w-2xl mx-auto border-t-4 border-t-[#25A7A1] mb-12">
               <CardContent className="p-6">
                 <div className="flex items-center gap-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#29b6b0] to-[#0f4a47] flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#25A7A1] to-[#0f4a47] flex items-center justify-center">
                     <Building className="w-10 h-10 text-white" />
                   </div>
                   <div className="flex-1">
                     <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Head of Social Affairs Sector</p>
                     <p className="text-2xl font-serif font-bold text-gray-800">{sectorHead.name}</p>
-                    <p className="text-sm text-[#29b6b0] font-medium">{sectorHead.year}</p>
+                    <p className="text-sm text-[#25A7A1] font-medium">{sectorHead.year}</p>
                     <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
                       <span className="flex items-center gap-1">
                         <Phone size={14} />
@@ -222,28 +222,28 @@ const SocialAffairs = () => {
 
             {/* Key Achievements */}
             <div className="grid md:grid-cols-3 gap-6 mt-12">
-              <Card className="text-center border-t-4 border-t-[#29b6b0] hover:shadow-lg transition-shadow">
+              <Card className="text-center border-t-4 border-t-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="pt-8">
-                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#29b6b0]/10 flex items-center justify-center">
-                    <BookOpen className="w-7 h-7 text-[#29b6b0]" />
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <BookOpen className="w-7 h-7 text-[#25A7A1]" />
                   </div>
                   <h3 className="font-serif font-bold text-xl mb-2">125 Students</h3>
                   <p className="text-muted-foreground text-sm">Currently enrolled in Qirat programs (55 Nuraniya + 70 Advanced)</p>
                 </CardContent>
               </Card>
-              <Card className="text-center border-t-4 border-t-[#29b6b0] hover:shadow-lg transition-shadow">
+              <Card className="text-center border-t-4 border-t-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="pt-8">
-                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#29b6b0]/10 flex items-center justify-center">
-                    <Heart className="w-7 h-7 text-[#29b6b0]" />
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Heart className="w-7 h-7 text-[#25A7A1]" />
                   </div>
                   <h3 className="font-serif font-bold text-xl mb-2">180,000+ ETB</h3>
                   <p className="text-muted-foreground text-sm">Distributed in 2024 (Eid al-Adha + Eid al-Fitr programs)</p>
                 </CardContent>
               </Card>
-              <Card className="text-center border-t-4 border-t-[#29b6b0] hover:shadow-lg transition-shadow">
+              <Card className="text-center border-t-4 border-t-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="pt-8">
-                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#29b6b0]/10 flex items-center justify-center">
-                    <Award className="w-7 h-7 text-[#29b6b0]" />
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Award className="w-7 h-7 text-[#25A7A1]" />
                   </div>
                   <h3 className="font-serif font-bold text-xl mb-2">500+ Reached</h3>
                   <p className="text-muted-foreground text-sm">People reached through Dawa programs annually</p>
@@ -299,7 +299,7 @@ const SocialAffairs = () => {
                       {sector.stats.map((stat) => (
                         <span
                           key={stat}
-                          className={`px-4 py-2 text-sm font-medium rounded-full bg-[#29b6b015] text-[#29b6b0]`}
+                          className={`px-4 py-2 text-sm font-medium rounded-full bg-[#25A7A115] text-[#25A7A1]`}
                         >
                           {stat}
                         </span>
@@ -362,8 +362,8 @@ const SocialAffairs = () => {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <Card className="text-center hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#29b6b0]/10 flex items-center justify-center">
-                  <Users className="w-8 h-8 text-[#29b6b0]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#25A7A1]/10 flex items-center justify-center">
+                  <Users className="w-8 h-8 text-[#25A7A1]" />
                 </div>
                 <CardTitle>Student Donations</CardTitle>
               </CardHeader>
@@ -376,8 +376,8 @@ const SocialAffairs = () => {
 
             <Card className="text-center hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#29b6b0]/10 flex items-center justify-center">
-                  <Award className="w-8 h-8 text-[#29b6b0]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#25A7A1]/10 flex items-center justify-center">
+                  <Award className="w-8 h-8 text-[#25A7A1]" />
                 </div>
                 <CardTitle>Star-Shining Association</CardTitle>
               </CardHeader>
@@ -390,8 +390,8 @@ const SocialAffairs = () => {
 
             <Card className="text-center hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#29b6b0]/10 flex items-center justify-center">
-                  <Heart className="w-8 h-8 text-[#29b6b0]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#25A7A1]/10 flex items-center justify-center">
+                  <Heart className="w-8 h-8 text-[#25A7A1]" />
                 </div>
                 <CardTitle>Community Sponsors</CardTitle>
               </CardHeader>
@@ -431,19 +431,19 @@ const SocialAffairs = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-2xl font-bold text-[#29b6b0]">8</p>
+                    <p className="text-2xl font-bold text-[#25A7A1]">8</p>
                     <p className="text-xs text-gray-500">Elderly Individuals</p>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-2xl font-bold text-[#29b6b0]">22</p>
+                    <p className="text-2xl font-bold text-[#25A7A1]">22</p>
                     <p className="text-xs text-gray-500">Orphan-Household Families</p>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-2xl font-bold text-[#29b6b0]">15</p>
+                    <p className="text-2xl font-bold text-[#25A7A1]">15</p>
                     <p className="text-xs text-gray-500">Needy Students</p>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-2xl font-bold text-[#29b6b0]">5</p>
+                    <p className="text-2xl font-bold text-[#25A7A1]">5</p>
                     <p className="text-xs text-gray-500">Students with Disabilities</p>
                   </div>
                 </div>
@@ -454,7 +454,7 @@ const SocialAffairs = () => {
                   </div>
                   <div className="flex justify-between items-center mt-2">
                     <span className="text-gray-500">Actual Expenditure:</span>
-                    <span className="font-bold text-[#29b6b0]">80,000 ETB</span>
+                    <span className="font-bold text-[#25A7A1]">80,000 ETB</span>
                   </div>
                 </div>
               </CardContent>
@@ -471,7 +471,7 @@ const SocialAffairs = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="p-6 bg-gray-50 rounded-lg text-center">
-                  <p className="text-4xl font-bold text-[#29b6b0]">86</p>
+                  <p className="text-4xl font-bold text-[#25A7A1]">86</p>
                   <p className="text-sm text-gray-500 mt-1">Clothing Kits Distributed</p>
                 </div>
                 <p className="text-sm text-muted-foreground text-center">
@@ -480,7 +480,7 @@ const SocialAffairs = () => {
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500">Total Program Cost:</span>
-                    <span className="font-bold text-[#29b6b0]">100,000 ETB</span>
+                    <span className="font-bold text-[#25A7A1]">100,000 ETB</span>
                   </div>
                 </div>
               </CardContent>
@@ -509,7 +509,7 @@ const SocialAffairs = () => {
             {pastEvents.map((yearData, yearIndex) => (
               <div key={yearData.year} className="mb-12 last:mb-0">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#29b6b0] to-[#0f4a47] flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#25A7A1] to-[#0f4a47] flex items-center justify-center">
                     <span className="text-2xl font-bold text-white">{yearData.year}</span>
                   </div>
                   <div className="h-px flex-1 bg-gradient-to-r from-[#29b6b0] to-transparent" />
@@ -525,7 +525,7 @@ const SocialAffairs = () => {
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="font-semibold text-sm">{event.title}</h4>
-                          <span className={`px-2 py-1 text-xs rounded-full bg-[#29b6b0]/10 text-[#29b6b0]`}>
+                          <span className={`px-2 py-1 text-xs rounded-full bg-[#25A7A1]/10 text-[#25A7A1]`}>
                             {event.sector}
                           </span>
                         </div>
@@ -554,15 +554,15 @@ const SocialAffairs = () => {
             learning the Quran, or spreading Islamic awareness.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button variant="hero" size="lg" className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => openModal("donor", "charity")}>
+            <Button variant="hero" size="lg" className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => openModal("donor", "charity")}>
               <Heart size={20} className="mr-2" />
               Donate Now
             </Button>
-            <Button variant="outline" size="lg" className="border-[#29b6b0] text-[#29b6b0] hover:bg-[#29b6b0] hover:text-white" onClick={() => openModal("student", "qirat")}>
+            <Button variant="outline" size="lg" className="border-[#25A7A1] text-[#25A7A1] hover:bg-[#25A7A1] hover:text-white" onClick={() => openModal("student", "qirat")}>
               <BookOpen size={20} className="mr-2" />
               Join Qirat Program
             </Button>
-            <Button variant="outline" size="lg" className="border-[#29b6b0] text-[#29b6b0] hover:bg-[#29b6b0] hover:text-white" onClick={() => openModal("volunteer", "dawa")}>
+            <Button variant="outline" size="lg" className="border-[#25A7A1] text-[#25A7A1] hover:bg-[#25A7A1] hover:text-white" onClick={() => openModal("volunteer", "dawa")}>
               <Megaphone size={20} className="mr-2" />
               Volunteer for Dawa
             </Button>

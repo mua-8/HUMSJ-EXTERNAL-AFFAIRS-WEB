@@ -77,7 +77,7 @@ const HeroSection = () => {
           {/* Main Headline */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight mb-6 animate-fade-in-up">
             Empowering Lives Through
-            <span className="block text-[#29b6b0]">Faith & Service</span>
+            <span className="block text-[#25A7A1]">Faith & Service</span>
           </h1>
 
           {/* Description */}
@@ -97,7 +97,7 @@ const HeroSection = () => {
             <Link to="/about">
               <Button
                 variant="outline"
-                className="border-2 border-[#29b6b0] text-[#29b6b0] hover:bg-[#29b6b0] hover:text-white font-semibold px-8 py-6 text-lg rounded-xl transition-all"
+                className="border-2 border-[#25A7A1] text-[#25A7A1] hover:bg-[#25A7A1] hover:text-white font-semibold px-8 py-6 text-lg rounded-xl transition-all"
               >
                 Learn More
                 <ArrowRight size={20} />
@@ -120,13 +120,13 @@ const HeroSection = () => {
               style={{ animationDelay: `${(index + 3) * 100}ms` }}
             >
               {/* Teal top accent bar */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-[#29b6b0]" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-[#25A7A1]" />
 
               {/* Card Content */}
               <div className="p-6">
                 {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-[#29b6b0]/20 flex items-center justify-center mb-4">
-                  <sector.icon size={24} className="text-[#29b6b0]" />
+                <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/20 flex items-center justify-center mb-4">
+                  <sector.icon size={24} className="text-[#25A7A1]" />
                 </div>
 
                 {/* Title */}
@@ -141,12 +141,12 @@ const HeroSection = () => {
 
                 {/* Stats Badge & Arrow */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[#29b6b0] text-xs font-medium bg-[#29b6b0]/20 px-3 py-1 rounded-full">
+                  <span className="text-[#25A7A1] text-xs font-medium bg-[#25A7A1]/20 px-3 py-1 rounded-full">
                     {sector.stats}
                   </span>
                   <ArrowRight
                     size={16}
-                    className="text-gray-400 group-hover:text-[#29b6b0] group-hover:translate-x-1 transition-all"
+                    className="text-gray-400 group-hover:text-[#25A7A1] group-hover:translate-x-1 transition-all"
                   />
                 </div>
               </div>
@@ -171,7 +171,7 @@ const HeroSection = () => {
                   HUMSJ Charity Sector
                 </p>
                 <div className="flex items-center justify-between bg-black/20 rounded-lg px-3 py-2">
-                  <code className="text-[#29b6b0] text-sm font-mono font-semibold">
+                  <code className="text-[#25A7A1] text-sm font-mono font-semibold">
                     1000614307599
                   </code>
                   <button
@@ -196,7 +196,7 @@ const HeroSection = () => {
                   HUMSJ Charity Sector
                 </p>
                 <div className="flex items-center justify-between bg-black/20 rounded-lg px-3 py-2">
-                  <code className="text-[#29b6b0] text-sm font-mono font-semibold">
+                  <code className="text-[#25A7A1] text-sm font-mono font-semibold">
                     +251 985 736 451
                   </code>
                   <button

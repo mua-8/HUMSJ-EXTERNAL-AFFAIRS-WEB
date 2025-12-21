@@ -247,12 +247,12 @@ const DawaDashboard = () => {
     return (
         <div className="min-h-screen bg-[#f8f9fa] flex">
             {/* Sidebar */}
-            <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#29b6b0] to-[#239e99] p-6 hidden lg:flex flex-col z-50 shadow-xl">
+            <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#25A7A1] to-[#1F8B86] p-6 hidden lg:flex flex-col z-50 shadow-xl">
                 <div className="flex items-center gap-3 mb-8">
                     <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
                     <div>
                         <h2 className="font-serif font-bold text-white">HUMSJ</h2>
-                        <p className="text-xs text-white/80">🟡 Dawa Sector</p>
+                        <p className="text-xs text-white/80">🔵 Dawa Sector</p>
                     </div>
                 </div>
 
@@ -299,10 +299,10 @@ const DawaDashboard = () => {
                 {activeTab === "overview" && (
                     <>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                            <Card className="border-l-4 border-l-[#29b6b0] hover:shadow-lg transition-shadow">
+                            <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                                 <CardContent className="flex items-center gap-4 pt-6">
-                                    <div className="w-12 h-12 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                                        <Users size={24} className="text-[#29b6b0]" />
+                                    <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                                        <Users size={24} className="text-[#25A7A1]" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.totalParticipants}</p>
@@ -310,10 +310,10 @@ const DawaDashboard = () => {
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
+                            <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                                 <CardContent className="flex items-center gap-4 pt-6">
-                                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                                        <Calendar size={24} className="text-blue-500" />
+                                    <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                                        <Calendar size={24} className="text-[#25A7A1]" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.upcomingEvents}</p>
@@ -321,10 +321,10 @@ const DawaDashboard = () => {
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
+                            <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                                 <CardContent className="flex items-center gap-4 pt-6">
-                                    <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                                        <Target size={24} className="text-green-500" />
+                                    <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                                        <Target size={24} className="text-[#25A7A1]" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.totalReached}</p>
@@ -332,10 +332,10 @@ const DawaDashboard = () => {
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card className="border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
+                            <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                                 <CardContent className="flex items-center gap-4 pt-6">
-                                    <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                                        <Heart size={24} className="text-purple-500" />
+                                    <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                                        <Heart size={24} className="text-[#25A7A1]" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.newMuslimsSupported}</p>
@@ -349,7 +349,7 @@ const DawaDashboard = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Calendar size={20} className="text-[#29b6b0]" />
+                                        <Calendar size={20} className="text-[#25A7A1]" />
                                         Upcoming Events
                                     </CardTitle>
                                 </CardHeader>
@@ -382,7 +382,7 @@ const DawaDashboard = () => {
                                     <div className="space-y-4">
                                         {newMuslims.filter(n => n.status === "active").map((muslim) => (
                                             <div key={muslim.id} className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-full bg-[#29b6b0] flex items-center justify-center text-white font-bold">
+                                                <div className="w-10 h-10 rounded-full bg-[#25A7A1] flex items-center justify-center text-white font-bold">
                                                     {muslim.name.charAt(0)}
                                                 </div>
                                                 <div className="flex-1">
@@ -392,7 +392,7 @@ const DawaDashboard = () => {
                                                     </div>
                                                     <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                                                         <div
-                                                            className="h-full bg-gradient-to-r from-[#29b6b0] to-[#239e99] rounded-full transition-all duration-500"
+                                                            className="h-full bg-gradient-to-r from-[#25A7A1] to-[#1F8B86] rounded-full transition-all duration-500"
                                                             style={{ width: `${muslim.progress}%` }}
                                                         />
                                                     </div>
@@ -446,7 +446,7 @@ const DawaDashboard = () => {
                                             className="pl-9 w-64"
                                         />
                                     </div>
-                                    <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => setIsAddParticipantOpen(true)}>
+                                    <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddParticipantOpen(true)}>
                                         <UserPlus size={16} className="mr-2" />
                                         Register Participant
                                     </Button>
@@ -659,7 +659,7 @@ const DawaDashboard = () => {
                             <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <CardTitle>New Muslim Support Registry</CardTitle>
-                                    <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => setIsAddNewMuslimOpen(true)}>
+                                    <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddNewMuslimOpen(true)}>
                                         <Heart size={16} className="mr-2" />
                                         Register New Muslim
                                     </Button>
@@ -775,7 +775,7 @@ const DawaDashboard = () => {
                                 </div>
 
                                 <div className="flex flex-wrap gap-3">
-                                    <Button onClick={() => exportToCSV(participants, "dawa_participants_report")} className="bg-[#29b6b0] hover:bg-[#239e99]">
+                                    <Button onClick={() => exportToCSV(participants, "dawa_participants_report")} className="bg-[#25A7A1] hover:bg-[#1F8B86]">
                                         <Download size={16} className="mr-2" />
                                         Export Participants Report
                                     </Button>

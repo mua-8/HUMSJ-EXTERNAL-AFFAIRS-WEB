@@ -191,12 +191,12 @@ const QiratDashboard = () => {
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#29b6b0] to-[#239e99] p-6 hidden lg:flex flex-col z-50 shadow-xl">
+      <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#25A7A1] to-[#1F8B86] p-6 hidden lg:flex flex-col z-50 shadow-xl">
         <div className="flex items-center gap-3 mb-8">
           <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
           <div>
             <h2 className="font-serif font-bold text-white">HUMSJ</h2>
-            <p className="text-xs text-white/80">🟠 Qirat Sector</p>
+            <p className="text-xs text-white/80">🔵 Qirat Sector</p>
           </div>
         </div>
 
@@ -234,7 +234,7 @@ const QiratDashboard = () => {
       <main className="lg:ml-64 flex-1 p-6 lg:p-8">
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">
-            🟠 Qirat Sector Dashboard
+            🔵 Qirat Sector Dashboard
           </h1>
           <p className="text-[#64748b]">Manage Quran recitation programs</p>
         </div>
@@ -243,47 +243,47 @@ const QiratDashboard = () => {
         {activeTab === "overview" && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <Card className="border-l-4 border-l-[#29b6b0] hover:shadow-lg transition-shadow">
+              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                    <Users size={24} className="text-[#29b6b0]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Users size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{stats.totalStudents}</p>
-                    <p className="text-sm text-gray-500">Qirat Students</p>
+                    <p className="text-sm text-gray-500">Total Students</p>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-l-4 border-l-amber-500 hover:shadow-lg transition-shadow">
+              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                    <Star size={24} className="text-amber-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <BookOpen size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{stats.hafizStudents}</p>
-                    <p className="text-sm text-gray-500">Hafiz Graduates</p>
+                    <p className="text-2xl font-bold">{stats.activeStudents}</p>
+                    <p className="text-sm text-gray-500">Currently Active</p>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
+              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                    <Trophy size={24} className="text-green-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Star size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{stats.upcomingCompetitions}</p>
-                    <p className="text-sm text-gray-500">Upcoming Events</p>
+                    <p className="text-2xl font-bold">{stats.advancedStudents}</p>
+                    <p className="text-sm text-gray-500">Advanced Program</p>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
+              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                    <BookOpen size={24} className="text-blue-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Award size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{stats.totalResources}</p>
-                    <p className="text-sm text-gray-500">Resources</p>
+                    <p className="text-2xl font-bold">{stats.attendanceRate}%</p>
+                    <p className="text-sm text-gray-500">Avg. Attendance</p>
                   </div>
                 </CardContent>
               </Card>
@@ -293,7 +293,7 @@ const QiratDashboard = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Mic size={20} className="text-[#29b6b0]" />
+                    <Mic size={20} className="text-[#25A7A1]" />
                     Active Quran Classes
                   </CardTitle>
                 </CardHeader>
@@ -304,7 +304,7 @@ const QiratDashboard = () => {
                       return (
                         <div key={cls} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-[#29b6b0] flex items-center justify-center text-white font-bold">
+                            <div className="w-10 h-10 rounded-full bg-[#25A7A1] flex items-center justify-center text-white font-bold">
                               {index + 1}
                             </div>
                             <div>
@@ -312,7 +312,7 @@ const QiratDashboard = () => {
                               <p className="text-sm text-gray-500">{count} active students</p>
                             </div>
                           </div>
-                          <Badge className="bg-[#29b6b0]/10 text-[#29b6b0]">Active</Badge>
+                          <Badge className="bg-[#25A7A1]/10 text-[#25A7A1]">Active</Badge>
                         </div>
                       );
                     })}
@@ -357,7 +357,7 @@ const QiratDashboard = () => {
                 <div className="space-y-4">
                   {students.filter(s => s.status === "active").slice(0, 5).map((student) => (
                     <div key={student.id} className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-[#29b6b0] flex items-center justify-center text-white font-bold">
+                      <div className="w-10 h-10 rounded-full bg-[#25A7A1] flex items-center justify-center text-white font-bold">
                         {student.name.charAt(0)}
                       </div>
                       <div className="flex-1">
@@ -367,7 +367,7 @@ const QiratDashboard = () => {
                         </div>
                         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-[#29b6b0] to-[#239e99] rounded-full transition-all duration-500"
+                            className="h-full bg-gradient-to-r from-[#25A7A1] to-[#1F8B86] rounded-full transition-all duration-500"
                             style={{ width: `${student.progress}%` }}
                           />
                         </div>
@@ -397,9 +397,9 @@ const QiratDashboard = () => {
                       className="pl-9 w-64"
                     />
                   </div>
-                  <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => setIsAddStudentOpen(true)}>
-                    <Plus size={16} className="mr-2" />
-                    Add Student
+                  <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddStudentOpen(true)}>
+                    <UserPlus size={16} className="mr-2" />
+                    Register Student
                   </Button>
                   <Button variant="outline" onClick={() => exportToCSV(students, "qirat_students")}>
                     <Download size={16} className="mr-2" />
@@ -489,7 +489,7 @@ const QiratDashboard = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Activities & Events</CardTitle>
-                  <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => setIsAddActivityOpen(true)}>
+                  <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddActivityOpen(true)}>
                     <Plus size={16} className="mr-2" />
                     Add Activity
                   </Button>
@@ -583,7 +583,7 @@ const QiratDashboard = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Learning Resources</CardTitle>
-                  <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => setIsAddResourceOpen(true)}>
+                  <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddResourceOpen(true)}>
                     <Plus size={16} className="mr-2" />
                     Upload Resource
                   </Button>
@@ -715,11 +715,9 @@ const QiratDashboard = () => {
                     <p className="text-sm text-amber-600">Hafiz Graduates</p>
                     <p className="text-2xl font-bold text-amber-700">{stats.hafizStudents}</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-                    <p className="text-sm text-blue-600">Completion Rate</p>
-                    <p className="text-2xl font-bold text-blue-700">
-                      {((stats.hafizStudents / stats.totalStudents) * 100).toFixed(0)}%
-                    </p>
+                  <div className="p-4 bg-gray-50 rounded-xl border-l-4 border-[#25A7A1]">
+                    <p className="text-sm text-gray-500">This Month</p>
+                    <p className="text-2xl font-bold text-[#25A7A1]">92%</p>
                   </div>
                 </div>
 

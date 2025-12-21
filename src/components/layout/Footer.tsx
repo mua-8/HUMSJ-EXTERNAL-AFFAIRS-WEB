@@ -62,20 +62,20 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm">
-                <MapPin size={18} className="text-[#29b6b0] mt-0.5 flex-shrink-0" />
+                <MapPin size={18} className="text-[#25A7A1] mt-0.5 flex-shrink-0" />
                 <span className="text-white">Haramaya University, Dire Dawa, Ethiopia</span>
               </li>
               <li className="flex items-center gap-3 text-sm">
-                <Mail size={18} className="text-[#29b6b0] flex-shrink-0" />
+                <Mail size={18} className="text-[#25A7A1] flex-shrink-0" />
                 <a
                   href="mailto:info@humsj.org"
-                  className="text-white hover:text-[#29b6b0] transition-colors"
+                  className="text-white hover:text-[#25A7A1] transition-colors"
                 >
                   info@humsj.org
                 </a>
               </li>
               <li className="flex items-center gap-3 text-sm">
-                <Phone size={18} className="text-[#29b6b0] flex-shrink-0" />
+                <Phone size={18} className="text-[#25A7A1] flex-shrink-0" />
                 <span className="text-white">+251 123 456 789</span>
               </li>
             </ul>
@@ -93,10 +93,10 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-[#29b6b0] transition-all duration-300"
+                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-[#25A7A1] transition-all duration-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
               </a>
               {/* Telegram */}
@@ -105,7 +105,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Telegram"
-                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-[#29b6b0] transition-all duration-300"
+                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-[#25A7A1] transition-all duration-300"
               >
                 <Send size={20} />
               </a>

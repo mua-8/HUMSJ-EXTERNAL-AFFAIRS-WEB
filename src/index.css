@@ -7,7 +7,7 @@
   A warm, professional, faith-based design
   Communicates: Hope, Dignity, Service, Trust
   
-  Primary Teal: #29b6b0 (HUMSJ brand color)
+  Primary Teal: #25A7A1 (HUMSJ brand color)
   Gold Accent: #d4af37 (warmth, generosity)
 */
 
@@ -48,9 +48,9 @@
   --radius: 0.75rem;
 
   /* Custom HUMSJ Colors */
-  --humsj-teal: #29b6b0;
-  --humsj-teal-light: #e6f7f6;
-  --humsj-teal-dark: #239e99;
+  --humsj-teal: #25A7A1;
+  --humsj-teal-light: #E8F6F5;
+  --humsj-teal-dark: #1F8B86;
   --humsj-gold: #d4af37;
   --humsj-gold-light: #fef9c3;
   --humsj-charcoal: #1f2933;
@@ -92,25 +92,25 @@
      ======================== */
   
   /* Charity Sector - Teal */
-  --charity-primary: #29b6b0;
-  --charity-secondary: #239e99;
-  --charity-light: #e6f7f6;
-  --charity-gradient-from: #29b6b0;
-  --charity-gradient-to: #239e99;
+  --charity-primary: #25A7A1;
+  --charity-secondary: #1F8B86;
+  --charity-light: #E8F6F5;
+  --charity-gradient-from: #25A7A1;
+  --charity-gradient-to: #1F8B86;
   
   /* Qirat Sector - Standarized to Teal */
-  --qirat-primary: #29b6b0;
-  --qirat-secondary: #239e99;
-  --qirat-light: #e6f7f6;
-  --qirat-gradient-from: #29b6b0;
-  --qirat-gradient-to: #239e99;
+  --qirat-primary: #25A7A1;
+  --qirat-secondary: #1F8B86;
+  --qirat-light: #E8F6F5;
+  --qirat-gradient-from: #25A7A1;
+  --qirat-gradient-to: #1F8B86;
   
   /* Dawa Sector - Standarized to Teal */
-  --dawa-primary: #29b6b0;
-  --dawa-secondary: #239e99;
-  --dawa-light: #e6f7f6;
-  --dawa-gradient-from: #29b6b0;
-  --dawa-gradient-to: #239e99;
+  --dawa-primary: #25A7A1;
+  --dawa-secondary: #1F8B86;
+  --dawa-light: #E8F6F5;
+  --dawa-gradient-from: #25A7A1;
+  --dawa-gradient-to: #1F8B86;
   
   /* Social Affairs - Main Teal (same as Charity/Primary) */
   --social-affairs-primary: #29b6b0;
@@ -143,7 +143,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2329b6b0' fill-opacity='0.02'%3E%3Cpath d='M30 28v-12h-2v12h-12v2h12v12h2v-12h12v-2h-12z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2325A7A1' fill-opacity='0.02'%3E%3Cpath d='M30 28v-12h-2v12h-12v2h12v12h2v-12h12v-2h-12z'/%3E%3C/g%3E%3C/svg%3E");
   pointer-events: none;
   z-index: -1;
 }
@@ -513,7 +513,7 @@ a:hover {
 
 /* Islamic pattern overlay */
 .islamic-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2329b6b0' fill-opacity='0.05'%3E%3Cpath d='M30 28v-12h-2v12h-12v2h12v12h2v-12h12v-2h-12z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2325A7A1' fill-opacity='0.05'%3E%3Cpath d='M30 28v-12h-2v12h-12v2h12v12h2v-12h12v-2h-12z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* ===================

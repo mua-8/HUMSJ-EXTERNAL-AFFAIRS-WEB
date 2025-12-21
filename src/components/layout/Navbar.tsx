@@ -40,7 +40,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#29b6b0] border-b border-[#239e99] shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#25A7A1] border-b border-[#1F8B86] shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
@@ -62,8 +62,8 @@ const Navbar = () => {
                 key={link.path}
                 to={link.path}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${location.pathname === link.path
-                    ? "text-white bg-white/20"
-                    : "text-white/90 hover:text-white hover:bg-white/10"
+                  ? "text-white bg-white/20"
+                  : "text-white/90 hover:text-white hover:bg-white/10"
                   }`}
               >
                 {link.name}
@@ -109,7 +109,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-white/20 animate-fade-in bg-[#29b6b0]">
+          <div className="md:hidden py-4 border-t border-white/20 animate-fade-in bg-[#25A7A1]">
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
@@ -117,8 +117,8 @@ const Navbar = () => {
                   to={link.path}
                   onClick={() => setIsOpen(false)}
                   className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${location.pathname === link.path
-                      ? "text-white bg-white/20"
-                      : "text-white/90 hover:text-white hover:bg-white/10"
+                    ? "text-white bg-white/20"
+                    : "text-white/90 hover:text-white hover:bg-white/10"
                     }`}
                 >
                   {link.name}

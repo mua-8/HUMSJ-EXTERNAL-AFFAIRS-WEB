@@ -120,24 +120,24 @@ const DawaSector = () => {
             <section className="relative min-h-[45vh] flex items-center overflow-hidden bg-gradient-to-br from-[#f0fafa] to-[#e6f7f6]">
                 {/* Subtle pattern */}
                 <div className="absolute inset-0 opacity-5">
-                    <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #29b6b0 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+                    <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #25A7A1 1px, transparent 0)', backgroundSize: '40px 40px' }} />
                 </div>
                 {/* Decorative elements */}
-                <div className="absolute top-16 left-12 w-16 h-16 rounded-xl bg-[#29b6b0]/[0.15] rotate-12" />
-                <div className="absolute top-20 right-20 w-12 h-12 rounded-lg bg-[#29b6b0]/[0.10] -rotate-6" />
-                <div className="absolute bottom-16 right-16 w-14 h-14 rounded-xl bg-[#29b6b0]/[0.12] rotate-6" />
+                <div className="absolute top-16 left-12 w-16 h-16 rounded-xl bg-[#25A7A1]/[0.15] rotate-12" />
+                <div className="absolute top-20 right-20 w-12 h-12 rounded-lg bg-[#25A7A1]/[0.10] -rotate-6" />
+                <div className="absolute bottom-16 right-16 w-14 h-14 rounded-xl bg-[#25A7A1]/[0.12] rotate-6" />
 
                 <div className="container mx-auto px-4 py-20 relative z-10">
                     <Link
                         to="/external-affairs"
-                        className="inline-flex items-center gap-2 text-gray-500 hover:text-[#29b6b0] transition-colors mb-6"
+                        className="inline-flex items-center gap-2 text-gray-500 hover:text-[#25A7A1] transition-colors mb-6"
                     >
                         <ArrowLeft size={16} />
                         Back to External Affairs
                     </Link>
 
                     <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#29b6b0] to-[#239e99] flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#25A7A1] to-[#1F8B86] flex items-center justify-center">
                             <Megaphone className="w-8 h-8 text-white" />
                         </div>
                         <div>
@@ -161,13 +161,13 @@ const DawaSector = () => {
                     <Card className="max-w-2xl mx-auto border-l-4 border-l-[#29b6b0]">
                         <CardContent className="p-6">
                             <div className="flex items-center gap-6">
-                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#29b6b0] to-[#239e99] flex items-center justify-center">
+                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#25A7A1] to-[#1F8B86] flex items-center justify-center">
                                     <Star className="w-10 h-10 text-white" />
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="text-xs uppercase tracking-wider text-gray-500 mb-1">Head of Dawa Sub-Sector</h3>
                                     <p className="text-xl font-serif font-bold text-gray-800">{leadership.amir}</p>
-                                    <p className="text-sm text-[#29b6b0] font-medium">{leadership.year}</p>
+                                    <p className="text-sm text-[#25A7A1] font-medium">{leadership.year}</p>
                                     <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
                                         <span className="flex items-center gap-1">
                                             <Phone size={14} />
@@ -242,8 +242,8 @@ const DawaSector = () => {
                             >
                                 <CardHeader>
                                     <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                                            <program.icon size={24} className="text-[#29b6b0]" />
+                                        <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                                            <program.icon size={24} className="text-[#25A7A1]" />
                                         </div>
                                         <CardTitle className="text-lg">{program.title}</CardTitle>
                                     </div>
@@ -253,7 +253,7 @@ const DawaSector = () => {
                                     <ul className="space-y-2">
                                         {program.activities.map((activity) => (
                                             <li key={activity} className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-[#29b6b0]" />
+                                                <div className="w-1.5 h-1.5 rounded-full bg-[#25A7A1]" />
                                                 {activity}
                                             </li>
                                         ))}
@@ -291,7 +291,7 @@ const DawaSector = () => {
                                             <div className="flex items-center gap-4">
                                                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${event.status === "upcoming" ? "bg-blue-100" : "bg-[#29b6b0]/10"
                                                     }`}>
-                                                    <Calendar size={20} className={event.status === "upcoming" ? "text-blue-600" : "text-[#29b6b0]"} />
+                                                    <Calendar size={20} className={event.status === "upcoming" ? "text-blue-600" : "text-[#25A7A1]"} />
                                                 </div>
                                                 <div>
                                                     <h4 className="font-semibold">{event.title}</h4>
@@ -324,7 +324,7 @@ const DawaSector = () => {
                 title="Our Activities"
                 subtitle="Highlights from our Dawa programs and community events"
                 images={dawaEventImages}
-                accentColor="#29b6b0"
+                accentColor="#25A7A1"
             />
 
             {/* Registration CTA Section */}
@@ -339,7 +339,7 @@ const DawaSector = () => {
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
                         <Button
-                            className="bg-gradient-to-r from-[#29b6b0] to-[#239e99] text-white hover:opacity-90"
+                            className="bg-gradient-to-r from-[#25A7A1] to-[#1F8B86] text-white hover:opacity-90"
                             size="lg"
                             onClick={() => openModal("volunteer")}
                         >
@@ -347,7 +347,7 @@ const DawaSector = () => {
                             Get Involved
                         </Button>
                         <Link to="/external-affairs">
-                            <Button variant="outline" size="lg" className="border-[#29b6b0] text-[#29b6b0] hover:bg-[#29b6b0] hover:text-white">
+                            <Button variant="outline" size="lg" className="border-[#25A7A1] text-[#25A7A1] hover:bg-[#25A7A1] hover:text-white">
                                 <Globe size={20} className="mr-2" />
                                 Explore Other Sectors
                             </Button>

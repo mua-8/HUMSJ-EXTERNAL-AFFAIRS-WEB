@@ -263,12 +263,14 @@ const SuperAdminDashboard = () => {
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#29b6b0] to-[#239e99] p-6 hidden lg:flex flex-col z-50">
-        <div className="flex items-center gap-3 mb-8">
-          <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
+      <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900 text-slate-400 p-6 hidden lg:flex flex-col border-r border-slate-800">
+        <div className="flex items-center gap-3 mb-10 px-2">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#25A7A1] to-[#1F8B86] flex items-center justify-center shadow-lg shadow-teal-500/20">
+            <LayoutDashboard className="text-white w-6 h-6" />
+          </div>
           <div>
-            <h2 className="font-serif font-bold text-white">HUMSJ</h2>
-            <p className="text-xs text-white/80">Super Admin</p>
+            <h2 className="font-serif font-bold text-white text-lg leading-tight">HUMSJ</h2>
+            <p className="text-[10px] uppercase tracking-wider font-bold text-[#25A7A1]">Super Admin</p>
           </div>
         </div>
 
@@ -281,8 +283,8 @@ const SuperAdminDashboard = () => {
                 setSearchParams({ section: item.section });
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeSection === item.section
-                ? "bg-white/20 text-white shadow-lg"
-                : "text-white/70 hover:bg-white/10 hover:text-white"
+                ? "bg-[#25A7A1]/10 text-white font-semibold border-l-4 border-[#25A7A1]"
+                : "hover:bg-slate-800 hover:text-slate-200"
                 }`}
             >
               <item.icon size={18} />

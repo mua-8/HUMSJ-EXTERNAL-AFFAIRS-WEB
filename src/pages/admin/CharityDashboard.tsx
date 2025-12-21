@@ -284,7 +284,7 @@ const CharityDashboard = () => {
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#29b6b0] to-[#239e99] p-6 hidden lg:flex flex-col shadow-xl">
+      <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#25A7A1] to-[#1F8B86] p-6 hidden lg:flex flex-col shadow-xl">
         <div className="flex items-center gap-3 mb-8">
           <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
           <div>
@@ -355,10 +355,10 @@ const CharityDashboard = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-l-4 border-l-[#29b6b0] hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
             <CardContent className="flex items-center gap-4 pt-6">
-              <div className="w-12 h-12 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                <Users size={24} className="text-[#29b6b0]" />
+              <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                <Users size={24} className="text-[#25A7A1]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#1e293b]">{stats.total}</p>
@@ -366,10 +366,10 @@ const CharityDashboard = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
             <CardContent className="flex items-center gap-4 pt-6">
-              <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                <Check size={24} className="text-green-500" />
+              <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                <Check size={24} className="text-[#25A7A1]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#1e293b]">{stats.confirmed}</p>
@@ -377,10 +377,10 @@ const CharityDashboard = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-l-4 border-l-amber-500 hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
             <CardContent className="flex items-center gap-4 pt-6">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                <TrendingUp size={24} className="text-amber-500" />
+              <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                <TrendingUp size={24} className="text-[#25A7A1]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#1e293b]">{stats.pending}</p>
@@ -388,10 +388,10 @@ const CharityDashboard = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-l-4 border-l-[#d4af37] hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
             <CardContent className="flex items-center gap-4 pt-6">
-              <div className="w-12 h-12 rounded-xl bg-[#d4af37]/10 flex items-center justify-center">
-                <DollarSign size={24} className="text-[#d4af37]" />
+              <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                <DollarSign size={24} className="text-[#25A7A1]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#1e293b]">{stats.totalAmount.toLocaleString()} ETB</p>
@@ -464,9 +464,9 @@ const CharityDashboard = () => {
                           <TableCell>{donation.phone}</TableCell>
                           <TableCell>{donation.idNumber}</TableCell>
                           <TableCell>{donation.department}</TableCell>
-                          <TableCell className="font-semibold text-[#29b6b0]">{donation.amount} ETB</TableCell>
+                          <TableCell className="font-semibold text-[#25A7A1]">{donation.amount} ETB</TableCell>
                           <TableCell>
-                            <Badge className={donation.donationType === "star_shining" ? "bg-[#d4af37]/10 text-[#d4af37] border-0" : "bg-[#29b6b0]/10 text-[#29b6b0] border-0"}>
+                            <Badge className={donation.donationType === "star_shining" ? "bg-[#d4af37]/10 text-[#d4af37] border-0" : "bg-[#25A7A1]/10 text-[#25A7A1] border-0"}>
                               {donation.donationType === "star_shining" ? "Star-Shining" : "Student"}
                             </Badge>
                           </TableCell>
@@ -489,7 +489,7 @@ const CharityDashboard = () => {
                                 size="icon"
                                 variant="ghost"
                                 onClick={() => handleViewDetails(donation)}
-                                className="text-[#29b6b0] hover:bg-[#29b6b0]/10 h-8 w-8"
+                                className="text-[#25A7A1] hover:bg-[#25A7A1]/10 h-8 w-8"
                                 title="View & Respond"
                               >
                                 <Eye size={16} />
@@ -582,9 +582,9 @@ const CharityDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div className="p-4 bg-gradient-to-br from-[#29b6b0]/10 to-[#29b6b0]/5 rounded-xl">
+                  <div className="p-4 bg-gradient-to-br from-[#25A7A1]/10 to-[#25A7A1]/5 rounded-xl">
                     <p className="text-sm text-gray-500">Total Donations</p>
-                    <p className="text-2xl font-bold text-[#29b6b0]">{periodDonations.length}</p>
+                    <p className="text-2xl font-bold text-[#25A7A1]">{periodDonations.length}</p>
                   </div>
                   <div className="p-4 bg-gradient-to-br from-green-500/10 to-green-500/5 rounded-xl">
                     <p className="text-sm text-gray-500">Confirmed</p>
@@ -603,7 +603,7 @@ const CharityDashboard = () => {
                 <div className="flex gap-3 mb-6">
                   <Button
                     onClick={() => exportToCSV(periodDonations, `donations_${reportPeriod}_${selectedYear}`)}
-                    className="bg-[#29b6b0] hover:bg-[#239e99]"
+                    className="bg-[#25A7A1] hover:bg-[#1F8B86]"
                   >
                     <Download size={16} className="mr-2" />
                     Export to Excel (CSV)
@@ -669,11 +669,11 @@ const CharityDashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {Object.entries(paymentMethodStats).length > 0 ? (
                   Object.entries(paymentMethodStats).map(([method, amount]) => (
-                    <Card key={method} className="border-2 hover:border-[#29b6b0] transition-colors">
+                    <Card key={method} className="border-2 hover:border-[#25A7A1] transition-colors">
                       <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                            <CreditCard size={24} className="text-[#29b6b0]" />
+                          <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                            <CreditCard size={24} className="text-[#25A7A1]" />
                           </div>
                           <div>
                             <p className="text-sm text-gray-500 capitalize">{method.replace(/_/g, " ")}</p>
@@ -704,7 +704,7 @@ const CharityDashboard = () => {
                           </div>
                           <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-[#29b6b0] to-[#0f4a47] rounded-full transition-all duration-500"
+                              className="h-full bg-gradient-to-r from-[#25A7A1] to-[#0f4a47] rounded-full transition-all duration-500"
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
@@ -752,7 +752,7 @@ const CharityDashboard = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-500">Amount:</span>
-                  <span className="font-bold text-[#29b6b0]">{selectedDonation.amount} ETB</span>
+                  <span className="font-bold text-[#25A7A1]">{selectedDonation.amount} ETB</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-500">Payment Method:</span>
