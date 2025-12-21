@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Mic,
@@ -20,6 +20,9 @@ import {
   Target,
   Trophy,
   UserPlus,
+  Check,
+  X,
+  UserCheck,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,8 +54,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import humjsLogo from "@/assets/humjs-logo.png";
+import {
+  subscribeToRegistrations,
+  updateRegistration,
+  deleteRegistration,
+  FirestoreRegistration
+} from "@/lib/firestore";
 
-type ActiveTab = "overview" | "students" | "activities" | "resources" | "competitions" | "reports";
+type ActiveTab = "overview" | "students" | "enrollments" | "activities" | "resources" | "competitions" | "reports";
 
 // Types
 interface QiratStudent {
@@ -140,6 +149,38 @@ const QiratDashboard = () => {
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [isAddActivityOpen, setIsAddActivityOpen] = useState(false);
   const [isAddResourceOpen, setIsAddResourceOpen] = useState(false);
+  const [registrations, setRegistrations] = useState<FirestoreRegistration[]>([]);
+  const [isRegLoading, setIsRegLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToRegistrations((data) => {
+      // Filter for qirat sector and student type
+      const qiratRegistrations = data.filter(r => r.sector === "qirat" && r.type === "student");
+      setRegistrations(qiratRegistrations);
+      setIsRegLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleApproveRegistration = async (id: string) => {
+    try {
+      await updateRegistration(id, { status: "approved" });
+      toast({ title: "Registration Approved", description: "Student has been approved." });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to approve registration.", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteRegistration = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this registration?")) return;
+    try {
+      await deleteRegistration(id);
+      toast({ title: "Registration Deleted", description: "The registration has been removed." });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete registration.", variant: "destructive" });
+    }
+  };
 
   const stats = {
     totalStudents: students.length,
@@ -149,6 +190,7 @@ const QiratDashboard = () => {
     upcomingCompetitions: competitions.filter(c => c.status === "upcoming").length,
     totalResources: resources.length,
     totalDownloads: resources.reduce((sum, r) => sum + r.downloads, 0),
+    pendingRegistrations: registrations.filter(r => r.status === "pending").length,
   };
 
   const filteredStudents = students.filter(s =>
@@ -176,6 +218,7 @@ const QiratDashboard = () => {
     { icon: Calendar, label: "Activities", tab: "activities" as const },
     { icon: BookOpen, label: "Resources", tab: "resources" as const },
     { icon: Trophy, label: "Competitions", tab: "competitions" as const },
+    { icon: UserCheck, label: "Enrollments", tab: "enrollments" as const, badge: stats.pendingRegistrations > 0 ? stats.pendingRegistrations : undefined },
     { icon: BarChart3, label: "Reports", tab: "reports" as const },
   ];
 
@@ -206,13 +249,20 @@ const QiratDashboard = () => {
             <button
               key={item.tab}
               onClick={() => setActiveTab(item.tab)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === item.tab
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === item.tab
                 ? "bg-white/20 text-white shadow-lg"
                 : "text-white/70 hover:bg-white/10 hover:text-white"
                 }`}
             >
-              <item.icon size={18} />
-              {item.label}
+              <div className="flex items-center gap-3">
+                <item.icon size={18} />
+                {item.label}
+              </div>
+              {item.badge !== undefined && (
+                <span className="bg-white text-[#25A7A1] text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                  {item.badge}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -277,14 +327,14 @@ const QiratDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
+              <Card className="border-l-4 border-l-amber-500 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveTab("enrollments")}>
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
-                    <Award size={24} className="text-[#25A7A1]" />
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                    <UserPlus size={24} className="text-amber-500" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">92%</p>
-                    <p className="text-sm text-gray-500">Attendance Rate</p>
+                    <p className="text-2xl font-bold">{stats.pendingRegistrations}</p>
+                    <p className="text-sm text-gray-500">Pending Enrollments</p>
                   </div>
                 </CardContent>
               </Card>
@@ -476,6 +526,113 @@ const QiratDashboard = () => {
                         </TableCell>
                       </TableRow>
                     ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Enrollments Tab */}
+        {activeTab === "enrollments" && (
+          <Card>
+            <CardHeader>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <CardTitle>New Student Enrollments</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">Review and manage incoming student applications</p>
+                </div>
+                <Button variant="outline" onClick={() => exportToCSV(registrations, "qirat_enrollments")} disabled={registrations.length === 0}>
+                  <Download size={16} className="mr-2" />
+                  Export
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Student Details</TableHead>
+                      <TableHead>Program/Level</TableHead>
+                      <TableHead>Department/Year</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Date Received</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isRegLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                          Loading enrollments...
+                        </TableCell>
+                      </TableRow>
+                    ) : registrations.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                          No new enrollments found.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      registrations.map((reg) => (
+                        <TableRow key={reg.id} className="hover:bg-gray-50">
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <span className="font-medium text-gray-900">{reg.name}</span>
+                              <span className="text-xs text-gray-500">{reg.phone}</span>
+                              {reg.email && <span className="text-[10px] text-gray-400">{reg.email}</span>}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <span className="text-sm border-l-2 border-[#25A7A1] pl-2 capitalize">{reg.program || "General"}</span>
+                              <span className="text-xs text-gray-500 pl-2">{reg.interest || "No specified level"}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col text-sm">
+                              <span>{reg.department || "N/A"}</span>
+                              <span className="text-[10px] text-gray-400">{reg.year || ""}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={
+                              reg.status === "pending" ? "bg-amber-100 text-amber-600 border-amber-200" :
+                                reg.status === "approved" ? "bg-green-100 text-green-600 border-green-200" :
+                                  "bg-gray-100 text-gray-600 border-gray-200"
+                            }>
+                              {reg.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-500 font-mono">
+                            {reg.createdAt?.toDate().toLocaleDateString() || "N/A"}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              {reg.status === "pending" && (
+                                <Button
+                                  size="sm"
+                                  className="h-8 bg-[#25A7A1] hover:bg-[#1F8B86] text-white gap-1"
+                                  onClick={() => handleApproveRegistration(reg.id!)}
+                                >
+                                  <Check size={14} />
+                                  Approve
+                                </Button>
+                              )}
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-700"
+                                onClick={() => handleDeleteRegistration(reg.id!)}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </div>
