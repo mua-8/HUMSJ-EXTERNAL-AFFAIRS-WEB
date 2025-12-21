@@ -55,5 +55,18 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAuthenticated();
     }
+    
+    // Registrations
+    match /registrations/{registrationId} {
+      allow read: if isAuthenticated();
+      allow create: if true; // Public can register via sector pages
+      allow update, delete: if isAuthenticated();
+    }
+    
+    // Distributions - Admin management
+    match /distributions/{distributionId} {
+      allow read: if true; // Allow public to see distribution data
+      allow create, update, delete: if isAuthenticated();
+    }
   }
 }

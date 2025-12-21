@@ -47,7 +47,7 @@ const AdminLogin = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (isLocked) {
       toast({
         title: "Account Locked",
@@ -61,10 +61,10 @@ const AdminLogin = () => {
 
     try {
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      
+
       // Reset attempts on success
       setLoginAttempts(0);
-      
+
       toast({
         title: "Welcome, Admin!",
         description: "You have been logged in successfully.",
@@ -72,11 +72,11 @@ const AdminLogin = () => {
       navigate("/admin");
     } catch (error: unknown) {
       console.error("Login error:", error);
-      
+
       // Increment failed attempts
       const newAttempts = loginAttempts + 1;
       setLoginAttempts(newAttempts);
-      
+
       // Lock after 5 failed attempts
       if (newAttempts >= 5) {
         setIsLocked(true);
@@ -88,7 +88,7 @@ const AdminLogin = () => {
         });
       } else {
         let errorMessage = "Invalid credentials. Please try again.";
-        
+
         if (error && typeof error === "object" && "code" in error) {
           const firebaseError = error as { code: string };
           switch (firebaseError.code) {
@@ -110,7 +110,7 @@ const AdminLogin = () => {
               break;
           }
         }
-        
+
         toast({
           title: "Login Failed",
           description: errorMessage,
@@ -261,6 +261,67 @@ const AdminLogin = () => {
                 )}
               </Button>
             </form>
+
+            {/* DEV ONLY: Demo Login for Testing */}
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <p className="text-xs text-gray-500 text-center mb-3">
+                🔧 Development Mode - Test without Firebase
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-xs border-[#29b6b0] text-[#29b6b0] hover:bg-[#29b6b0] hover:text-white"
+                  onClick={() => {
+                    localStorage.setItem("devAuth", JSON.stringify({ role: "super_admin", email: "admin@humsj.org" }));
+                    toast({ title: "Dev Login", description: "Logged in as Super Admin" });
+                    navigate("/admin");
+                  }}
+                >
+                  Super Admin
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-xs border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
+                  onClick={() => {
+                    localStorage.setItem("devAuth", JSON.stringify({ role: "charity_amir", email: "charity@humsj.org" }));
+                    toast({ title: "Dev Login", description: "Logged in as Charity Amir" });
+                    navigate("/admin/charity");
+                  }}
+                >
+                  🟢 Charity
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-xs border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"
+                  onClick={() => {
+                    localStorage.setItem("devAuth", JSON.stringify({ role: "academic_amir", email: "academic@humsj.org" }));
+                    toast({ title: "Dev Login", description: "Logged in as Academic Amir" });
+                    navigate("/admin/academic");
+                  }}
+                >
+                  🔵 Academy
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-xs border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white"
+                  onClick={() => {
+                    localStorage.setItem("devAuth", JSON.stringify({ role: "qirat_amir", email: "qirat@humsj.org" }));
+                    toast({ title: "Dev Login", description: "Logged in as Qirat Amir" });
+                    navigate("/admin/qirat");
+                  }}
+                >
+                  🟠 Qirat
+                </Button>
+              </div>
+            </div>
 
             {/* Security Notice */}
             <div className="mt-6 pt-6 border-t border-gray-100">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   LayoutDashboard,
   Heart,
@@ -17,6 +17,11 @@ import {
   X,
   Trash2,
   Filter,
+  Truck,
+  Package,
+  Plus,
+  Loader2,
+  Edit,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,20 +53,49 @@ import {
 import {
   FirestoreEvent,
   subscribeToEvents,
+  FirestoreRegistration,
+  subscribeToRegistrations,
+  updateRegistration,
+  deleteRegistration,
+  FirestoreDistribution,
+  subscribeToDistributions,
+  addDistribution,
+  updateDistribution,
+  deleteDistribution,
 } from "@/lib/firestore";
 import humjsLogo from "@/assets/humjs-logo.png";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
-type ActiveSection = "overview" | "charity" | "academic" | "qirat" | "events" | "settings";
+type ActiveSection = "overview" | "charity" | "academic" | "qirat" | "events" | "distributions" | "settings";
 
 const SuperAdminDashboard = () => {
   const { toast } = useToast();
   const { signOut, user } = useAuth();
-  const [activeSection, setActiveSection] = useState<ActiveSection>("overview");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSection = (searchParams.get("section") as ActiveSection) || "overview";
+  const [activeSection, setActiveSection] = useState<ActiveSection>(initialSection);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [events, setEvents] = useState<FirestoreEvent[]>([]);
+  const [registrations, setRegistrations] = useState<FirestoreRegistration[]>([]);
+  const [distributions, setDistributions] = useState<FirestoreDistribution[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingDist, setIsLoadingDist] = useState(true);
+  const [isLoadingReg, setIsLoadingReg] = useState(true);
+  const [isSavingDist, setIsSavingDist] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const [isDistModalOpen, setIsDistModalOpen] = useState(false);
+  const [editingDist, setEditingDist] = useState<FirestoreDistribution | null>(null);
+  const [distForm, setDistForm] = useState({
+    item: "",
+    quantity: "",
+    beneficiaries: "",
+    date: new Date().toISOString().split("T")[0],
+    sector: "charity" as "charity" | "dawa" | "qirat",
+    status: "planned" as "planned" | "in-progress" | "completed",
+    notes: ""
+  });
 
   useEffect(() => {
     const unsubDonations = subscribeToDonations((data) => {
@@ -73,9 +107,21 @@ const SuperAdminDashboard = () => {
       setEvents(data);
     });
 
+    const unsubRegs = subscribeToRegistrations((data) => {
+      setRegistrations(data);
+      setIsLoadingReg(false);
+    });
+
+    const unsubDist = subscribeToDistributions((data) => {
+      setDistributions(data);
+      setIsLoadingDist(false);
+    });
+
     return () => {
       unsubDonations();
       unsubEvents();
+      unsubRegs();
+      unsubDist();
     };
   }, []);
 
@@ -94,6 +140,85 @@ const SuperAdminDashboard = () => {
       toast({ title: "Donation Rejected", variant: "destructive" });
     } catch (error) {
       toast({ title: "Error", variant: "destructive" });
+    }
+  };
+
+  const handleSaveDistribution = async () => {
+    console.log("Saving distribution:", distForm);
+    if (!distForm.item || !distForm.quantity || !distForm.beneficiaries) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in Item Name, Quantity, and Beneficiaries.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSavingDist(true);
+    try {
+      if (editingDist) {
+        await updateDistribution(editingDist.id!, distForm);
+        toast({ title: "Distribution Updated" });
+      } else {
+        await addDistribution(distForm);
+        toast({ title: "Distribution Created" });
+      }
+      setIsDistModalOpen(false);
+      setEditingDist(null);
+      setDistForm({
+        item: "",
+        quantity: "",
+        beneficiaries: "",
+        date: new Date().toISOString().split("T")[0],
+        sector: "charity",
+        status: "planned",
+        notes: ""
+      });
+    } catch (error: any) {
+      console.error("Save distribution error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save distribution",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSavingDist(false);
+    }
+  };
+
+  const handleDeleteDistribution = async (id: string) => {
+    try {
+      await deleteDistribution(id);
+      toast({ title: "Distribution Deleted" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete distribution", variant: "destructive" });
+    }
+  };
+
+  const handleApproveRegistration = async (id: string) => {
+    try {
+      await updateRegistration(id, { status: "approved" });
+      toast({ title: "Registration Approved" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to approve registration", variant: "destructive" });
+    }
+  };
+
+  const handleRejectRegistration = async (id: string) => {
+    try {
+      await updateRegistration(id, { status: "rejected" });
+      toast({ title: "Registration Rejected", variant: "destructive" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to reject registration", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteRegistration = async (id: string) => {
+    try {
+      await deleteRegistration(id);
+      toast({ title: "Registration Deleted" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete registration", variant: "destructive" });
     }
   };
 
@@ -131,18 +256,19 @@ const SuperAdminDashboard = () => {
     { icon: BookOpen, label: "Academic Sector", section: "academic" as const },
     { icon: Mic, label: "Qirat Sector", section: "qirat" as const },
     { icon: Calendar, label: "Events", section: "events" as const },
+    { icon: Truck, label: "Distributions", section: "distributions" as const },
     { icon: Settings, label: "Settings", section: "settings" as const },
   ];
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-[#0f4a47] p-6 hidden lg:flex flex-col z-50">
+      <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#29b6b0] to-[#239e99] p-6 hidden lg:flex flex-col z-50">
         <div className="flex items-center gap-3 mb-8">
           <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
           <div>
             <h2 className="font-serif font-bold text-white">HUMSJ</h2>
-            <p className="text-xs text-[#29b6b0]">Super Admin</p>
+            <p className="text-xs text-white/80">Super Admin</p>
           </div>
         </div>
 
@@ -150,12 +276,14 @@ const SuperAdminDashboard = () => {
           {navItems.map((item) => (
             <button
               key={item.section}
-              onClick={() => setActiveSection(item.section)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                activeSection === item.section
-                  ? "bg-[#29b6b0] text-white"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
-              }`}
+              onClick={() => {
+                setActiveSection(item.section);
+                setSearchParams({ section: item.section });
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeSection === item.section
+                ? "bg-white/20 text-white shadow-lg"
+                : "text-white/70 hover:bg-white/10 hover:text-white"
+                }`}
             >
               <item.icon size={18} />
               {item.label}
@@ -509,15 +637,218 @@ const SuperAdminDashboard = () => {
         {activeSection === "qirat" && (
           <>
             <div className="mb-8">
-              <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">Qirat Sector</h1>
-              <p className="text-[#64748b]">Manage Quran recitation programs and competitions</p>
+              <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">Qirat Sector Operations</h1>
+              <p className="text-[#64748b]">Manage students, teachers, and registrations for the Qirat sector.</p>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+              <Card>
+                <CardContent className="flex items-center gap-4 pt-6">
+                  <div className="w-12 h-12 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
+                    <Users size={24} className="text-[#29b6b0]" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{registrations.filter(r => r.sector === "qirat").length}</p>
+                    <p className="text-sm text-gray-500">Total Qirat Registrations</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center gap-4 pt-6">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                    <BookOpen size={24} className="text-purple-500" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{registrations.filter(r => r.sector === "qirat" && r.type === "student").length}</p>
+                    <p className="text-sm text-gray-500">Qirat Students</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center gap-4 pt-6">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                    <Users size={24} className="text-orange-500" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{registrations.filter(r => r.sector === "qirat" && r.type === "teacher").length}</p>
+                    <p className="text-sm text-gray-500">Qirat Teachers</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
-              <CardContent className="py-12 text-center">
-                <Mic size={48} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">Qirat Sector Management</h3>
-                <p className="text-gray-500">Quran classes, recitation competitions, and Tajweed programs will be managed here.</p>
-                <p className="text-sm text-[#29b6b0] mt-4">Coming Soon</p>
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <CardTitle>Qirat Registrations</CardTitle>
+                  <div className="flex gap-3">
+                    <Input
+                      placeholder="Search registrations..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-64"
+                    />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {isLoadingReg ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-[#29b6b0]" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Department/Level</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {registrations.filter(r =>
+                          r.sector === "qirat" &&
+                          (r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            r.type.toLowerCase().includes(searchQuery.toLowerCase()))
+                        ).map((reg) => (
+                          <TableRow key={reg.id}>
+                            <TableCell className="font-medium">{reg.name}</TableCell>
+                            <TableCell className="capitalize">{reg.type}</TableCell>
+                            <TableCell>{reg.department || reg.program || "N/A"}</TableCell>
+                            <TableCell>
+                              <Badge className={
+                                reg.status === "approved" ? "bg-green-100 text-green-600" :
+                                  reg.status === "rejected" ? "bg-red-100 text-red-600" :
+                                    "bg-amber-100 text-amber-600"
+                              }>
+                                {reg.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-1">
+                                {reg.status === "pending" && (
+                                  <>
+                                    <button onClick={() => handleApproveRegistration(reg.id!)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg"><Check size={16} /></button>
+                                    <button onClick={() => handleRejectRegistration(reg.id!)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><X size={16} /></button>
+                                  </>
+                                )}
+                                <button onClick={() => handleDeleteRegistration(reg.id!)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {/* Distributions Section */}
+        {activeSection === "distributions" && (
+          <>
+            <div className="mb-8 flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">Distribution Tracking</h1>
+                <p className="text-[#64748b]">Monitor and manage the distribution of aid items and resources.</p>
+              </div>
+              <Button onClick={() => {
+                setEditingDist(null);
+                setDistForm({
+                  item: "",
+                  quantity: "",
+                  beneficiaries: "",
+                  date: new Date().toISOString().split("T")[0],
+                  sector: "charity",
+                  status: "planned",
+                  notes: ""
+                });
+                setIsDistModalOpen(true);
+              }} className="bg-[#29b6b0] hover:bg-[#239e99]">
+                <Plus size={18} className="mr-2" /> Add Distribution
+              </Button>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <CardTitle>Distribution Logs</CardTitle>
+                  <Input
+                    placeholder="Search distributions..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-64"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                {isLoadingDist ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-[#29b6b0]" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Item</TableHead>
+                          <TableHead>Quantity</TableHead>
+                          <TableHead>Beneficiaries</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Sector</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {distributions.filter(d =>
+                          d.item.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          d.beneficiaries.toLowerCase().includes(searchQuery.toLowerCase())
+                        ).map((dist) => (
+                          <TableRow key={dist.id}>
+                            <TableCell className="font-medium">{dist.item}</TableCell>
+                            <TableCell>{dist.quantity}</TableCell>
+                            <TableCell>{dist.beneficiaries}</TableCell>
+                            <TableCell>{new Date(dist.date).toLocaleDateString()}</TableCell>
+                            <TableCell className="capitalize">{dist.sector}</TableCell>
+                            <TableCell>
+                              <Badge className={
+                                dist.status === "completed" ? "bg-green-100 text-green-600" :
+                                  dist.status === "in-progress" ? "bg-blue-100 text-blue-600" :
+                                    "bg-amber-100 text-amber-600"
+                              }>
+                                {dist.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-1">
+                                <button onClick={() => {
+                                  setEditingDist(dist);
+                                  setDistForm({
+                                    item: dist.item,
+                                    quantity: dist.quantity.toString(),
+                                    beneficiaries: dist.beneficiaries,
+                                    date: dist.date,
+                                    sector: dist.sector,
+                                    status: dist.status,
+                                    notes: dist.notes || ""
+                                  });
+                                  setIsDistModalOpen(true);
+                                }} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"><Edit size={16} /></button>
+                                <button onClick={() => handleDeleteDistribution(dist.id!)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </>
@@ -561,6 +892,84 @@ const SuperAdminDashboard = () => {
           </>
         )}
       </main>
+
+      {/* Distribution Modal */}
+      <Dialog open={isDistModalOpen} onOpenChange={setIsDistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingDist ? "Edit Distribution" : "Add New Distribution"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Item Name *</label>
+              <Input
+                placeholder="E.g. Food Packages, Textbooks"
+                value={distForm.item}
+                onChange={(e) => setDistForm({ ...distForm, item: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Quantity *</label>
+                <Input
+                  placeholder="E.g. 500 units"
+                  value={distForm.quantity}
+                  onChange={(e) => setDistForm({ ...distForm, quantity: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Beneficiaries *</label>
+                <Input
+                  placeholder="E.g. 200 families"
+                  value={distForm.beneficiaries}
+                  onChange={(e) => setDistForm({ ...distForm, beneficiaries: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Date *</label>
+                <Input
+                  type="date"
+                  value={distForm.date}
+                  onChange={(e) => setDistForm({ ...distForm, date: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Sub-Sector</label>
+                <select
+                  className="w-full border rounded-md p-2 text-sm"
+                  value={distForm.sector}
+                  onChange={(e) => setDistForm({ ...distForm, sector: e.target.value as any })}
+                >
+                  <option value="charity">Charity</option>
+                  <option value="dawa">Dawa</option>
+                  <option value="qirat">Qirat</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Status</label>
+              <select
+                className="w-full border rounded-md p-2 text-sm"
+                value={distForm.status}
+                onChange={(e) => setDistForm({ ...distForm, status: e.target.value as any })}
+              >
+                <option value="planned">Planned</option>
+                <option value="in-progress">In-Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDistModalOpen(false)} disabled={isSavingDist}>Cancel</Button>
+            <Button onClick={handleSaveDistribution} className="bg-[#29b6b0] hover:bg-[#239e99]" disabled={isSavingDist}>
+              {isSavingDist ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {isSavingDist ? "Saving..." : (editingDist ? "Update Distribution" : "Create Distribution")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

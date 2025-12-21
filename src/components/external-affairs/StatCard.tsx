@@ -6,7 +6,7 @@ interface StatCardProps {
   value: string | number;
   label: string;
   subLabel?: string;
-  variant?: "primary" | "teal" | "gold";
+  variant?: "primary" | "teal" | "gold" | "amber";
   delay?: number;
 }
 
@@ -15,12 +15,14 @@ const StatCard = ({ icon: Icon, value, label, subLabel, variant = "primary", del
     primary: "from-[#29b6b0]/20 to-[#e6f7f6]/50",
     teal: "from-[#29b6b0]/20 to-[#e6f7f6]/50",
     gold: "from-[#d4af37]/20 to-[#fef9c3]/50",
+    amber: "from-[#29b6b0]/20 to-[#e6f7f6]/50",
   };
 
   const iconClasses = {
     primary: "text-[#29b6b0]",
     teal: "text-[#29b6b0]",
     gold: "text-[#d4af37]",
+    amber: "text-[#29b6b0]",
   };
 
   return (

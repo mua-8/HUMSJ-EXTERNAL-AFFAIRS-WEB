@@ -12,6 +12,8 @@ import {
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import RegistrationModal, { RegistrationType } from "@/components/external-affairs/RegistrationModal";
+import { useState } from "react";
 import StatCard from "@/components/external-affairs/StatCard";
 import ProgramCard from "@/components/external-affairs/ProgramCard";
 import EventGallery from "@/components/ui/EventGallery";
@@ -30,6 +32,13 @@ const studentStats = [
 ];
 
 const QiratSector = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<RegistrationType>("student");
+
+  const openModal = (type: RegistrationType) => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
   return (
     <Layout>
       {/* Hero Section */}
@@ -56,16 +65,41 @@ const QiratSector = () => {
             </div>
             <div>
               <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1f2937]">
-                Qirat Sector
+                Qirat Sub-Sector
               </h1>
-              <p className="text-gray-500">External Affairs Division</p>
+              <p className="text-gray-500">Social Affairs Sector - HUMSJ</p>
             </div>
           </div>
 
           <p className="text-lg text-gray-600 max-w-3xl">
-            Nurturing Quranic education through structured Nuraniya programs, 
-            advanced memorization classes, and inspirational Muhadara gatherings.
+            Focuses on educating Quran and 'Dini' (religious education) to the society's children.
+            Currently serving 125 students: 55 in the foundational Nuraniya Program and 70 in the
+            Advanced Quran Memorization/Recitation Program.
           </p>
+        </div>
+      </section>
+
+      {/* Leadership Section */}
+      <section className="py-8 bg-white border-b">
+        <div className="container mx-auto px-4">
+          <Card className="max-w-2xl mx-auto border-l-4 border-l-[#29b6b0]">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-6">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#29b6b0] to-[#239e99] flex items-center justify-center">
+                  <BookOpen className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Head of Qirat Sub-Sector</p>
+                  <p className="text-xl font-serif font-bold text-gray-800">Mohammed Ahmed</p>
+                  <p className="text-sm text-[#29b6b0] font-medium">3rd Year Computer Science Student</p>
+                  <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
+                    <span className="flex items-center gap-1">📞 +251 91 XXX XXXX</span>
+                    <span className="flex items-center gap-1">✉️ qirat@humsj.org</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
@@ -170,7 +204,7 @@ const QiratSector = () => {
             <h2 className="text-3xl font-serif font-bold text-foreground mb-8 text-center">
               Program Details
             </h2>
-            
+
             <div className="grid md:grid-cols-2 gap-8">
               <Card variant="elevated" className="animate-fade-in-up">
                 <CardHeader>
@@ -183,7 +217,7 @@ const QiratSector = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground">
-                    The foundational program teaches students the basics of Quranic reading, 
+                    The foundational program teaches students the basics of Quranic reading,
                     including proper pronunciation (Tajweed) and Arabic letter recognition.
                   </p>
                   <ul className="space-y-2">
@@ -214,7 +248,7 @@ const QiratSector = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground">
-                    For students who have mastered the basics, this program focuses on 
+                    For students who have mastered the basics, this program focuses on
                     Quran memorization (Hifz) and advanced recitation techniques.
                   </p>
                   <ul className="space-y-2">
@@ -256,21 +290,24 @@ const QiratSector = () => {
             Help us expand our Qirat programs and reach more students eager to learn the Quran.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/external-affairs/charity">
-              <Button variant="hero" size="lg">
-                <Calendar size={20} />
-                Donate to Programs
-              </Button>
-            </Link>
-            <Link to="/contact">
-              <Button variant="outline" size="lg">
-                Join as Teacher
-              </Button>
-            </Link>
+            <Button variant="hero" size="lg" onClick={() => openModal("donor")}>
+              <Calendar size={20} />
+              Donate to Programs
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => openModal("teacher")}>
+              Join as Teacher
+            </Button>
           </div>
         </div>
       </section>
-    </Layout>
+
+      <RegistrationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        type={modalType}
+        sector="qirat"
+      />
+    </Layout >
   );
 };
 

@@ -61,7 +61,32 @@ import {
   addEvent as addFirestoreEvent,
   updateEvent as updateFirestoreEvent,
   deleteEvent as deleteFirestoreEvent,
+  FirestoreRegistration,
+  subscribeToRegistrations,
+  updateRegistration as updateFirestoreRegistration,
+  deleteRegistration as deleteFirestoreRegistration,
+  FirestoreDistribution,
+  subscribeToDistributions,
+  addDistribution as addFirestoreDistribution,
+  updateDistribution as updateFirestoreDistribution,
+  deleteDistribution as deleteFirestoreDistribution,
 } from "@/lib/firestore";
+import {
+  Donation,
+  subscribeToDonations,
+  updateDonationStatus as updateFirestoreDonationStatus,
+  deleteDonation as deleteFirestoreDonation,
+} from "@/lib/donations";
+import {
+  Heart,
+  Truck,
+  BookOpen,
+  DollarSign,
+  Package,
+  CheckCircle2,
+  Clock,
+  AlertCircle
+} from "lucide-react";
 
 // Translations
 const translations = {
@@ -127,6 +152,22 @@ const translations = {
     education: "Education",
     charity: "Charity",
     viewAll: "View All",
+    registrations: "Registrations",
+    manageRegistrations: "Manage subsector registrations",
+    subsector: "Subsector",
+    type: "Type",
+    phone: "Phone",
+    donations: "Donations",
+    manageDonations: "Track and oversee charity donations",
+    distributions: "Distributions",
+    manageDistributions: "Monitor aid and resource distribution",
+    qiratOps: "Qirat Operations",
+    manageQirat: "Qirat sector administrative tasks",
+    item: "Item",
+    quantity: "Quantity",
+    beneficiaries: "Beneficiaries",
+    amount: "Amount",
+    method: "Method",
   },
   amharic: {
     dashboard: "ዳሽቦርድ",
@@ -190,6 +231,22 @@ const translations = {
     education: "ትምህርት",
     charity: "በጎ አድራጎት",
     viewAll: "ሁሉንም ይመልከቱ",
+    registrations: "ምዝገባዎች",
+    manageRegistrations: "ንዑስ ዘርፍ ምዝገባዎችን ያስተዳድሩ",
+    subsector: "ንዑስ ዘርፍ",
+    type: "ዓይነት",
+    phone: "ስልክ",
+    donations: "ልገሳዎች",
+    manageDonations: "የበጎ አድራጎት ልገሳዎችን ይከታተሉ",
+    distributions: "ስርጭቶች",
+    manageDistributions: "የእርዳታ ስርጭትን ይከታተሉ",
+    qiratOps: "የቂራት እንቅስቃሴዎች",
+    manageQirat: "የቂራት ዘርፍ አስተዳደራዊ ተግባራት",
+    item: "ዕቃ",
+    quantity: "ብዛት",
+    beneficiaries: "ተጠቃሚዎች",
+    amount: "መጠን",
+    method: "ዘዴ",
   },
   oromic: {
     dashboard: "Daashboordii",
@@ -233,26 +290,42 @@ const translations = {
     eventTitle: "Mata Duree Taatee",
     date: "Guyyaa",
     category: "Ramaddii",
-    submittedBy: "Kan Dhiyeesse",
+    submittedBy: "Kan dhiyeesse",
     status: "Haala",
-    actions: "Tarkaanfii",
+    actions: "Gochaawwan",
     name: "Maqaa",
     email: "Imeelii",
     role: "Gahee",
-    joined: "Kan Makame",
+    joined: "Kan itti makame",
     search: "Barbaadi...",
     addEvent: "Taatee Dabali",
     editEvent: "Taatee Gulaali",
-    deleteConfirm: "Kana haquu barbaaddaa?",
-    save: "Olkaa'i",
+    deleteConfirm: "Dhuguma kana balleessuu barbaaddu?",
+    save: "Oolchi",
     cancel: "Haqi",
-    title: "Mata Duree",
+    title: "Mata-duree",
     description: "Ibsa",
-    selectCategory: "Ramaddii Filadhu",
+    selectCategory: "Ramaddii filadhu",
     community: "Hawaasa",
     education: "Barnoota",
-    charity: "Tola Ooltummaa",
-    viewAll: "Hunda Ilaali",
+    charity: "Buna",
+    viewAll: "Hunda ilaali",
+    registrations: "Galmeewwan",
+    manageRegistrations: "Galmeewwan kutaalee bulchi",
+    subsector: "Kutaa",
+    type: "Gosa",
+    phone: "Bilbila",
+    donations: "Buusii",
+    manageDonations: "Buusii deeggarsaa hordofi",
+    distributions: "Raabsa",
+    manageDistributions: "Raabsa deeggarsaa hordofi",
+    qiratOps: "Sochii Qira'ata",
+    manageQirat: "Hojiiwwan kuta Qira'ata",
+    item: "Meeshaa",
+    quantity: "Baay'ina",
+    beneficiaries: "Fayyadamtoota",
+    amount: "Hamma",
+    method: "Mala",
   },
 };
 
@@ -286,22 +359,22 @@ interface RecentActivity {
   type: "event" | "user" | "content" | "setting";
 }
 
-type ActiveSection = "dashboard" | "events" | "users" | "content" | "settings";
+type ActiveSection = "dashboard" | "events" | "users" | "content" | "settings" | "registrations" | "donations" | "distributions" | "qirat";
 
 const Admin = () => {
   const { toast } = useToast();
-  
+
   // Load persisted settings
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem("admin-language");
     return (saved as Language) || "english";
   });
-  
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("admin-dark-mode");
     return saved === "true";
   });
-  
+
   const [primaryColor, setPrimaryColor] = useState(() => {
     return localStorage.getItem("admin-primary-color") || "#1a9e98";
   });
@@ -312,6 +385,18 @@ const Admin = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isSavingEvent, setIsSavingEvent] = useState(false);
+
+  // Registrations state
+  const [registrations, setRegistrations] = useState<FirestoreRegistration[]>([]);
+  const [isLoadingRegistrations, setIsLoadingRegistrations] = useState(true);
+
+  // Donations state
+  const [donations, setDonations] = useState<Donation[]>([]);
+  const [isLoadingDonations, setIsLoadingDonations] = useState(true);
+
+  // Distributions state
+  const [distributions, setDistributions] = useState<FirestoreDistribution[]>([]);
+  const [isLoadingDistributions, setIsLoadingDistributions] = useState(true);
 
   // Subscribe to Firebase events
   useEffect(() => {
@@ -329,6 +414,17 @@ const Admin = () => {
       }));
       setEvents(mappedEvents);
       setIsLoadingEvents(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Subscribe to Firebase registrations
+  useEffect(() => {
+    setIsLoadingRegistrations(true);
+    const unsubscribe = subscribeToRegistrations((firestoreRegs: FirestoreRegistration[]) => {
+      setRegistrations(firestoreRegs);
+      setIsLoadingRegistrations(false);
     });
 
     return () => unsubscribe();
@@ -358,11 +454,23 @@ const Admin = () => {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState<string>("all");
-  
+
   // Modal states
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [eventForm, setEventForm] = useState({ title: "", description: "", date: "", category: "Community", image: "" });
+
+  const [isDistModalOpen, setIsDistModalOpen] = useState(false);
+  const [editingDist, setEditingDist] = useState<FirestoreDistribution | null>(null);
+  const [distForm, setDistForm] = useState({
+    item: "",
+    quantity: "",
+    beneficiaries: "",
+    date: new Date().toISOString().split("T")[0],
+    sector: "charity" as "charity" | "dawa" | "qirat",
+    status: "planned" as "planned" | "in-progress" | "completed",
+    notes: ""
+  });
 
   // Notification settings
   const [notificationSettings, setNotificationSettings] = useState(() => {
@@ -478,7 +586,7 @@ const Admin = () => {
         addActivity("New event created", "event");
         toast({ title: "Event Created", description: "The event has been added." });
       }
-      
+
       setIsEventModalOpen(false);
       setEditingEvent(null);
       setEventForm({ title: "", description: "", date: "", category: "Community", image: "" });
@@ -487,6 +595,121 @@ const Admin = () => {
       toast({ title: "Error", description: "Failed to save event. Please try again.", variant: "destructive" });
     } finally {
       setIsSavingEvent(false);
+    }
+  };
+
+  // Registration handlers
+  const handleApproveRegistration = async (id: string) => {
+    try {
+      await updateFirestoreRegistration(id, { status: "approved" });
+      addActivity("Registration approved", "user");
+      toast({ title: "Registration Approved" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to approve registration", variant: "destructive" });
+    }
+  };
+
+  const handleRejectRegistration = async (id: string) => {
+    try {
+      await updateFirestoreRegistration(id, { status: "rejected" });
+      addActivity("Registration rejected", "user");
+      toast({ title: "Registration Rejected", variant: "destructive" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to reject registration", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteRegistration = async (id: string) => {
+    try {
+      await deleteFirestoreRegistration(id);
+      addActivity("Registration deleted", "user");
+      toast({ title: "Registration Deleted" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete registration", variant: "destructive" });
+    }
+  };
+
+  // Donation handlers
+  const handleApproveDonation = async (id: string) => {
+    try {
+      await updateFirestoreDonationStatus(id, "confirmed");
+      addActivity("Donation confirmed", "content");
+      toast({ title: "Donation Confirmed" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to confirm donation", variant: "destructive" });
+    }
+  };
+
+  const handleRejectDonation = async (id: string) => {
+    try {
+      await updateFirestoreDonationStatus(id, "rejected");
+      addActivity("Donation rejected", "content");
+      toast({ title: "Donation Rejected", variant: "destructive" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to reject donation", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteDonation = async (id: string) => {
+    try {
+      await deleteFirestoreDonation(id);
+      addActivity("Donation deleted", "content");
+      toast({ title: "Donation Deleted" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete donation", variant: "destructive" });
+    }
+  };
+
+  // Distribution handlers
+  const handleUpdateDistributionStatus = async (id: string, status: "planned" | "in-progress" | "completed") => {
+    try {
+      await updateFirestoreDistribution(id, { status });
+      addActivity(`Distribution status updated to ${status}`, "content");
+      toast({ title: "Distribution Updated" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to update distribution", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteDistribution = async (id: string) => {
+    try {
+      await deleteFirestoreDistribution(id);
+      addActivity("Distribution deleted", "content");
+      toast({ title: "Distribution Deleted" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete distribution", variant: "destructive" });
+    }
+  };
+
+  const handleSaveDistribution = async () => {
+    if (!distForm.item || !distForm.quantity || !distForm.beneficiaries) {
+      toast({ title: "Error", description: "Please fill in all required fields.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      if (editingDist) {
+        await updateFirestoreDistribution(editingDist.id!, distForm);
+        addActivity("Distribution updated", "content");
+        toast({ title: "Distribution Updated" });
+      } else {
+        await addFirestoreDistribution(distForm);
+        addActivity("New distribution added", "content");
+        toast({ title: "Distribution Created" });
+      }
+      setIsDistModalOpen(false);
+      setEditingDist(null);
+      setDistForm({
+        item: "",
+        quantity: "",
+        beneficiaries: "",
+        date: new Date().toISOString().split("T")[0],
+        sector: "charity",
+        status: "planned",
+        notes: ""
+      });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to save distribution", variant: "destructive" });
     }
   };
 
@@ -533,6 +756,10 @@ const Admin = () => {
   const navItems = [
     { icon: LayoutDashboard, label: t.dashboard, section: "dashboard" as const },
     { icon: Calendar, label: t.events, section: "events" as const },
+    { icon: Heart, label: t.donations, section: "donations" as const },
+    { icon: Truck, label: t.distributions, section: "distributions" as const },
+    { icon: BookOpen, label: t.qiratOps, section: "qirat" as const },
+    { icon: Users, label: t.registrations, section: "registrations" as const },
     { icon: Users, label: t.users, section: "users" as const },
     { icon: FileText, label: t.content, section: "content" as const },
     { icon: Settings, label: t.settings, section: "settings" as const },
@@ -561,11 +788,10 @@ const Admin = () => {
             <button
               key={item.section}
               onClick={() => setActiveSection(item.section)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${
-                activeSection === item.section
-                  ? "text-white shadow-lg"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${activeSection === item.section
+                ? "text-white shadow-lg"
+                : "text-white/70 hover:bg-white/10 hover:text-white"
+                }`}
               style={activeSection === item.section ? { backgroundColor: primaryColor } : {}}
             >
               <item.icon size={18} />
@@ -735,8 +961,8 @@ const Admin = () => {
                           <TableCell>
                             <Badge className={
                               event.status === "approved" ? "bg-green-500/10 text-green-500 border-0" :
-                              event.status === "rejected" ? "bg-red-500/10 text-red-500 border-0" :
-                              "bg-amber-500/10 text-amber-500 border-0"
+                                event.status === "rejected" ? "bg-red-500/10 text-red-500 border-0" :
+                                  "bg-amber-500/10 text-amber-500 border-0"
                             }>{event.status}</Badge>
                           </TableCell>
                           <TableCell className="text-right">
@@ -778,7 +1004,326 @@ const Admin = () => {
           </Card>
         )}
 
-        {/* Users Section */}
+        {/* Registrations Section */}
+        {activeSection === "registrations" && (
+          <Card className={cardClass}>
+            <CardHeader>
+              <CardTitle className={textClass}>{t.manageRegistrations}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className={borderClass}>
+                      <TableHead className={mutedClass}>{t.name}</TableHead>
+                      <TableHead className={mutedClass}>{t.phone}</TableHead>
+                      <TableHead className={mutedClass}>{t.subsector}</TableHead>
+                      <TableHead className={mutedClass}>{t.type}</TableHead>
+                      <TableHead className={mutedClass}>{t.status}</TableHead>
+                      <TableHead className={`text-right ${mutedClass}`}>{t.actions}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {registrations.filter(r =>
+                      r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      r.sector.toLowerCase().includes(searchQuery.toLowerCase())
+                    ).map((reg) => (
+                      <TableRow key={reg.id} className={isDarkMode ? "border-gray-700" : "border-gray-100"}>
+                        <TableCell className={`font-medium ${textClass}`}>{reg.name}</TableCell>
+                        <TableCell className={mutedClass}>{reg.phone}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="capitalize">{reg.sector}</Badge>
+                        </TableCell>
+                        <TableCell className="capitalize">{reg.type}</TableCell>
+                        <TableCell>
+                          <Badge className={
+                            reg.status === "approved" ? "bg-green-500/10 text-green-500 border-0" :
+                              reg.status === "rejected" ? "bg-red-500/10 text-red-500 border-0" :
+                                "bg-amber-500/10 text-amber-500 border-0"
+                          }>{reg.status}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            {reg.status === "pending" && (
+                              <>
+                                <Button size="icon" variant="ghost" onClick={() => handleApproveRegistration(reg.id!)} className="text-green-500 hover:bg-green-500/10 h-8 w-8">
+                                  <Check size={16} />
+                                </Button>
+                                <Button size="icon" variant="ghost" onClick={() => handleRejectRegistration(reg.id!)} className="text-red-500 hover:bg-red-500/10 h-8 w-8">
+                                  <X size={16} />
+                                </Button>
+                              </>
+                            )}
+                            <Button size="icon" variant="ghost" onClick={() => handleDeleteRegistration(reg.id!)} className="text-red-500 hover:bg-red-500/10 h-8 w-8">
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {isLoadingRegistrations && (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin" style={{ color: primaryColor }} />
+                    <span className={`ml-2 ${mutedClass}`}>Loading registrations...</span>
+                  </div>
+                )}
+                {!isLoadingRegistrations && registrations.length === 0 && (
+                  <p className={`text-center py-8 ${mutedClass}`}>No registrations found</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Donations Section */}
+        {activeSection === "donations" && (
+          <Card className={cardClass}>
+            <CardHeader>
+              <CardTitle className={textClass}>{t.manageDonations}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className={borderClass}>
+                      <TableHead className={mutedClass}>{t.name}</TableHead>
+                      <TableHead className={mutedClass}>{t.amount}</TableHead>
+                      <TableHead className={mutedClass}>{t.method}</TableHead>
+                      <TableHead className={mutedClass}>{t.type}</TableHead>
+                      <TableHead className={mutedClass}>{t.status}</TableHead>
+                      <TableHead className={`text-right ${mutedClass}`}>{t.actions}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {donations.filter(d =>
+                      d.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+                    ).map((donation) => (
+                      <TableRow key={donation.id} className={isDarkMode ? "border-gray-700" : "border-gray-100"}>
+                        <TableCell className={`font-medium ${textClass}`}>{donation.fullName}</TableCell>
+                        <TableCell className={textClass}>{donation.amount} ETB</TableCell>
+                        <TableCell className={mutedClass}>{donation.paymentMethod}</TableCell>
+                        <TableCell className="capitalize">{donation.donationType.replace("_", " ")}</TableCell>
+                        <TableCell>
+                          <Badge className={
+                            donation.status === "confirmed" ? "bg-green-500/10 text-green-500 border-0" :
+                              donation.status === "rejected" ? "bg-red-500/10 text-red-500 border-0" :
+                                "bg-amber-500/10 text-amber-500 border-0"
+                          }>{donation.status}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            {donation.status === "pending" && (
+                              <>
+                                <Button size="icon" variant="ghost" onClick={() => handleApproveDonation(donation.id!)} className="text-green-500 hover:bg-green-500/10 h-8 w-8">
+                                  <Check size={16} />
+                                </Button>
+                                <Button size="icon" variant="ghost" onClick={() => handleRejectDonation(donation.id!)} className="text-red-500 hover:bg-red-500/10 h-8 w-8">
+                                  <X size={16} />
+                                </Button>
+                              </>
+                            )}
+                            <Button size="icon" variant="ghost" onClick={() => handleDeleteDonation(donation.id!)} className="text-red-500 hover:bg-red-500/10 h-8 w-8">
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {isLoadingDonations && (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin" style={{ color: primaryColor }} />
+                    <span className={`ml-2 ${mutedClass}`}>Loading donations...</span>
+                  </div>
+                )}
+                {!isLoadingDonations && donations.length === 0 && (
+                  <p className={`text-center py-8 ${mutedClass}`}>No donations found</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Distributions Section */}
+        {activeSection === "distributions" && (
+          <Card className={cardClass}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className={textClass}>{t.manageDistributions}</CardTitle>
+                <Button
+                  className="text-white"
+                  style={{ backgroundColor: primaryColor }}
+                  onClick={() => {
+                    setEditingDist(null);
+                    setDistForm({
+                      item: "",
+                      quantity: "",
+                      beneficiaries: "",
+                      date: new Date().toISOString().split("T")[0],
+                      sector: "charity",
+                      status: "planned",
+                      notes: ""
+                    });
+                    setIsDistModalOpen(true);
+                  }}
+                >
+                  <Plus size={18} /> Add New
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className={borderClass}>
+                      <TableHead className={mutedClass}>{t.item}</TableHead>
+                      <TableHead className={mutedClass}>{t.quantity}</TableHead>
+                      <TableHead className={mutedClass}>{t.beneficiaries}</TableHead>
+                      <TableHead className={mutedClass}>{t.date}</TableHead>
+                      <TableHead className={mutedClass}>{t.status}</TableHead>
+                      <TableHead className={`text-right ${mutedClass}`}>{t.actions}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {distributions.map((dist) => (
+                      <TableRow key={dist.id} className={isDarkMode ? "border-gray-700" : "border-gray-100"}>
+                        <TableCell className={`font-medium ${textClass}`}>{dist.item}</TableCell>
+                        <TableCell className={textClass}>{dist.quantity}</TableCell>
+                        <TableCell className={mutedClass}>{dist.beneficiaries}</TableCell>
+                        <TableCell className={mutedClass}>{new Date(dist.date).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <Badge className={
+                            dist.status === "completed" ? "bg-green-500/10 text-green-500 border-0" :
+                              dist.status === "in-progress" ? "bg-blue-500/10 text-blue-500 border-0" :
+                                "bg-amber-500/10 text-amber-500 border-0"
+                          }>{dist.status}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button size="icon" variant="ghost"
+                              onClick={() => {
+                                setEditingDist(dist);
+                                setDistForm({
+                                  item: dist.item,
+                                  quantity: dist.quantity.toString(),
+                                  beneficiaries: dist.beneficiaries,
+                                  date: dist.date,
+                                  sector: dist.sector,
+                                  status: dist.status,
+                                  notes: dist.notes || ""
+                                });
+                                setIsDistModalOpen(true);
+                              }}
+                              className={`h-8 w-8 ${isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-500"}`}
+                            >
+                              <Edit size={16} />
+                            </Button>
+                            <Button size="icon" variant="ghost" onClick={() => handleDeleteDistribution(dist.id!)} className="text-red-500 hover:bg-red-500/10 h-8 w-8">
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {isLoadingDistributions && (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin" style={{ color: primaryColor }} />
+                    <span className={`ml-2 ${mutedClass}`}>Loading distributions...</span>
+                  </div>
+                )}
+                {!isLoadingDistributions && distributions.length === 0 && (
+                  <p className={`text-center py-8 ${mutedClass}`}>No distributions found</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Qirat Sector Operations */}
+        {activeSection === "qirat" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className={cardClass}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                    <BookOpen size={16} />
+                    Total Qirat Students
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-3xl font-bold ${textClass}`}>
+                    {registrations.filter(r => r.sector === "qirat" && r.type === "student").length}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className={cardClass}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                    <Users size={16} />
+                    Qirat Teachers
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-3xl font-bold ${textClass}`}>
+                    {registrations.filter(r => r.sector === "qirat" && r.type === "teacher").length}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className={cardClass}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                    <Calendar size={16} />
+                    Qirat Events
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-3xl font-bold ${textClass}`}>
+                    {events.filter(e => e.category === "Education" || e.title.toLowerCase().includes("qirat")).length}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className={cardClass}>
+              <CardHeader>
+                <CardTitle className={textClass}>Qirat Sector Registrations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow className={borderClass}>
+                      <TableHead className={mutedClass}>{t.name}</TableHead>
+                      <TableHead className={mutedClass}>{t.phone}</TableHead>
+                      <TableHead className={mutedClass}>{t.type}</TableHead>
+                      <TableHead className={mutedClass}>{t.status}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {registrations.filter(r => r.sector === "qirat").map((reg) => (
+                      <TableRow key={reg.id} className={isDarkMode ? "border-gray-700" : "border-gray-100"}>
+                        <TableCell className={textClass}>{reg.name}</TableCell>
+                        <TableCell className={mutedClass}>{reg.phone}</TableCell>
+                        <TableCell className="capitalize">{reg.type}</TableCell>
+                        <TableCell>
+                          <Badge className={
+                            reg.status === "approved" ? "bg-green-500/10 text-green-500 border-0" :
+                              reg.status === "rejected" ? "bg-red-500/10 text-red-500 border-0" :
+                                "bg-amber-500/10 text-amber-500 border-0"
+                          }>{reg.status}</Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+        )}
         {activeSection === "users" && (
           <Card className={cardClass}>
             <CardHeader>
@@ -960,7 +1505,7 @@ const Admin = () => {
                       {isDarkMode ? t.enabled : t.disabled}
                     </Button>
                   </div>
-                  
+
                   <div>
                     <p className={`text-sm mb-3 ${mutedClass}`}>{t.accentColor}</p>
                     <div className="flex items-center gap-4">
@@ -1025,13 +1570,12 @@ const Admin = () => {
                       <button
                         key={lang.code}
                         onClick={() => setLanguage(lang.code)}
-                        className={`p-4 rounded-lg border text-left transition-all ${
-                          language === lang.code
-                            ? "shadow-md"
-                            : isDarkMode
+                        className={`p-4 rounded-lg border text-left transition-all ${language === lang.code
+                          ? "shadow-md"
+                          : isDarkMode
                             ? "border-gray-600 hover:border-gray-500"
                             : "border-gray-200 hover:border-gray-300"
-                        }`}
+                          }`}
                         style={language === lang.code ? { borderColor: primaryColor, backgroundColor: `${primaryColor}10` } : {}}
                       >
                         <span className="text-3xl mb-2 block">{lang.flag}</span>
@@ -1180,6 +1724,77 @@ const Admin = () => {
             <Button onClick={handleSaveEvent} className="text-white" style={{ backgroundColor: primaryColor }} disabled={isSavingEvent}>
               {isSavingEvent ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
               {isSavingEvent ? "Saving..." : t.save}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Distribution Modal */}
+      <Dialog open={isDistModalOpen} onOpenChange={setIsDistModalOpen}>
+        <DialogContent className={isDarkMode ? "bg-gray-800 border-gray-700 text-white" : ""}>
+          <DialogHeader>
+            <DialogTitle className={textClass}>{editingDist ? "Edit Distribution" : "Add Distribution"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className={`text-sm font-medium ${textClass}`}>{t.item} *</label>
+              <Input
+                value={distForm.item}
+                onChange={(e) => setDistForm({ ...distForm, item: e.target.value })}
+                placeholder="E.g. Food Packages"
+                className={`mt-1 ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : ""}`}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={`text-sm font-medium ${textClass}`}>{t.quantity} *</label>
+                <Input
+                  value={distForm.quantity}
+                  onChange={(e) => setDistForm({ ...distForm, quantity: e.target.value })}
+                  placeholder="E.g. 500 units"
+                  className={`mt-1 ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : ""}`}
+                />
+              </div>
+              <div>
+                <label className={`text-sm font-medium ${textClass}`}>{t.beneficiaries} *</label>
+                <Input
+                  value={distForm.beneficiaries}
+                  onChange={(e) => setDistForm({ ...distForm, beneficiaries: e.target.value })}
+                  placeholder="E.g. 200 families"
+                  className={`mt-1 ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : ""}`}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={`text-sm font-medium ${textClass}`}>{t.date} *</label>
+                <Input
+                  type="date"
+                  value={distForm.date}
+                  onChange={(e) => setDistForm({ ...distForm, date: e.target.value })}
+                  className={`mt-1 ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : ""}`}
+                />
+              </div>
+              <div>
+                <label className={`text-sm font-medium ${textClass}`}>{t.subsector}</label>
+                <select
+                  value={distForm.sector}
+                  onChange={(e) => setDistForm({ ...distForm, sector: e.target.value as any })}
+                  className={`mt-1 w-full rounded-md border px-3 py-2 ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-200"}`}
+                >
+                  <option value="charity">Charity</option>
+                  <option value="dawa">Dawa</option>
+                  <option value="qirat">Qirat</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDistModalOpen(false)} className={isDarkMode ? "border-gray-600 text-gray-300" : ""}>
+              {t.cancel}
+            </Button>
+            <Button onClick={handleSaveDistribution} className="text-white" style={{ backgroundColor: primaryColor }}>
+              <Save size={16} /> {t.save}
             </Button>
           </DialogFooter>
         </DialogContent>

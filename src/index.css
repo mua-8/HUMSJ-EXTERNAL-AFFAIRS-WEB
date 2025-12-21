@@ -86,6 +86,35 @@
   --sidebar-accent-foreground: 220 14% 96%;
   --sidebar-border: 220 20% 20%;
   --sidebar-ring: 178 63% 44%;
+
+  /* ========================
+     SECTOR COLORS
+     ======================== */
+  
+  /* Charity Sector - Teal */
+  --charity-primary: #29b6b0;
+  --charity-secondary: #239e99;
+  --charity-light: #e6f7f6;
+  --charity-gradient-from: #29b6b0;
+  --charity-gradient-to: #239e99;
+  
+  /* Qirat Sector - Standarized to Teal */
+  --qirat-primary: #29b6b0;
+  --qirat-secondary: #239e99;
+  --qirat-light: #e6f7f6;
+  --qirat-gradient-from: #29b6b0;
+  --qirat-gradient-to: #239e99;
+  
+  /* Dawa Sector - Standarized to Teal */
+  --dawa-primary: #29b6b0;
+  --dawa-secondary: #239e99;
+  --dawa-light: #e6f7f6;
+  --dawa-gradient-from: #29b6b0;
+  --dawa-gradient-to: #239e99;
+  
+  /* Social Affairs - Main Teal (same as Charity/Primary) */
+  --social-affairs-primary: #29b6b0;
+  --social-affairs-secondary: #0f4a47;
 }
 
 * {
@@ -578,4 +607,94 @@ a:hover {
 
 .footer-dark a:hover {
   color: #29b6b0;
+}
+
+/* ===================
+   SECTOR UTILITIES
+   =================== */
+
+/* Charity Sector (Teal) */
+.text-charity { color: var(--charity-primary); }
+.bg-charity { background-color: var(--charity-primary); }
+.bg-charity-light { background-color: var(--charity-light); }
+.border-charity { border-color: var(--charity-primary); }
+.bg-gradient-charity { 
+  background: linear-gradient(135deg, var(--charity-gradient-from) 0%, var(--charity-gradient-to) 100%); 
+}
+
+/* Qirat Sector (Purple) */
+.text-qirat { color: var(--qirat-primary); }
+.bg-qirat { background-color: var(--qirat-primary); }
+.bg-qirat-light { background-color: var(--qirat-light); }
+.border-qirat { border-color: var(--qirat-primary); }
+.bg-gradient-qirat { 
+  background: linear-gradient(135deg, var(--qirat-gradient-from) 0%, var(--qirat-gradient-to) 100%); 
+}
+
+/* Dawa Sector (Amber) */
+.text-dawa { color: var(--dawa-primary); }
+.bg-dawa { background-color: var(--dawa-primary); }
+.bg-dawa-light { background-color: var(--dawa-light); }
+.border-dawa { border-color: var(--dawa-primary); }
+.bg-gradient-dawa { 
+  background: linear-gradient(135deg, var(--dawa-gradient-from) 0%, var(--dawa-gradient-to) 100%); 
+}
+
+/* Sector Card Borders */
+.card-charity { border-left: 4px solid var(--charity-primary); }
+.card-qirat { border-left: 4px solid var(--qirat-primary); }
+.card-dawa { border-left: 4px solid var(--dawa-primary); }
+
+/* Sector Icon Backgrounds */
+.icon-charity { 
+  background-color: rgba(41, 182, 176, 0.1);
+  color: var(--charity-primary);
+}
+.icon-qirat { 
+  background-color: rgba(124, 58, 237, 0.1);
+  color: var(--qirat-primary);
+}
+.icon-dawa { 
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--dawa-primary);
+}
+
+/* Sector Badges */
+.badge-charity {
+  background-color: rgba(41, 182, 176, 0.1);
+  color: var(--charity-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.badge-qirat {
+  background-color: rgba(124, 58, 237, 0.1);
+  color: var(--qirat-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.badge-dawa {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--dawa-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Sector Hover Effects */
+.hover-charity:hover { 
+  border-color: var(--charity-primary); 
+  box-shadow: 0 4px 12px rgba(41, 182, 176, 0.15);
+}
+.hover-qirat:hover { 
+  border-color: var(--qirat-primary); 
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+.hover-dawa:hover { 
+  border-color: var(--dawa-primary); 
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
 }

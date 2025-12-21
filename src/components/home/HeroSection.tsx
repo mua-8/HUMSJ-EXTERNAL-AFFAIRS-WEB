@@ -23,34 +23,34 @@ const HeroSection = () => {
   const mainSectors = [
     {
       icon: Heart,
-      title: "Charity Sector",
+      title: "Charity Sub-Sector",
       description:
-        "Supporting elderly, orphans, and persons with disabilities through transparent aid distribution",
-      link: "/charity-sector",
-      stats: "80,000+ Birr distributed",
+        "Collects funds from students, Star-Shining Association, and sponsors to support orphans, elderly, and needy students",
+      link: "/external-affairs/charity",
+      stats: "180,000+ ETB distributed (2024)",
     },
     {
       icon: BookOpen,
-      title: "Qirati Sector",
+      title: "Qirat Sub-Sector",
       description:
-        "Nuraniya & Advanced Quran Memorization programs nurturing spiritual growth",
-      link: "/qirat-sector",
-      stats: "125+ active students",
+        "Focuses on Quran and Dini education with 55 students in Nuraniya and 70 in Advanced programs",
+      link: "/external-affairs/qirat",
+      stats: "125 active students",
     },
     {
       icon: GraduationCap,
-      title: "Academy Sector",
+      title: "Dawa Sub-Sector",
       description:
-        "Academic excellence programs, scholarships, and educational support initiatives",
-      link: "/academic-sector",
-      stats: "12+ Muhadara sessions",
+        "Preparation and compilation of all Dawa programs, spreading Islamic knowledge in the society",
+      link: "/external-affairs/dawa",
+      stats: "500+ people reached",
     },
   ];
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background Image */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/hero-bg.png')" }}
       />
@@ -69,7 +69,7 @@ const HeroSection = () => {
             />
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2">
               <span className="text-white text-sm font-semibold tracking-wide">
-                External Affairs Sector • Haramaya University
+                Social Affairs Sector • HUMSJ • Haramaya University
               </span>
             </div>
           </div>

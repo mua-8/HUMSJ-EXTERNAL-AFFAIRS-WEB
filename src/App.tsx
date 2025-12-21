@@ -16,6 +16,7 @@ import ExternalAffairs from "./pages/ExternalAffairs";
 import CharitySector from "./pages/CharitySector";
 import QiratSector from "./pages/QiratSector";
 import AcademicSector from "./pages/AcademicSector";
+import DawaSector from "./pages/DawaSector";
 import Donate from "./pages/Donate";
 import StudentSadaqah from "./pages/StudentSadaqah";
 import NotFound from "./pages/NotFound";
@@ -24,6 +25,9 @@ import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
 import CharityDashboard from "./pages/admin/CharityDashboard";
+import AcademicDashboard from "./pages/admin/AcademicDashboard";
+import QiratDashboard from "./pages/admin/QiratDashboard";
+import DawaDashboard from "./pages/admin/DawaDashboard";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 
 const queryClient = new QueryClient();
@@ -43,6 +47,7 @@ const App = () => (
             <Route path="/external-affairs/charity" element={<CharitySector />} />
             <Route path="/external-affairs/qirat" element={<QiratSector />} />
             <Route path="/external-affairs/academic" element={<AcademicSector />} />
+            <Route path="/external-affairs/dawa" element={<DawaSector />} />
             <Route path="/charity-sector" element={<CharitySector />} />
             <Route path="/qirat-sector" element={<QiratSector />} />
             <Route path="/academic-sector" element={<AcademicSector />} />
@@ -51,10 +56,10 @@ const App = () => (
             <Route path="/donate" element={<Donate />} />
             <Route path="/student-sadaqah" element={<StudentSadaqah />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
-            
+
             {/* Secret Admin Login - Not linked anywhere on the site */}
             <Route path="/humsj-admin-portal" element={<AdminLogin />} />
-            
+
             {/* Protected Admin Dashboard - Super Admin */}
             <Route
               path="/admin"
@@ -64,7 +69,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            
+
             {/* Old Events Dashboard */}
             <Route
               path="/admin/events"
@@ -74,7 +79,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            
+
             {/* Sector Dashboards */}
             <Route
               path="/admin/charity"
@@ -84,7 +89,34 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            
+
+            <Route
+              path="/admin/academic"
+              element={
+                <ProtectedRoute>
+                  <AcademicDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/qirat"
+              element={
+                <ProtectedRoute>
+                  <QiratDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/dawa"
+              element={
+                <ProtectedRoute>
+                  <DawaDashboard />
+                </ProtectedRoute>
+              }
+            />
+
             {/* 404 - Also catches unauthorized access attempts */}
             <Route path="*" element={<NotFound />} />
           </Routes>

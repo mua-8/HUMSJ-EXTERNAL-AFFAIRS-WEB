@@ -18,6 +18,8 @@ import DonationInfo from "@/components/external-affairs/DonationInfo";
 import StatCard from "@/components/external-affairs/StatCard";
 import ProgramCard from "@/components/external-affairs/ProgramCard";
 import EventGallery from "@/components/ui/EventGallery";
+import RegistrationModal, { RegistrationType } from "@/components/external-affairs/RegistrationModal";
+import { useState } from "react";
 
 // Charity event images - add more images to public/images/events/charity/
 const charityEventImages = [
@@ -37,6 +39,13 @@ const beneficiaryStats = [
 ];
 
 const CharitySector = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<RegistrationType>("donor");
+
+  const openModal = (type: RegistrationType) => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
   return (
     <Layout>
       {/* Hero Section */}
@@ -63,16 +72,41 @@ const CharitySector = () => {
             </div>
             <div>
               <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1f2937]">
-                Charity Sector
+                Charity Sub-Sector
               </h1>
-              <p className="text-gray-500">External Affairs Division</p>
+              <p className="text-gray-500">Social Affairs Sector - HUMSJ</p>
             </div>
           </div>
 
           <p className="text-lg text-gray-600 max-w-3xl">
-            Dedicated to supporting those in need through meal sponsorships, Eid gift programs, 
-            and continuous aid distribution to orphans, elderly, and students requiring assistance.
+            Collects money from different sources (Students, Star-Shining Association, Sponsors)
+            and distributes aid to orphans, elderly, needy students, and students with disabilities
+            during Ramadan, Eid al-Fitr, Eid al-Adha, and throughout the year.
           </p>
+        </div>
+      </section>
+
+      {/* Leadership Section */}
+      <section className="py-8 bg-white border-b">
+        <div className="container mx-auto px-4">
+          <Card className="max-w-2xl mx-auto border-l-4 border-l-[#29b6b0]">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-6">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#29b6b0] to-[#239e99] flex items-center justify-center">
+                  <Heart className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Head of Charity Sub-Sector</p>
+                  <p className="text-xl font-serif font-bold text-gray-800">Muha</p>
+                  <p className="text-sm text-[#29b6b0] font-medium">3rd Year Economics Student</p>
+                  <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
+                    <span className="flex items-center gap-1">📞 +251 91 XXX XXXX</span>
+                    <span className="flex items-center gap-1">✉️ charity@humsj.org</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
@@ -209,7 +243,7 @@ const CharitySector = () => {
             Join Our Mission
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-            Every contribution, big or small, makes a difference in someone's life. 
+            Every contribution, big or small, makes a difference in someone's life.
             Help us continue serving our community.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
@@ -219,14 +253,18 @@ const CharitySector = () => {
                 Student Sadaqah
               </Button>
             </Link>
-            <Link to="/contact">
-              <Button variant="outline" size="lg">
-                Contact Us
-              </Button>
-            </Link>
+            <Button variant="outline" size="lg" onClick={() => openModal("donor")}>
+              Donate Now
+            </Button>
           </div>
         </div>
       </section>
+      <RegistrationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        type={modalType}
+        sector="charity"
+      />
     </Layout>
   );
 };

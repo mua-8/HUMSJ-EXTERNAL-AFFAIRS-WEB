@@ -9,7 +9,7 @@ import humjsLogo from "@/assets/humjs-logo.png";
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "About Us", path: "/about" },
-  { name: "External Affairs", path: "/external-affairs" },
+  { name: "Social Affairs", path: "/external-affairs" },
   { name: "Events", path: "/events" },
   { name: "Donate", path: "/student-sadaqah" },
   { name: "Contact", path: "/contact" },
@@ -61,11 +61,10 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                  location.pathname === link.path
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${location.pathname === link.path
                     ? "text-white bg-white/20"
                     : "text-white/90 hover:text-white hover:bg-white/10"
-                }`}
+                  }`}
               >
                 {link.name}
               </Link>
@@ -117,11 +116,10 @@ const Navbar = () => {
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    location.pathname === link.path
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${location.pathname === link.path
                       ? "text-white bg-white/20"
                       : "text-white/90 hover:text-white hover:bg-white/10"
-                  }`}
+                    }`}
                 >
                   {link.name}
                 </Link>

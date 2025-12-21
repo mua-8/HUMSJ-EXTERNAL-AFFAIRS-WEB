@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { 
-  User, 
-  onAuthStateChanged, 
-  signOut as firebaseSignOut 
+import {
+  User,
+  onAuthStateChanged,
+  signOut as firebaseSignOut
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -35,7 +35,7 @@ interface AuthProviderProps {
 // Role mapping by email
 const getRoleByEmail = (email: string | null): UserRole => {
   if (!email) return "user";
-  
+
   const roleMap: Record<string, UserRole> = {
     "admin@humsj.org": "super_admin",
     "superadmin@humsj.org": "super_admin",
@@ -43,7 +43,7 @@ const getRoleByEmail = (email: string | null): UserRole => {
     "academic@humsj.org": "academic_amir",
     "qirat@humsj.org": "qirat_amir",
   };
-  
+
   return roleMap[email.toLowerCase()] || "super_admin"; // Default authenticated users to super_admin for now
 };
 
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
-      
+
       if (user) {
         const userRole = getRoleByEmail(user.email);
         setRole(userRole);
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsAdmin(false);
         setRole("user");
       }
-      
+
       setLoading(false);
     });
 
@@ -75,6 +75,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
+      // Clear any dev authentication bypass
+      localStorage.removeItem("devAuth");
+
       setUser(null);
       setIsAdmin(false);
       setRole("user");
