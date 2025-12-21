@@ -78,24 +78,24 @@ const AcademicSector = () => {
     <Layout>
       {/* Hero Section */}
       <section className="relative min-h-[40vh] flex items-center overflow-hidden bg-[#f0fafa]">
-        {/* Subtle pattern - #29b6b0 (Faith & Service color) */}
+        {/* Subtle pattern - #25A7A1 (Faith & Service color) */}
         <div className="absolute inset-0 pattern-squares-teal" />
         {/* Decorative corner squares - 10-20% opacity */}
-        <div className="absolute top-16 left-16 w-14 h-14 rounded-xl bg-[#29b6b0]/[0.15] rotate-12" />
-        <div className="absolute top-12 right-20 w-10 h-10 rounded-lg bg-[#29b6b0]/[0.10] -rotate-6" />
-        <div className="absolute bottom-16 right-16 w-12 h-12 rounded-xl bg-[#29b6b0]/[0.12] rotate-6" />
+        <div className="absolute top-16 left-16 w-14 h-14 rounded-xl bg-[#25A7A1]/[0.15] rotate-12" />
+        <div className="absolute top-12 right-20 w-10 h-10 rounded-lg bg-[#25A7A1]/[0.10] -rotate-6" />
+        <div className="absolute bottom-16 right-16 w-12 h-12 rounded-xl bg-[#25A7A1]/[0.12] rotate-6" />
 
         <div className="container mx-auto px-4 py-20 relative z-10">
           <Link
             to="/external-affairs"
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-[#29b6b0] transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-gray-500 hover:text-[#25A7A1] transition-colors mb-6"
           >
             <ArrowLeft size={16} />
             Back to External Affairs
           </Link>
 
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-[#29b6b0] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#25A7A1] flex items-center justify-center">
               <GraduationCap className="w-8 h-8 text-white" />
             </div>
             <div>
@@ -103,7 +103,7 @@ const AcademicSector = () => {
                 <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1f2937]">
                   Academic Sector
                 </h1>
-                <Badge className="bg-[#29b6b0]/20 text-[#29b6b0] border-[#29b6b0]/30">
+                <Badge className="bg-[#25A7A1]/20 text-[#25A7A1] border-[#25A7A1]/30">
                   <Clock size={12} className="mr-1" />
                   Coming Soon
                 </Badge>
@@ -113,7 +113,7 @@ const AcademicSector = () => {
           </div>
 
           <p className="text-lg text-gray-600 max-w-3xl">
-            Empowering students through academic support, tutorials, training programs, 
+            Empowering students through academic support, tutorials, training programs,
             and learning resources to achieve excellence in their studies.
           </p>
         </div>
@@ -123,7 +123,7 @@ const AcademicSector = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#29b6b0]/10 border border-[#29b6b0]/20 text-[#29b6b0] mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25A7A1]/10 border border-[#25A7A1]/20 text-[#25A7A1] mb-6">
               <Lightbulb size={16} />
               <span className="text-sm font-medium">Our Vision</span>
             </div>
@@ -131,9 +131,9 @@ const AcademicSector = () => {
               Building Academic Excellence
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-              The Academic Sector aims to create a supportive environment where every HUMSJ member 
-              can achieve their full academic potential. We believe that education is a cornerstone 
-              of personal and community development, and we are committed to providing the resources 
+              The Academic Sector aims to create a supportive environment where every HUMSJ member
+              can achieve their full academic potential. We believe that education is a cornerstone
+              of personal and community development, and we are committed to providing the resources
               and support needed for student success.
             </p>
 
@@ -146,8 +146,8 @@ const AcademicSector = () => {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <CardContent className="pt-6">
-                    <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                      <goal.icon size={24} className="text-[#29b6b0]" />
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                      <goal.icon size={24} className="text-[#25A7A1]" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-1">{goal.title}</h3>
                     <p className="text-xs text-muted-foreground">{goal.description}</p>
@@ -180,14 +180,14 @@ const AcademicSector = () => {
               <Card
                 key={program.title}
                 variant="elevated"
-                className="animate-fade-in-up border-l-4 border-l-[#29b6b0]/50"
+                className="animate-fade-in-up border-l-4 border-l-[#25A7A1]/50"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
-                        <program.icon size={20} className="text-[#29b6b0]" />
+                      <div className="w-10 h-10 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                        <program.icon size={20} className="text-[#25A7A1]" />
                       </div>
                       <div>
                         <CardTitle className="text-lg">{program.title}</CardTitle>
@@ -237,8 +237,8 @@ const AcademicSector = () => {
 
               <Card variant="interactive" className="text-center animate-fade-in-up delay-100">
                 <CardContent className="pt-6">
-                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#29b6b0]/10 flex items-center justify-center">
-                    <Lightbulb size={28} className="text-[#29b6b0]" />
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Lightbulb size={28} className="text-[#25A7A1]" />
                   </div>
                   <h3 className="font-serif font-semibold text-foreground mb-2">Suggest Programs</h3>
                   <p className="text-sm text-muted-foreground mb-4">
@@ -249,8 +249,8 @@ const AcademicSector = () => {
 
               <Card variant="interactive" className="text-center animate-fade-in-up delay-200">
                 <CardContent className="pt-6">
-                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#29b6b0]/10 flex items-center justify-center">
-                    <Award size={28} className="text-[#29b6b0]" />
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Award size={28} className="text-[#25A7A1]" />
                   </div>
                   <h3 className="font-serif font-semibold text-foreground mb-2">Donate Resources</h3>
                   <p className="text-sm text-muted-foreground mb-4">
@@ -277,7 +277,7 @@ const AcademicSector = () => {
         title="Our Activities"
         subtitle="Highlights from our academic programs, workshops, and study sessions"
         images={academyEventImages}
-        accentColor="#29b6b0"
+        accentColor="#25A7A1"
       />
     </Layout>
   );

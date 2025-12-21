@@ -23,7 +23,7 @@
   --popover-foreground: 220 13% 18%;
 
   /* Primary - HUMSJ Teal */
-  --primary: 178 63% 44%;         /* #29b6b0 */
+  --primary: 177 64% 40%;         /* #25A7A1 */
   --primary-foreground: 0 0% 100%;
 
   /* Secondary - Light gray for sections */
@@ -43,7 +43,7 @@
 
   --border: 220 13% 91%;          /* #e5e7eb */
   --input: 220 13% 91%;
-  --ring: 178 63% 44%;            /* Primary teal */
+  --ring: 177 64% 40%;            /* Primary teal */
 
   --radius: 0.75rem;
 
@@ -57,9 +57,9 @@
   --humsj-warm-gray: #374151;
 
   /* Tailwind Custom Colors (HSL) */
-  --teal: 178 63% 44%;           /* #29b6b0 */
+  --teal: 177 64% 40%;           /* #25A7A1 */
   --teal-light: 174 60% 94%;     /* #e6f7f6 */
-  --teal-dark: 178 63% 38%;      /* #239e99 */
+  --teal-dark: 177 64% 33%;      /* #1F8B86 */
   --gold: 43 74% 52%;            /* #d4af37 */
   --gold-light: 48 96% 89%;      /* #fef9c3 */
   --gold-dark: 43 60% 45%;       /* #b8972e */
@@ -80,12 +80,12 @@
   /* Sidebar - Admin */
   --sidebar-background: 220 20% 12%;
   --sidebar-foreground: 220 14% 96%;
-  --sidebar-primary: 178 63% 44%;
+  --sidebar-primary: 177 64% 40%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 220 20% 18%;
   --sidebar-accent-foreground: 220 14% 96%;
   --sidebar-border: 220 20% 20%;
-  --sidebar-ring: 178 63% 44%;
+  --sidebar-ring: 177 64% 40%;
 
   /* ========================
      SECTOR COLORS
@@ -113,8 +113,8 @@
   --dawa-gradient-to: #1F8B86;
   
   /* Social Affairs - Main Teal (same as Charity/Primary) */
-  --social-affairs-primary: #29b6b0;
-  --social-affairs-secondary: #0f4a47;
+  --social-affairs-primary: #25A7A1;
+  --social-affairs-secondary: #1F8B86;
 }
 
 * {

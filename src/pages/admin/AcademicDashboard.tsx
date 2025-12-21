@@ -9,12 +9,6 @@ import {
   LogOut,
   Plus,
   TrendingUp,
-  DollarSign,
-  Edit,
-  Trash2,
-  Eye,
-  Download,
-  Search,
   BarChart3,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,7 +41,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import humjsLogo from "@/assets/humjs-logo.png";
 
-type ActiveTab = "overview" | "students" | "programs" | "fees" | "reports";
+type ActiveTab = "overview" | "students" | "programs" | "reports";
 
 // Types
 interface Student {
@@ -58,7 +52,6 @@ interface Student {
   program: string;
   enrollmentDate: string;
   status: "active" | "graduated" | "inactive";
-  feesStatus: "paid" | "pending" | "partial";
 }
 
 interface Program {
@@ -72,23 +65,14 @@ interface Program {
   type: "study_circle" | "workshop" | "course";
 }
 
-interface Fee {
-  id: string;
-  studentName: string;
-  program: string;
-  amount: number;
-  paidAmount: number;
-  dueDate: string;
-  status: "paid" | "pending" | "overdue";
-}
 
 // Sample data
 const sampleStudents: Student[] = [
-  { id: "1", name: "Ahmed Mohammed", email: "ahmed@example.com", phone: "+251911234567", program: "Tafsir Al-Quran", enrollmentDate: "2024-09-01", status: "active", feesStatus: "paid" },
-  { id: "2", name: "Fatima Ibrahim", email: "fatima@example.com", phone: "+251912345678", program: "Hadith Studies", enrollmentDate: "2024-09-15", status: "active", feesStatus: "pending" },
-  { id: "3", name: "Yusuf Ali", email: "yusuf@example.com", phone: "+251913456789", program: "Fiqh Basics", enrollmentDate: "2024-08-01", status: "active", feesStatus: "paid" },
-  { id: "4", name: "Mariam Hassan", email: "mariam@example.com", phone: "+251914567890", program: "Seerah", enrollmentDate: "2024-10-01", status: "active", feesStatus: "partial" },
-  { id: "5", name: "Omar Abdullah", email: "omar@example.com", phone: "+251915678901", program: "Islamic Finance Workshop", enrollmentDate: "2024-07-01", status: "graduated", feesStatus: "paid" },
+  { id: "1", name: "Ahmed Mohammed", email: "ahmed@example.com", phone: "+251911234567", program: "Tafsir Al-Quran", enrollmentDate: "2024-09-01", status: "active" },
+  { id: "2", name: "Fatima Ibrahim", email: "fatima@example.com", phone: "+251912345678", program: "Hadith Studies", enrollmentDate: "2024-09-15", status: "active" },
+  { id: "3", name: "Yusuf Ali", email: "yusuf@example.com", phone: "+251913456789", program: "Fiqh Basics", enrollmentDate: "2024-08-01", status: "active" },
+  { id: "4", name: "Mariam Hassan", email: "mariam@example.com", phone: "+251914567890", program: "Seerah", enrollmentDate: "2024-10-01", status: "active" },
+  { id: "5", name: "Omar Abdullah", email: "omar@example.com", phone: "+251915678901", program: "Islamic Finance Workshop", enrollmentDate: "2024-07-01", status: "graduated" },
 ];
 
 const samplePrograms: Program[] = [
@@ -101,13 +85,6 @@ const samplePrograms: Program[] = [
   { id: "7", name: "Da'wah Training", instructor: "Uztaz Hamza", students: 52, day: "Completed", time: "Dec 10, 2024", status: "completed", type: "workshop" },
 ];
 
-const sampleFees: Fee[] = [
-  { id: "1", studentName: "Ahmed Mohammed", program: "Tafsir Al-Quran", amount: 500, paidAmount: 500, dueDate: "2024-12-01", status: "paid" },
-  { id: "2", studentName: "Fatima Ibrahim", program: "Hadith Studies", amount: 500, paidAmount: 0, dueDate: "2024-12-15", status: "pending" },
-  { id: "3", studentName: "Yusuf Ali", program: "Fiqh Basics", amount: 450, paidAmount: 450, dueDate: "2024-11-01", status: "paid" },
-  { id: "4", studentName: "Mariam Hassan", program: "Seerah", amount: 500, paidAmount: 250, dueDate: "2024-12-20", status: "pending" },
-  { id: "5", studentName: "Omar Abdullah", program: "Islamic Finance Workshop", amount: 200, paidAmount: 200, dueDate: "2024-07-15", status: "paid" },
-];
 
 const AcademicDashboard = () => {
   const { toast } = useToast();
@@ -115,7 +92,6 @@ const AcademicDashboard = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
   const [students, setStudents] = useState<Student[]>(sampleStudents);
   const [programs, setPrograms] = useState<Program[]>(samplePrograms);
-  const [fees, setFees] = useState<Fee[]>(sampleFees);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [isAddProgramOpen, setIsAddProgramOpen] = useState(false);
@@ -127,9 +103,7 @@ const AcademicDashboard = () => {
     totalPrograms: programs.length,
     activePrograms: programs.filter(p => p.status === "active").length,
     upcomingWorkshops: programs.filter(p => p.status === "upcoming").length,
-    totalFees: fees.reduce((sum, f) => sum + f.amount, 0),
-    collectedFees: fees.reduce((sum, f) => sum + f.paidAmount, 0),
-    pendingFees: fees.filter(f => f.status === "pending").length,
+    totalInstructors: new Set(programs.map(p => p.instructor)).size,
   };
 
   const filteredStudents = students.filter(s =>
@@ -155,19 +129,18 @@ const AcademicDashboard = () => {
     { icon: BookOpen, label: "Overview", tab: "overview" as const },
     { icon: Users, label: "Students", tab: "students" as const },
     { icon: GraduationCap, label: "Programs", tab: "programs" as const },
-    { icon: DollarSign, label: "Fees", tab: "fees" as const },
     { icon: BarChart3, label: "Reports", tab: "reports" as const },
   ];
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#29b6b0] to-[#239e99] p-6 hidden lg:flex flex-col z-50 shadow-xl">
+      <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#25A7A1] to-[#1F8B86] p-6 hidden lg:flex flex-col z-50 shadow-xl">
         <div className="flex items-center gap-3 mb-8">
           <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
           <div>
             <h2 className="font-serif font-bold text-white">HUMSJ</h2>
-            <p className="text-xs text-white/80">🔵 Academy Sector</p>
+            <p className="text-xs text-white/80">🟢 Academy Sector</p>
           </div>
         </div>
 
@@ -205,7 +178,7 @@ const AcademicDashboard = () => {
       <main className="lg:ml-64 flex-1 p-6 lg:p-8">
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">
-            🔵 Academy Sector Dashboard
+            🟢 Academy Sector Dashboard
           </h1>
           <p className="text-[#64748b]">Manage Islamic education programs</p>
         </div>
@@ -214,10 +187,10 @@ const AcademicDashboard = () => {
         {activeTab === "overview" && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
+              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                    <Users size={24} className="text-blue-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Users size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{stats.totalStudents}</p>
@@ -225,10 +198,10 @@ const AcademicDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
+              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                    <BookOpen size={24} className="text-green-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <BookOpen size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{stats.activePrograms}</p>
@@ -236,10 +209,10 @@ const AcademicDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
+              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                    <GraduationCap size={24} className="text-purple-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <GraduationCap size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{stats.upcomingWorkshops}</p>
@@ -247,14 +220,14 @@ const AcademicDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-l-4 border-l-amber-500 hover:shadow-lg transition-shadow">
+              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                    <DollarSign size={24} className="text-amber-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Users size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{stats.collectedFees.toLocaleString()} ETB</p>
-                    <p className="text-sm text-gray-500">Fees Collected</p>
+                    <p className="text-2xl font-bold">{stats.totalInstructors}</p>
+                    <p className="text-sm text-gray-500">Total Instructors</p>
                   </div>
                 </CardContent>
               </Card>
@@ -264,7 +237,7 @@ const AcademicDashboard = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <BookOpen size={20} className="text-blue-500" />
+                    <BookOpen size={20} className="text-[#25A7A1]" />
                     Active Study Circles
                   </CardTitle>
                 </CardHeader>
@@ -276,7 +249,7 @@ const AcademicDashboard = () => {
                           <p className="font-medium">{circle.name}</p>
                           <p className="text-sm text-gray-500">{circle.instructor} • {circle.day} {circle.time}</p>
                         </div>
-                        <Badge className="bg-blue-100 text-blue-600">{circle.students} students</Badge>
+                        <Badge className="bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20">{circle.students} students</Badge>
                       </div>
                     ))}
                   </div>
@@ -286,7 +259,7 @@ const AcademicDashboard = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Calendar size={20} className="text-purple-500" />
+                    <Calendar size={20} className="text-[#25A7A1]" />
                     Upcoming Workshops
                   </CardTitle>
                 </CardHeader>
@@ -298,7 +271,7 @@ const AcademicDashboard = () => {
                           <p className="font-medium">{workshop.name}</p>
                           <p className="text-sm text-gray-500">{workshop.instructor} • {workshop.time}</p>
                         </div>
-                        <Badge className="bg-green-100 text-green-600">{workshop.students} registered</Badge>
+                        <Badge className="bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20">{workshop.students} registered</Badge>
                       </div>
                     ))}
                   </div>
@@ -308,7 +281,7 @@ const AcademicDashboard = () => {
               <Card className="lg:col-span-2">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <TrendingUp size={20} className="text-amber-500" />
+                    <TrendingUp size={20} className="text-[#25A7A1]" />
                     Recent Enrollments
                   </CardTitle>
                 </CardHeader>
@@ -317,7 +290,7 @@ const AcademicDashboard = () => {
                     {students.slice(0, 5).map((student) => (
                       <div key={student.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                          <div className="w-10 h-10 rounded-full bg-[#25A7A1] flex items-center justify-center text-white font-bold">
                             {student.name.charAt(0)}
                           </div>
                           <div>
@@ -326,7 +299,7 @@ const AcademicDashboard = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <Badge className={student.status === "active" ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-600"}>
+                          <Badge className={student.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" : "bg-gray-100 text-gray-600"}>
                             {student.status}
                           </Badge>
                           <p className="text-xs text-gray-400 mt-1">{new Date(student.enrollmentDate).toLocaleDateString()}</p>
@@ -356,7 +329,7 @@ const AcademicDashboard = () => {
                       className="pl-9 w-64"
                     />
                   </div>
-                  <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => setIsAddStudentOpen(true)}>
+                  <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddStudentOpen(true)}>
                     <Plus size={16} className="mr-2" />
                     Add Student
                   </Button>
@@ -378,7 +351,6 @@ const AcademicDashboard = () => {
                       <TableHead>Program</TableHead>
                       <TableHead>Enrolled</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Fees</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -387,7 +359,7 @@ const AcademicDashboard = () => {
                       <TableRow key={student.id} className="hover:bg-gray-50">
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
+                            <div className="w-8 h-8 rounded-full bg-[#25A7A1] flex items-center justify-center text-white text-sm font-bold">
                               {student.name.charAt(0)}
                             </div>
                             {student.name}
@@ -399,25 +371,16 @@ const AcademicDashboard = () => {
                         <TableCell>{new Date(student.enrollmentDate).toLocaleDateString()}</TableCell>
                         <TableCell>
                           <Badge className={
-                            student.status === "active" ? "bg-green-100 text-green-600" :
-                              student.status === "graduated" ? "bg-blue-100 text-blue-600" :
+                            student.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" :
+                              student.status === "graduated" ? "bg-[#25A7A1]/20 text-[#25A7A1]" :
                                 "bg-gray-100 text-gray-600"
                           }>
                             {student.status}
                           </Badge>
                         </TableCell>
-                        <TableCell>
-                          <Badge className={
-                            student.feesStatus === "paid" ? "bg-green-100 text-green-600" :
-                              student.feesStatus === "partial" ? "bg-amber-100 text-amber-600" :
-                                "bg-red-100 text-red-600"
-                          }>
-                            {student.feesStatus}
-                          </Badge>
-                        </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-500">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                               <Eye size={16} />
                             </Button>
                             <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
@@ -443,7 +406,7 @@ const AcademicDashboard = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>All Programs & Workshops</CardTitle>
-                <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => setIsAddProgramOpen(true)}>
+                <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddProgramOpen(true)}>
                   <Plus size={16} className="mr-2" />
                   Add Program
                 </Button>
@@ -476,7 +439,7 @@ const AcademicDashboard = () => {
                       <TableCell>{program.students}</TableCell>
                       <TableCell>
                         <Badge className={
-                          program.status === "active" ? "bg-green-100 text-green-600" :
+                          program.status === "active" ? "bg-[#25A7A1]/10 text-[#25A7A1] border-[#25A7A1]/20" :
                             program.status === "upcoming" ? "bg-blue-100 text-blue-600" :
                               "bg-gray-100 text-gray-600"
                         }>
@@ -485,7 +448,7 @@ const AcademicDashboard = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-500">
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                             <Eye size={16} />
                           </Button>
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
@@ -501,81 +464,6 @@ const AcademicDashboard = () => {
           </Card>
         )}
 
-        {/* Fees Tab */}
-        {activeTab === "fees" && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-                <CardContent className="pt-6">
-                  <p className="text-blue-100">Total Expected</p>
-                  <p className="text-3xl font-bold">{stats.totalFees.toLocaleString()} ETB</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
-                <CardContent className="pt-6">
-                  <p className="text-green-100">Collected</p>
-                  <p className="text-3xl font-bold">{stats.collectedFees.toLocaleString()} ETB</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white">
-                <CardContent className="pt-6">
-                  <p className="text-amber-100">Pending</p>
-                  <p className="text-3xl font-bold">{(stats.totalFees - stats.collectedFees).toLocaleString()} ETB</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Fee Records</CardTitle>
-                  <Button variant="outline" onClick={() => exportToCSV(fees, "fees_export")}>
-                    <Download size={16} className="mr-2" />
-                    Export
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Student</TableHead>
-                      <TableHead>Program</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Paid</TableHead>
-                      <TableHead>Balance</TableHead>
-                      <TableHead>Due Date</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {fees.map((fee) => (
-                      <TableRow key={fee.id} className="hover:bg-gray-50">
-                        <TableCell className="font-medium">{fee.studentName}</TableCell>
-                        <TableCell>{fee.program}</TableCell>
-                        <TableCell>{fee.amount} ETB</TableCell>
-                        <TableCell className="text-green-600">{fee.paidAmount} ETB</TableCell>
-                        <TableCell className={fee.amount - fee.paidAmount > 0 ? "text-red-600" : "text-green-600"}>
-                          {fee.amount - fee.paidAmount} ETB
-                        </TableCell>
-                        <TableCell>{new Date(fee.dueDate).toLocaleDateString()}</TableCell>
-                        <TableCell>
-                          <Badge className={
-                            fee.status === "paid" ? "bg-green-100 text-green-600" :
-                              fee.status === "overdue" ? "bg-red-100 text-red-600" :
-                                "bg-amber-100 text-amber-600"
-                          }>
-                            {fee.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* Reports Tab */}
         {activeTab === "reports" && (
@@ -589,38 +477,32 @@ const AcademicDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                  <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-                    <p className="text-sm text-blue-600">Total Enrollments</p>
-                    <p className="text-2xl font-bold text-blue-700">{stats.totalStudents}</p>
+                  <div className="p-4 bg-[#25A7A1]/10 rounded-xl border border-[#25A7A1]/20">
+                    <p className="text-sm text-[#25A7A1]">Total Enrollments</p>
+                    <p className="text-2xl font-bold text-[#25A7A1]">{stats.totalStudents}</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                  <div className="p-4 bg-green-50 rounded-xl">
                     <p className="text-sm text-green-600">Active Students</p>
                     <p className="text-2xl font-bold text-green-700">{stats.activeStudents}</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
-                    <p className="text-sm text-purple-600">Programs Running</p>
+                  <div className="p-4 bg-purple-50 rounded-xl">
+                    <p className="text-sm text-purple-600">Active Programs</p>
                     <p className="text-2xl font-bold text-purple-700">{stats.activePrograms}</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl">
-                    <p className="text-sm text-amber-600">Collection Rate</p>
-                    <p className="text-2xl font-bold text-amber-700">
-                      {((stats.collectedFees / stats.totalFees) * 100).toFixed(0)}%
-                    </p>
+                  <div className="p-4 bg-[#25A7A1]/10 rounded-xl border border-[#25A7A1]/20">
+                    <p className="text-sm text-[#25A7A1]">Instructors</p>
+                    <p className="text-2xl font-bold text-[#25A7A1]">{stats.totalInstructors}</p>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <Button onClick={() => exportToCSV(students, "students_report")} className="bg-[#29b6b0] hover:bg-[#239e99]">
+                  <Button onClick={() => exportToCSV(students, "students_report")} className="bg-[#25A7A1] hover:bg-[#1F8B86]">
                     <Download size={16} className="mr-2" />
                     Export Students Report
                   </Button>
                   <Button onClick={() => exportToCSV(programs, "programs_report")} variant="outline">
                     <Download size={16} className="mr-2" />
                     Export Programs Report
-                  </Button>
-                  <Button onClick={() => exportToCSV(fees, "fees_report")} variant="outline">
-                    <Download size={16} className="mr-2" />
-                    Export Fees Report
                   </Button>
                 </div>
               </CardContent>
@@ -640,7 +522,7 @@ const AcademicDashboard = () => {
                       </div>
                       <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-[#25A7A1] to-[#1F8B86] rounded-full transition-all duration-500"
                           style={{ width: `${(program.students / 50) * 100}%` }}
                         />
                       </div>
@@ -675,7 +557,7 @@ const AcademicDashboard = () => {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddStudentOpen(false)}>Cancel</Button>
-              <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => {
+              <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => {
                 toast({ title: "Student Added", description: "New student has been enrolled." });
                 setIsAddStudentOpen(false);
               }}>
@@ -709,7 +591,7 @@ const AcademicDashboard = () => {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddProgramOpen(false)}>Cancel</Button>
-              <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => {
+              <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => {
                 toast({ title: "Program Added", description: "New program has been created." });
                 setIsAddProgramOpen(false);
               }}>
