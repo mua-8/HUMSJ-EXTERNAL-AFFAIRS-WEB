@@ -18,34 +18,16 @@ const getDefaultRouteForRole = (role: UserRole): string => {
       return "/admin/academic";
     case "qirat_amir":
       return "/admin/qirat";
-    case "dawa_amir":
-      return "/admin/dawa";
     default:
       return "/";
   }
-};
-
-// Check for development auth bypass
-const getDevAuth = (): { role: UserRole; email: string } | null => {
-  try {
-    const devAuth = localStorage.getItem("devAuth");
-    if (devAuth) {
-      return JSON.parse(devAuth);
-    }
-  } catch {
-    // Ignore parsing errors
-  }
-  return null;
 };
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { user, loading, isAdmin, role } = useAuth();
   const location = useLocation();
 
-  // Check for dev auth bypass
-  const devAuth = getDevAuth();
-
-  if (loading && !devAuth) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -54,18 +36,6 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
         </div>
       </div>
     );
-  }
-
-  // Allow access if dev auth is set (for development testing)
-  if (devAuth) {
-    // Check role-based access if allowedRoles is specified
-    if (allowedRoles && allowedRoles.length > 0) {
-      if (devAuth.role !== "super_admin" && !allowedRoles.includes(devAuth.role)) {
-        const defaultRoute = getDefaultRouteForRole(devAuth.role);
-        return <Navigate to={defaultRoute} replace />;
-      }
-    }
-    return <>{children}</>;
   }
 
   // Not authenticated or not an admin

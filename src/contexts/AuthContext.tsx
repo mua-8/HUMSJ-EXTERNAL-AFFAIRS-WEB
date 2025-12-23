@@ -8,7 +8,7 @@ import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 // User roles
-export type UserRole = "super_admin" | "charity_amir" | "academic_amir" | "qirat_amir" | "dawa_amir" | "user";
+export type UserRole = "super_admin" | "charity_amir" | "academic_amir" | "qirat_amir" | "user";
 
 interface AuthContextType {
   user: User | null;
@@ -42,14 +42,12 @@ const getRoleByEmail = (email: string | null): UserRole => {
     "humsjcharity@gmail.com": "charity_amir",
     "humsjacademic@gmail.com": "academic_amir",
     "humsjqirat@gmail.com": "qirat_amir",
-    "humsjdawa@gmail.com": "dawa_amir",
     // Original emails (backup)
     "admin@humsj.org": "super_admin",
     "superadmin@humsj.org": "super_admin",
     "charity@humsj.org": "charity_amir",
     "academic@humsj.org": "academic_amir",
     "qirat@humsj.org": "qirat_amir",
-    "dawa@humsj.org": "dawa_amir",
   };
 
   return roleMap[email.toLowerCase()] || "user";
@@ -83,8 +81,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
-      // Clear any dev authentication bypass
-      localStorage.removeItem("devAuth");
 
       setUser(null);
       setIsAdmin(false);

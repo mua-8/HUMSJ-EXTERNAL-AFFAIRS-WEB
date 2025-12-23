@@ -67,6 +67,7 @@ import humjsLogo from "@/assets/humjs-logo.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import EventsManager from "@/components/admin/EventsManager";
 import MobileNav from "@/components/admin/MobileNav";
+import AdminSettings from "@/components/admin/AdminSettings";
 
 type ActiveSection = "overview" | "charity" | "academic" | "qirat" | "events" | "distributions" | "settings";
 
@@ -885,20 +886,7 @@ const SuperAdminDashboard = () => {
 
         {/* Settings Section */}
         {activeSection === "settings" && (
-          <>
-            <div className="mb-8">
-              <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">Settings</h1>
-              <p className="text-[#64748b]">Configure dashboard and system settings</p>
-            </div>
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Settings size={48} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">System Settings</h3>
-                <p className="text-gray-500">User roles, permissions, and system configuration.</p>
-                <p className="text-sm text-[#29b6b0] mt-4">Coming Soon</p>
-              </CardContent>
-            </Card>
-          </>
+          <AdminSettings sectorName="Super Admin" sectorColor="#25A7A1" />
         )}
       </main>
 

@@ -23,12 +23,10 @@ import NotFound from "./pages/NotFound";
 
 // Admin Pages (Secret)
 import AdminLogin from "./pages/AdminLogin";
-import SectorLogin from "./pages/SectorLogin";
 import Admin from "./pages/Admin";
 import CharityDashboard from "./pages/admin/CharityDashboard";
 import AcademicDashboard from "./pages/admin/AcademicDashboard";
 import QiratDashboard from "./pages/admin/QiratDashboard";
-import DawaDashboard from "./pages/admin/DawaDashboard";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 
 const queryClient = new QueryClient();
@@ -58,13 +56,8 @@ const App = () => (
             <Route path="/student-sadaqah" element={<StudentSadaqah />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
 
-            {/* Secret Admin Login URLs - Each sector has its own */}
+            {/* Single Secret Admin Login URL - All admins use this */}
             <Route path="/humsj-admin-portal" element={<AdminLogin />} />
-            <Route path="/humsj-super-admin" element={<SectorLogin sector="super_admin" />} />
-            <Route path="/humsj-charity-portal" element={<SectorLogin sector="charity" />} />
-            <Route path="/humsj-academic-portal" element={<SectorLogin sector="academic" />} />
-            <Route path="/humsj-qirat-portal" element={<SectorLogin sector="qirat" />} />
-            <Route path="/humsj-dawa-portal" element={<SectorLogin sector="dawa" />} />
 
             {/* Protected Admin Dashboard - Super Admin Only */}
             <Route
@@ -110,15 +103,6 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["super_admin", "qirat_amir"]}>
                   <QiratDashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/dawa"
-              element={
-                <ProtectedRoute allowedRoles={["super_admin", "dawa_amir"]}>
-                  <DawaDashboard />
                 </ProtectedRoute>
               }
             />

@@ -21,6 +21,7 @@ import {
   BarChart3,
   PieChart,
   Plus,
+  Settings,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -74,8 +75,9 @@ import { Label } from "@/components/ui/label";
 import humjsLogo from "@/assets/humjs-logo.png";
 import EventsManager from "@/components/admin/EventsManager";
 import MobileNav from "@/components/admin/MobileNav";
+import AdminSettings from "@/components/admin/AdminSettings";
 
-type ActiveTab = "donations" | "distributions" | "events" | "reports" | "payment-methods";
+type ActiveTab = "donations" | "distributions" | "events" | "reports" | "payment-methods" | "settings";
 
 const CharityDashboard = () => {
   const { toast } = useToast();
@@ -403,6 +405,7 @@ const CharityDashboard = () => {
           { icon: Calendar, label: "Events", section: "events" },
           { icon: BarChart3, label: "Reports", section: "reports" },
           { icon: CreditCard, label: "Payment Methods", section: "payment-methods" },
+          { icon: Settings, label: "Settings", section: "settings" },
         ]}
         activeSection={activeTab}
         onSectionChange={(section) => setActiveTab(section as ActiveTab)}
@@ -470,6 +473,16 @@ const CharityDashboard = () => {
           >
             <CreditCard size={18} />
             Payment Methods
+          </button>
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === "settings"
+              ? "bg-white/20 text-white shadow-lg"
+              : "text-white/70 hover:bg-white/10 hover:text-white"
+              }`}
+          >
+            <Settings size={18} />
+            Settings
           </button>
         </nav>
 
@@ -957,6 +970,11 @@ const CharityDashboard = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Settings Tab */}
+        {activeTab === "settings" && (
+          <AdminSettings sectorName="Charity Sector" sectorColor="#22C55E" />
+        )}
       </main>
 
       {/* View & Respond Modal */}
@@ -1285,6 +1303,7 @@ const CharityDashboard = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
     </div>
   );
 };

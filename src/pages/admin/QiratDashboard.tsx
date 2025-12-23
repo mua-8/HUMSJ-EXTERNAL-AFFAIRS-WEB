@@ -23,6 +23,7 @@ import {
   Check,
   X,
   UserCheck,
+  Settings,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -82,9 +83,10 @@ import {
 } from "@/lib/firestore";
 import EventsManager from "@/components/admin/EventsManager";
 import MobileNav from "@/components/admin/MobileNav";
+import AdminSettings from "@/components/admin/AdminSettings";
 import { Label } from "@/components/ui/label";
 
-type ActiveTab = "overview" | "students" | "enrollments" | "activities" | "events" | "resources" | "competitions" | "reports";
+type ActiveTab = "overview" | "students" | "enrollments" | "activities" | "events" | "resources" | "competitions" | "reports" | "settings";
 
 // Types
 // Sample data removed for live implementation
@@ -424,6 +426,7 @@ const QiratDashboard = () => {
     { icon: Trophy, label: "Competitions", tab: "competitions" as const },
     { icon: UserCheck, label: "Enrollments", tab: "enrollments" as const, badge: stats.pendingRegistrations > 0 ? stats.pendingRegistrations : undefined },
     { icon: BarChart3, label: "Reports", tab: "reports" as const },
+    { icon: Settings, label: "Settings", tab: "settings" as const },
   ];
 
   const getLevelColor = (level: string) => {
@@ -440,7 +443,7 @@ const QiratDashboard = () => {
     <div className="min-h-screen bg-[#f8f9fa] flex">
       {/* Mobile Navigation */}
       <MobileNav
-        title="Qirat Sector"
+        title="Qirat & Dawa"
         navItems={navItems.map(item => ({ icon: item.icon, label: item.label, section: item.tab }))}
         activeSection={activeTab}
         onSectionChange={(section) => setActiveTab(section as ActiveTab)}
@@ -454,7 +457,7 @@ const QiratDashboard = () => {
           <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
           <div>
             <h2 className="font-serif font-bold text-white">HUMSJ</h2>
-            <p className="text-xs text-white/80">🟢 Qirat Sector</p>
+            <p className="text-xs text-white/80">🟣 Qirat & Dawa</p>
           </div>
         </div>
 
@@ -499,9 +502,9 @@ const QiratDashboard = () => {
       <main className="lg:ml-64 flex-1 p-6 lg:p-8">
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">
-            🟢 Qirat Sector Dashboard
+            🟣 Qirat & Dawa Dashboard
           </h1>
-          <p className="text-[#64748b]">Manage Quran recitation programs</p>
+          <p className="text-[#64748b]">Manage Quran recitation and Dawa programs</p>
         </div>
 
         {/* Overview */}
@@ -1221,6 +1224,11 @@ const QiratDashboard = () => {
           </div>
         )}
 
+        {/* Settings Tab */}
+        {activeTab === "settings" && (
+          <AdminSettings sectorName="Qirat Sector" sectorColor="#8B5CF6" />
+        )}
+
         {/* Add Student Dialog */}
         <Dialog open={isAddStudentOpen} onOpenChange={setIsAddStudentOpen}>
           <DialogContent>
@@ -1871,6 +1879,7 @@ const QiratDashboard = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
       </main>
     </div>
   );

@@ -15,6 +15,7 @@ import {
   Eye,
   Download,
   BarChart3,
+  Settings,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,8 +62,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import EventsManager from "@/components/admin/EventsManager";
 import MobileNav from "@/components/admin/MobileNav";
+import AdminSettings from "@/components/admin/AdminSettings";
 
-type ActiveTab = "overview" | "students" | "programs" | "events" | "reports";
+type ActiveTab = "overview" | "students" | "programs" | "events" | "reports" | "settings";
 
 // Sample data removed for live implementation
 
@@ -252,6 +254,7 @@ const AcademicDashboard = () => {
     { icon: GraduationCap, label: "Programs", tab: "programs" as const },
     { icon: Calendar, label: "Events", tab: "events" as const },
     { icon: BarChart3, label: "Reports", tab: "reports" as const },
+    { icon: Settings, label: "Settings", tab: "settings" as const },
   ];
 
   return (
@@ -713,6 +716,11 @@ const AcademicDashboard = () => {
           </div>
         )}
 
+        {/* Settings Tab */}
+        {activeTab === "settings" && (
+          <AdminSettings sectorName="Academic Sector" sectorColor="#3B82F6" />
+        )}
+
         {/* Add Student Dialog */}
         <Dialog open={isAddStudentOpen} onOpenChange={setIsAddStudentOpen}>
           <DialogContent>
@@ -1048,6 +1056,7 @@ const AcademicDashboard = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
       </main>
     </div>
   );

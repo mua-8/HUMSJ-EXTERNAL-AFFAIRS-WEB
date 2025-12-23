@@ -3,16 +3,32 @@ import { useNavigate } from "react-router-dom";
 import { Lock, Mail, ArrowRight, Shield, Eye, EyeOff } from "lucide-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import humjsLogo from "@/assets/humjs-logo.png";
 
+// Get dashboard path based on role
+const getDashboardByRole = (role: UserRole): string => {
+  switch (role) {
+    case "super_admin":
+      return "/admin";
+    case "charity_amir":
+      return "/admin/charity";
+    case "academic_amir":
+      return "/admin/academic";
+    case "qirat_amir":
+      return "/admin/qirat";
+    default:
+      return "/";
+  }
+};
+
 const AdminLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, role } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -23,12 +39,13 @@ const AdminLogin = () => {
   const [isLocked, setIsLocked] = useState(false);
   const [lockTimer, setLockTimer] = useState(0);
 
-  // Redirect if already logged in
+  // Redirect if already logged in - to their specific dashboard
   useEffect(() => {
     if (user && isAdmin) {
-      navigate("/admin");
+      const dashboardPath = getDashboardByRole(role);
+      navigate(dashboardPath);
     }
-  }, [user, isAdmin, navigate]);
+  }, [user, isAdmin, role, navigate]);
 
   // Lock timer countdown
   useEffect(() => {
@@ -60,16 +77,35 @@ const AdminLogin = () => {
     setIsLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
-
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      
       // Reset attempts on success
       setLoginAttempts(0);
 
+      // Get role from email to determine redirect
+      const email = userCredential.user.email?.toLowerCase() || "";
+      let dashboardPath = "/";
+      let roleName = "User";
+      
+      if (email === "humsjadmin@gmail.com" || email === "admin@humsj.org" || email === "superadmin@humsj.org") {
+        dashboardPath = "/admin";
+        roleName = "Super Admin";
+      } else if (email === "humsjcharity@gmail.com" || email === "charity@humsj.org") {
+        dashboardPath = "/admin/charity";
+        roleName = "Charity Admin";
+      } else if (email === "humsjacademic@gmail.com" || email === "academic@humsj.org") {
+        dashboardPath = "/admin/academic";
+        roleName = "Academic Admin";
+      } else if (email === "humsjqirat@gmail.com" || email === "qirat@humsj.org") {
+        dashboardPath = "/admin/qirat";
+        roleName = "Qirat & Dawa Admin";
+      }
+
       toast({
-        title: "Welcome, Admin!",
+        title: `Welcome, ${roleName}!`,
         description: "You have been logged in successfully.",
       });
-      navigate("/admin");
+      navigate(dashboardPath);
     } catch (error: unknown) {
       console.error("Login error:", error);
 
@@ -261,80 +297,6 @@ const AdminLogin = () => {
                 )}
               </Button>
             </form>
-
-            {/* DEV ONLY: Demo Login for Testing */}
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <p className="text-xs text-gray-500 text-center mb-3">
-                🔧 Development Mode - Test without Firebase
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="text-xs border-[#29b6b0] text-[#29b6b0] hover:bg-[#29b6b0] hover:text-white"
-                  onClick={() => {
-                    localStorage.setItem("devAuth", JSON.stringify({ role: "super_admin", email: "admin@humsj.org" }));
-                    toast({ title: "Dev Login", description: "Logged in as Super Admin" });
-                    navigate("/admin");
-                  }}
-                >
-                  Super Admin
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="text-xs border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
-                  onClick={() => {
-                    localStorage.setItem("devAuth", JSON.stringify({ role: "charity_amir", email: "charity@humsj.org" }));
-                    toast({ title: "Dev Login", description: "Logged in as Charity Amir" });
-                    navigate("/admin/charity");
-                  }}
-                >
-                  🟢 Charity
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="text-xs border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"
-                  onClick={() => {
-                    localStorage.setItem("devAuth", JSON.stringify({ role: "academic_amir", email: "academic@humsj.org" }));
-                    toast({ title: "Dev Login", description: "Logged in as Academic Amir" });
-                    navigate("/admin/academic");
-                  }}
-                >
-                  🔵 Academy
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="text-xs border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white"
-                  onClick={() => {
-                    localStorage.setItem("devAuth", JSON.stringify({ role: "qirat_amir", email: "qirat@humsj.org" }));
-                    toast({ title: "Dev Login", description: "Logged in as Qirat Amir" });
-                    navigate("/admin/qirat");
-                  }}
-                >
-                  🟣 Qirat
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="text-xs border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white col-span-2"
-                  onClick={() => {
-                    localStorage.setItem("devAuth", JSON.stringify({ role: "dawa_amir", email: "dawa@humsj.org" }));
-                    toast({ title: "Dev Login", description: "Logged in as Dawa Amir" });
-                    navigate("/admin/dawa");
-                  }}
-                >
-                  🟡 Dawa
-                </Button>
-              </div>
-            </div>
 
             {/* Security Notice */}
             <div className="mt-6 pt-6 border-t border-gray-100">
