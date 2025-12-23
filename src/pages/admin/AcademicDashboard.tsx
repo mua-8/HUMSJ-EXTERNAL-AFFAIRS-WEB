@@ -59,8 +59,9 @@ import {
 } from "@/lib/firestore";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import EventsManager from "@/components/admin/EventsManager";
 
-type ActiveTab = "overview" | "students" | "programs" | "reports";
+type ActiveTab = "overview" | "students" | "programs" | "events" | "reports";
 
 // Sample data removed for live implementation
 
@@ -75,7 +76,10 @@ const AcademicDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [isAddProgramOpen, setIsAddProgramOpen] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [isEditStudentOpen, setIsEditStudentOpen] = useState(false);
+  const [isEditProgramOpen, setIsEditProgramOpen] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [editingProgram, setEditingProgram] = useState<Program | null>(null);
 
   // Form states
   const [studentForm, setStudentForm] = useState({ name: "", email: "", phone: "", program: "", status: "active" as const });
@@ -147,6 +151,72 @@ const AcademicDashboard = () => {
     }
   };
 
+  const handleEditStudent = (student: Student) => {
+    setEditingStudent(student);
+    setStudentForm({
+      name: student.name,
+      email: student.email,
+      phone: student.phone,
+      program: student.program,
+      status: student.status as "active"
+    });
+    setIsEditStudentOpen(true);
+  };
+
+  const handleUpdateStudent = async () => {
+    if (!editingStudent?.id) return;
+    try {
+      await updateStudent(editingStudent.id, {
+        name: studentForm.name,
+        email: studentForm.email,
+        phone: studentForm.phone,
+        program: studentForm.program,
+        status: studentForm.status
+      });
+      toast({ title: "Student Updated", description: "Student information has been updated." });
+      setIsEditStudentOpen(false);
+      setEditingStudent(null);
+      setStudentForm({ name: "", email: "", phone: "", program: "", status: "active" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to update student.", variant: "destructive" });
+    }
+  };
+
+  const handleEditProgram = (program: Program) => {
+    setEditingProgram(program);
+    setProgramForm({
+      name: program.name,
+      instructor: program.instructor,
+      type: program.type,
+      day: program.day,
+      time: program.time,
+      status: program.status as "active",
+      description: program.description || ""
+    });
+    setIsEditProgramOpen(true);
+  };
+
+  const handleUpdateProgram = async () => {
+    if (!editingProgram?.id) return;
+    try {
+      await updateProgram(editingProgram.id, {
+        name: programForm.name,
+        instructor: programForm.instructor,
+        type: programForm.type,
+        day: programForm.day,
+        time: programForm.time,
+        status: programForm.status,
+        description: programForm.description
+      });
+      toast({ title: "Program Updated", description: "Program information has been updated." });
+      setIsEditProgramOpen(false);
+      setEditingProgram(null);
+      setProgramForm({ name: "", instructor: "", type: "study_circle", day: "", time: "", status: "active", description: "" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to update program.", variant: "destructive" });
+    }
+  };
+
   const stats = {
     totalStudents: students.length,
     activeStudents: students.filter(s => s.status === "active").length,
@@ -179,6 +249,7 @@ const AcademicDashboard = () => {
     { icon: BookOpen, label: "Overview", tab: "overview" as const },
     { icon: Users, label: "Students", tab: "students" as const },
     { icon: GraduationCap, label: "Programs", tab: "programs" as const },
+    { icon: Calendar, label: "Events", tab: "events" as const },
     { icon: BarChart3, label: "Reports", tab: "reports" as const },
   ];
 
@@ -442,7 +513,12 @@ const AcademicDashboard = () => {
                               <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                                 <Eye size={16} />
                               </Button>
-                              <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
+                              <Button 
+                                size="icon" 
+                                variant="ghost" 
+                                className="h-8 w-8 text-gray-500"
+                                onClick={() => handleEditStudent(student)}
+                              >
                                 <Edit size={16} />
                               </Button>
                               <Button
@@ -525,7 +601,12 @@ const AcademicDashboard = () => {
                             <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                               <Eye size={16} />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
+                            <Button 
+                              size="icon" 
+                              variant="ghost" 
+                              className="h-8 w-8 text-gray-500"
+                              onClick={() => handleEditProgram(program)}
+                            >
                               <Edit size={16} />
                             </Button>
                             <Button
@@ -547,6 +628,10 @@ const AcademicDashboard = () => {
           </Card>
         )}
 
+        {/* Events Tab */}
+        {activeTab === "events" && (
+          <EventsManager sector="academic" title="Academic Events" />
+        )}
 
         {/* Reports Tab */}
         {activeTab === "reports" && (
@@ -629,7 +714,7 @@ const AcademicDashboard = () => {
                 <Input
                   placeholder="Full Name"
                   value={studentForm.name}
-                  onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
@@ -638,7 +723,7 @@ const AcademicDashboard = () => {
                   placeholder="Email"
                   type="email"
                   value={studentForm.email}
-                  onChange={(e) => setStudentForm({ ...studentForm, email: e.target.value })}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, email: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
@@ -646,22 +731,33 @@ const AcademicDashboard = () => {
                 <Input
                   placeholder="Phone"
                   value={studentForm.phone}
-                  onChange={(e) => setStudentForm({ ...studentForm, phone: e.target.value })}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, phone: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Program</Label>
                 <Select
                   value={studentForm.program}
-                  onValueChange={(value) => setStudentForm({ ...studentForm, program: value })}
+                  onValueChange={(value) => setStudentForm((prev) => ({ ...prev, program: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Program" />
                   </SelectTrigger>
                   <SelectContent>
-                    {programs.map(p => (
-                      <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
-                    ))}
+                    {programs.length > 0 ? (
+                      programs.map(p => (
+                        <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
+                      ))
+                    ) : (
+                      <>
+                        <SelectItem value="Islamic Studies">Islamic Studies</SelectItem>
+                        <SelectItem value="Arabic Language">Arabic Language</SelectItem>
+                        <SelectItem value="Fiqh & Jurisprudence">Fiqh & Jurisprudence</SelectItem>
+                        <SelectItem value="Hadith Studies">Hadith Studies</SelectItem>
+                        <SelectItem value="Tafsir Studies">Tafsir Studies</SelectItem>
+                        <SelectItem value="Aqeedah">Aqeedah</SelectItem>
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -691,7 +787,7 @@ const AcademicDashboard = () => {
                 <Input
                   placeholder="Program Name"
                   value={programForm.name}
-                  onChange={(e) => setProgramForm({ ...programForm, name: e.target.value })}
+                  onChange={(e) => setProgramForm((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
@@ -699,14 +795,14 @@ const AcademicDashboard = () => {
                 <Input
                   placeholder="Instructor"
                   value={programForm.instructor}
-                  onChange={(e) => setProgramForm({ ...programForm, instructor: e.target.value })}
+                  onChange={(e) => setProgramForm((prev) => ({ ...prev, instructor: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Program Type</Label>
                 <Select
                   value={programForm.type}
-                  onValueChange={(value: any) => setProgramForm({ ...programForm, type: value })}
+                  onValueChange={(value: any) => setProgramForm((prev) => ({ ...prev, type: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Program Type" />
@@ -724,7 +820,7 @@ const AcademicDashboard = () => {
                   <Input
                     placeholder="e.g., Monday"
                     value={programForm.day}
-                    onChange={(e) => setProgramForm({ ...programForm, day: e.target.value })}
+                    onChange={(e) => setProgramForm((prev) => ({ ...prev, day: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
@@ -732,7 +828,7 @@ const AcademicDashboard = () => {
                   <Input
                     placeholder="e.g., 4:00 PM"
                     value={programForm.time}
-                    onChange={(e) => setProgramForm({ ...programForm, time: e.target.value })}
+                    onChange={(e) => setProgramForm((prev) => ({ ...prev, time: e.target.value }))}
                   />
                 </div>
               </div>
@@ -741,7 +837,7 @@ const AcademicDashboard = () => {
                 <Textarea
                   placeholder="Program details..."
                   value={programForm.description}
-                  onChange={(e) => setProgramForm({ ...programForm, description: e.target.value })}
+                  onChange={(e) => setProgramForm((prev) => ({ ...prev, description: e.target.value }))}
                 />
               </div>
             </div>
@@ -753,6 +849,190 @@ const AcademicDashboard = () => {
                 disabled={!programForm.name || !programForm.instructor}
               >
                 Create Program
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Student Dialog */}
+        <Dialog open={isEditStudentOpen} onOpenChange={setIsEditStudentOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Student</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Full Name</Label>
+                <Input
+                  placeholder="Full Name"
+                  value={studentForm.name}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input
+                  placeholder="Email"
+                  type="email"
+                  value={studentForm.email}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, email: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Phone</Label>
+                <Input
+                  placeholder="Phone"
+                  value={studentForm.phone}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, phone: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Program</Label>
+                <Select
+                  value={studentForm.program}
+                  onValueChange={(value) => setStudentForm((prev) => ({ ...prev, program: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Program" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {programs.length > 0 ? (
+                      programs.map(p => (
+                        <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
+                      ))
+                    ) : (
+                      <>
+                        <SelectItem value="Islamic Studies">Islamic Studies</SelectItem>
+                        <SelectItem value="Arabic Language">Arabic Language</SelectItem>
+                        <SelectItem value="Fiqh & Jurisprudence">Fiqh & Jurisprudence</SelectItem>
+                        <SelectItem value="Hadith Studies">Hadith Studies</SelectItem>
+                        <SelectItem value="Tafsir Studies">Tafsir Studies</SelectItem>
+                        <SelectItem value="Aqeedah">Aqeedah</SelectItem>
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select
+                  value={studentForm.status}
+                  onValueChange={(value: any) => setStudentForm((prev) => ({ ...prev, status: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="graduated">Graduated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditStudentOpen(false)}>Cancel</Button>
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86]"
+                onClick={handleUpdateStudent}
+                disabled={!studentForm.name || !studentForm.program}
+              >
+                Update Student
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Program Dialog */}
+        <Dialog open={isEditProgramOpen} onOpenChange={setIsEditProgramOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Program</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
+              <div className="space-y-2">
+                <Label>Program Name</Label>
+                <Input
+                  placeholder="Program Name"
+                  value={programForm.name}
+                  onChange={(e) => setProgramForm((prev) => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Instructor</Label>
+                <Input
+                  placeholder="Instructor"
+                  value={programForm.instructor}
+                  onChange={(e) => setProgramForm((prev) => ({ ...prev, instructor: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Program Type</Label>
+                <Select
+                  value={programForm.type}
+                  onValueChange={(value: any) => setProgramForm((prev) => ({ ...prev, type: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Program Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="study_circle">Study Circle</SelectItem>
+                    <SelectItem value="workshop">Workshop</SelectItem>
+                    <SelectItem value="course">Course</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Day</Label>
+                  <Input
+                    placeholder="e.g., Monday"
+                    value={programForm.day}
+                    onChange={(e) => setProgramForm((prev) => ({ ...prev, day: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Time</Label>
+                  <Input
+                    placeholder="e.g., 4:00 PM"
+                    value={programForm.time}
+                    onChange={(e) => setProgramForm((prev) => ({ ...prev, time: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select
+                  value={programForm.status}
+                  onValueChange={(value: any) => setProgramForm((prev) => ({ ...prev, status: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="upcoming">Upcoming</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  placeholder="Program details..."
+                  value={programForm.description}
+                  onChange={(e) => setProgramForm((prev) => ({ ...prev, description: e.target.value }))}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditProgramOpen(false)}>Cancel</Button>
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86]"
+                onClick={handleUpdateProgram}
+                disabled={!programForm.name || !programForm.instructor}
+              >
+                Update Program
               </Button>
             </DialogFooter>
           </DialogContent>

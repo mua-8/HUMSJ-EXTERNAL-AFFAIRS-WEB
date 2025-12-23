@@ -65,6 +65,7 @@ import {
 } from "@/lib/firestore";
 import humjsLogo from "@/assets/humjs-logo.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import EventsManager from "@/components/admin/EventsManager";
 
 type ActiveSection = "overview" | "charity" | "academic" | "qirat" | "events" | "distributions" | "settings";
 
@@ -88,13 +89,12 @@ const SuperAdminDashboard = () => {
   const [isDistModalOpen, setIsDistModalOpen] = useState(false);
   const [editingDist, setEditingDist] = useState<FirestoreDistribution | null>(null);
   const [distForm, setDistForm] = useState({
-    item: "",
-    quantity: "",
-    beneficiaries: "",
+    title: "",
+    items: "",
+    beneficiaries: 0,
     date: new Date().toISOString().split("T")[0],
-    sector: "charity" as "charity" | "dawa" | "qirat",
-    status: "planned" as "planned" | "in-progress" | "completed",
-    notes: ""
+    status: "planned" as "planned" | "ongoing" | "completed",
+    description: ""
   });
 
   useEffect(() => {
@@ -145,10 +145,10 @@ const SuperAdminDashboard = () => {
 
   const handleSaveDistribution = async () => {
     console.log("Saving distribution:", distForm);
-    if (!distForm.item || !distForm.quantity || !distForm.beneficiaries) {
+    if (!distForm.title || !distForm.items || distForm.beneficiaries <= 0) {
       toast({
         title: "Validation Error",
-        description: "Please fill in Item Name, Quantity, and Beneficiaries.",
+        description: "Please fill in Title, Items, and Beneficiaries.",
         variant: "destructive"
       });
       return;
@@ -156,23 +156,31 @@ const SuperAdminDashboard = () => {
 
     setIsSavingDist(true);
     try {
+      const distributionData = {
+        title: distForm.title,
+        items: distForm.items.split(",").map(i => i.trim()),
+        beneficiaries: distForm.beneficiaries,
+        date: distForm.date,
+        status: distForm.status,
+        description: distForm.description
+      };
+
       if (editingDist) {
-        await updateDistribution(editingDist.id!, distForm);
+        await updateDistribution(editingDist.id!, distributionData);
         toast({ title: "Distribution Updated" });
       } else {
-        await addDistribution(distForm);
+        await addDistribution(distributionData);
         toast({ title: "Distribution Created" });
       }
       setIsDistModalOpen(false);
       setEditingDist(null);
       setDistForm({
-        item: "",
-        quantity: "",
-        beneficiaries: "",
+        title: "",
+        items: "",
+        beneficiaries: 0,
         date: new Date().toISOString().split("T")[0],
-        sector: "charity",
         status: "planned",
-        notes: ""
+        description: ""
       });
     } catch (error: any) {
       console.error("Save distribution error:", error);
@@ -263,14 +271,12 @@ const SuperAdminDashboard = () => {
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900 text-slate-400 p-6 hidden lg:flex flex-col border-r border-slate-800">
-        <div className="flex items-center gap-3 mb-10 px-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#25A7A1] to-[#1F8B86] flex items-center justify-center shadow-lg shadow-teal-500/20">
-            <LayoutDashboard className="text-white w-6 h-6" />
-          </div>
+      <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#25A7A1] to-[#1F8B86] p-6 hidden lg:flex flex-col shadow-xl">
+        <div className="flex items-center gap-3 mb-8">
+          <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
           <div>
-            <h2 className="font-serif font-bold text-white text-lg leading-tight">HUMSJ</h2>
-            <p className="text-[10px] uppercase tracking-wider font-bold text-[#25A7A1]">Super Admin</p>
+            <h2 className="font-serif font-bold text-white">HUMSJ</h2>
+            <p className="text-xs text-white/80">Super Admin</p>
           </div>
         </div>
 
@@ -283,8 +289,8 @@ const SuperAdminDashboard = () => {
                 setSearchParams({ section: item.section });
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeSection === item.section
-                ? "bg-[#25A7A1]/10 text-white font-semibold border-l-4 border-[#25A7A1]"
-                : "hover:bg-slate-800 hover:text-slate-200"
+                ? "bg-white/20 text-white shadow-lg"
+                : "text-white/70 hover:bg-white/10 hover:text-white"
                 }`}
             >
               <item.icon size={18} />
@@ -296,7 +302,7 @@ const SuperAdminDashboard = () => {
         <div className="mt-auto pt-6 border-t border-white/10 space-y-2">
           <p className="text-xs text-white/50 px-2">{user?.email}</p>
           <Link to="/">
-            <Button variant="outline" className="w-full border-white/20 text-white/70 hover:bg-white/10 hover:text-white">
+            <Button variant="outline" className="w-full border-white/20 text-white/70 hover:bg-white/10 hover:text-white mb-2">
               Back to Site
             </Button>
           </Link>
@@ -762,13 +768,12 @@ const SuperAdminDashboard = () => {
               <Button onClick={() => {
                 setEditingDist(null);
                 setDistForm({
-                  item: "",
-                  quantity: "",
-                  beneficiaries: "",
+                  title: "",
+                  items: "",
+                  beneficiaries: 0,
                   date: new Date().toISOString().split("T")[0],
-                  sector: "charity",
                   status: "planned",
-                  notes: ""
+                  description: ""
                 });
                 setIsDistModalOpen(true);
               }} className="bg-[#29b6b0] hover:bg-[#239e99]">
@@ -798,30 +803,34 @@ const SuperAdminDashboard = () => {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Item</TableHead>
-                          <TableHead>Quantity</TableHead>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Items</TableHead>
                           <TableHead>Beneficiaries</TableHead>
                           <TableHead>Date</TableHead>
-                          <TableHead>Sector</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {distributions.filter(d =>
-                          d.item.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          d.beneficiaries.toLowerCase().includes(searchQuery.toLowerCase())
+                          (d.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (d.items || []).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
                         ).map((dist) => (
                           <TableRow key={dist.id}>
-                            <TableCell className="font-medium">{dist.item}</TableCell>
-                            <TableCell>{dist.quantity}</TableCell>
-                            <TableCell>{dist.beneficiaries}</TableCell>
+                            <TableCell className="font-medium">{dist.title}</TableCell>
+                            <TableCell>
+                              <div className="flex flex-wrap gap-1">
+                                {(dist.items || []).map((item, i) => (
+                                  <Badge key={i} variant="outline" className="text-[10px]">{item}</Badge>
+                                ))}
+                              </div>
+                            </TableCell>
+                            <TableCell>{dist.beneficiaries || 0}</TableCell>
                             <TableCell>{new Date(dist.date).toLocaleDateString()}</TableCell>
-                            <TableCell className="capitalize">{dist.sector}</TableCell>
                             <TableCell>
                               <Badge className={
                                 dist.status === "completed" ? "bg-green-100 text-green-600" :
-                                  dist.status === "in-progress" ? "bg-blue-100 text-blue-600" :
+                                  dist.status === "ongoing" ? "bg-blue-100 text-blue-600" :
                                     "bg-amber-100 text-amber-600"
                               }>
                                 {dist.status}
@@ -832,13 +841,12 @@ const SuperAdminDashboard = () => {
                                 <button onClick={() => {
                                   setEditingDist(dist);
                                   setDistForm({
-                                    item: dist.item,
-                                    quantity: dist.quantity.toString(),
-                                    beneficiaries: dist.beneficiaries,
+                                    title: dist.title || "",
+                                    items: (dist.items || []).join(", "),
+                                    beneficiaries: dist.beneficiaries || 0,
                                     date: dist.date,
-                                    sector: dist.sector,
                                     status: dist.status,
-                                    notes: dist.notes || ""
+                                    description: dist.description || ""
                                   });
                                   setIsDistModalOpen(true);
                                 }} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"><Edit size={16} /></button>
@@ -858,22 +866,7 @@ const SuperAdminDashboard = () => {
 
         {/* Events Section */}
         {activeSection === "events" && (
-          <>
-            <div className="mb-8">
-              <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">Events Management</h1>
-              <p className="text-[#64748b]">Manage all HUMSJ events across sectors</p>
-            </div>
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Calendar size={48} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">Events from all sectors</h3>
-                <p className="text-gray-500">{stats.totalEvents} events • {stats.approvedEvents} approved</p>
-                <Link to="/admin">
-                  <Button className="mt-4 bg-[#29b6b0] hover:bg-[#239e99]">Go to Events Dashboard</Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </>
+          <EventsManager sector="all" title="All Events Management" showSectorFilter={true} />
         )}
 
         {/* Settings Section */}
@@ -903,51 +896,38 @@ const SuperAdminDashboard = () => {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Item Name *</label>
+              <label className="text-sm font-medium">Distribution Title *</label>
               <Input
-                placeholder="E.g. Food Packages, Textbooks"
-                value={distForm.item}
-                onChange={(e) => setDistForm({ ...distForm, item: e.target.value })}
+                placeholder="E.g. Monthly Food Aid, School Supplies"
+                value={distForm.title}
+                onChange={(e) => setDistForm((prev) => ({ ...prev, title: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Items (comma separated) *</label>
+              <Input
+                placeholder="E.g. Rice, Oil, Sugar, Flour"
+                value={distForm.items}
+                onChange={(e) => setDistForm((prev) => ({ ...prev, items: e.target.value }))}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Quantity *</label>
-                <Input
-                  placeholder="E.g. 500 units"
-                  value={distForm.quantity}
-                  onChange={(e) => setDistForm({ ...distForm, quantity: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
                 <label className="text-sm font-medium">Beneficiaries *</label>
                 <Input
-                  placeholder="E.g. 200 families"
+                  type="number"
+                  placeholder="E.g. 200"
                   value={distForm.beneficiaries}
-                  onChange={(e) => setDistForm({ ...distForm, beneficiaries: e.target.value })}
+                  onChange={(e) => setDistForm((prev) => ({ ...prev, beneficiaries: parseInt(e.target.value) || 0 }))}
                 />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Date *</label>
                 <Input
                   type="date"
                   value={distForm.date}
-                  onChange={(e) => setDistForm({ ...distForm, date: e.target.value })}
+                  onChange={(e) => setDistForm((prev) => ({ ...prev, date: e.target.value }))}
                 />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Sub-Sector</label>
-                <select
-                  className="w-full border rounded-md p-2 text-sm"
-                  value={distForm.sector}
-                  onChange={(e) => setDistForm({ ...distForm, sector: e.target.value as any })}
-                >
-                  <option value="charity">Charity</option>
-                  <option value="dawa">Dawa</option>
-                  <option value="qirat">Qirat</option>
-                </select>
               </div>
             </div>
             <div className="space-y-2">
@@ -955,12 +935,20 @@ const SuperAdminDashboard = () => {
               <select
                 className="w-full border rounded-md p-2 text-sm"
                 value={distForm.status}
-                onChange={(e) => setDistForm({ ...distForm, status: e.target.value as any })}
+                onChange={(e) => setDistForm((prev) => ({ ...prev, status: e.target.value as any }))}
               >
                 <option value="planned">Planned</option>
-                <option value="in-progress">In-Progress</option>
+                <option value="ongoing">Ongoing</option>
                 <option value="completed">Completed</option>
               </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Description</label>
+              <Input
+                placeholder="Additional details..."
+                value={distForm.description}
+                onChange={(e) => setDistForm((prev) => ({ ...prev, description: e.target.value }))}
+              />
             </div>
           </div>
           <DialogFooter>

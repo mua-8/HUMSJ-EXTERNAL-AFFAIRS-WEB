@@ -83,11 +83,11 @@ const Events = () => {
           title: e.title,
           description: e.description,
           date: e.date,
-          time: "TBA",
-          location: "HUMSJ Campus",
+          time: e.time || "TBA",
+          location: e.location || e.venue || "HUMSJ Campus",
           category: e.category,
           image: e.image || "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=800",
-          attendees: 0,
+          attendees: e.expectedParticipants || 0,
         }));
         setAllEvents(mappedEvents);
       } else {

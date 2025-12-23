@@ -70,6 +70,7 @@ import {
     FirestoreEvent,
     FirestoreNewMuslim
 } from "@/lib/firestore";
+import EventsManager from "@/components/admin/EventsManager";
 
 type ActiveTab = "overview" | "participants" | "events" | "new-muslims" | "reports";
 
@@ -535,85 +536,7 @@ const DawaDashboard = () => {
 
                 {/* Events Tab */}
                 {activeTab === "events" && (
-                    <div className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <div className="flex items-center justify-between">
-                                    <CardTitle>Dawa Events</CardTitle>
-                                    <Button className="bg-[#29b6b0] hover:bg-[#239e99]" onClick={() => setIsAddEventOpen(true)}>
-                                        <Plus size={16} className="mr-2" />
-                                        Add Event
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Event</TableHead>
-                                            <TableHead>Type</TableHead>
-                                            <TableHead>Date</TableHead>
-                                            <TableHead>Venue</TableHead>
-                                            <TableHead>Participants</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead className="text-right">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {events.map((event) => (
-                                            <TableRow key={event.id} className="hover:bg-gray-50">
-                                                <TableCell>
-                                                    <div>
-                                                        <p className="font-medium">{event.title}</p>
-                                                        <p className="text-xs text-gray-500">{event.speaker}</p>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline" className="capitalize">{event.type}</Badge>
-                                                </TableCell>
-                                                <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
-                                                <TableCell>{event.venue}</TableCell>
-                                                <TableCell>
-                                                    {event.status === "completed"
-                                                        ? `${event.actualParticipants}/${event.expectedParticipants}`
-                                                        : `Expected: ${event.expectedParticipants}`
-                                                    }
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge className={
-                                                        event.status === "upcoming" ? "bg-blue-100 text-blue-600" :
-                                                            event.status === "ongoing" ? "bg-amber-100 text-amber-600" :
-                                                                event.status === "completed" ? "bg-green-100 text-green-600" :
-                                                                    "bg-red-100 text-red-600"
-                                                    }>
-                                                        {event.status}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <div className="flex justify-end gap-1">
-                                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
-                                                            <Eye size={16} />
-                                                        </Button>
-                                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
-                                                            <Edit size={16} />
-                                                        </Button>
-                                                        <Button
-                                                            size="icon"
-                                                            variant="ghost"
-                                                            className="h-8 w-8 text-red-500"
-                                                            onClick={() => handleDelete(event.id!, "event")}
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </Button>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
-                    </div>
+                    <EventsManager sector="dawa" title="Dawa Events" />
                 )}
 
                 {/* New Muslims Tab */}
@@ -818,7 +741,7 @@ const DawaDashboard = () => {
                                 <Input
                                     placeholder="Enter full name"
                                     value={participantForm.name}
-                                    onChange={(e) => setParticipantForm({ ...participantForm, name: e.target.value })}
+                                    onChange={(e) => setParticipantForm((prev) => ({ ...prev, name: e.target.value }))}
                                 />
                             </div>
                             <div>
@@ -826,7 +749,7 @@ const DawaDashboard = () => {
                                 <Input
                                     placeholder="+251 9XX XXX XXX"
                                     value={participantForm.phone}
-                                    onChange={(e) => setParticipantForm({ ...participantForm, phone: e.target.value })}
+                                    onChange={(e) => setParticipantForm((prev) => ({ ...prev, phone: e.target.value }))}
                                 />
                             </div>
                             <div>
@@ -835,14 +758,14 @@ const DawaDashboard = () => {
                                     type="email"
                                     placeholder="email@example.com"
                                     value={participantForm.email}
-                                    onChange={(e) => setParticipantForm({ ...participantForm, email: e.target.value })}
+                                    onChange={(e) => setParticipantForm((prev) => ({ ...prev, email: e.target.value }))}
                                 />
                             </div>
                             <div>
                                 <Label>Program *</Label>
                                 <Select
                                     value={participantForm.program}
-                                    onValueChange={(v) => setParticipantForm({ ...participantForm, program: v })}
+                                    onValueChange={(v) => setParticipantForm((prev) => ({ ...prev, program: v }))}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select program" />
@@ -860,7 +783,7 @@ const DawaDashboard = () => {
                                 <Textarea
                                     placeholder="Any additional notes..."
                                     value={participantForm.notes}
-                                    onChange={(e) => setParticipantForm({ ...participantForm, notes: e.target.value })}
+                                    onChange={(e) => setParticipantForm((prev) => ({ ...prev, notes: e.target.value }))}
                                 />
                             </div>
                         </div>
@@ -889,7 +812,7 @@ const DawaDashboard = () => {
                                 <Input
                                     placeholder="Event Name"
                                     value={eventForm.title}
-                                    onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+                                    onChange={(e) => setEventForm((prev) => ({ ...prev, title: e.target.value }))}
                                 />
                             </div>
                             <div>
@@ -897,7 +820,7 @@ const DawaDashboard = () => {
                                 <Input
                                     type="date"
                                     value={eventForm.date}
-                                    onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
+                                    onChange={(e) => setEventForm((prev) => ({ ...prev, date: e.target.value }))}
                                 />
                             </div>
                             <div>
@@ -905,7 +828,7 @@ const DawaDashboard = () => {
                                 <Input
                                     placeholder="Venue"
                                     value={eventForm.location}
-                                    onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
+                                    onChange={(e) => setEventForm((prev) => ({ ...prev, location: e.target.value }))}
                                 />
                             </div>
                             <div>
@@ -913,7 +836,7 @@ const DawaDashboard = () => {
                                 <Textarea
                                     placeholder="Event Details"
                                     value={eventForm.description}
-                                    onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                                    onChange={(e) => setEventForm((prev) => ({ ...prev, description: e.target.value }))}
                                 />
                             </div>
                         </div>
@@ -942,7 +865,7 @@ const DawaDashboard = () => {
                                     <Label>Name</Label>
                                     <Input
                                         value={newMuslimForm.name}
-                                        onChange={(e) => setNewMuslimForm({ ...newMuslimForm, name: e.target.value })}
+                                        onChange={(e) => setNewMuslimForm((prev) => ({ ...prev, name: e.target.value }))}
                                     />
                                 </div>
                                 <div>
@@ -950,7 +873,7 @@ const DawaDashboard = () => {
                                     <Input
                                         type="date"
                                         value={newMuslimForm.shahadaDate}
-                                        onChange={(e) => setNewMuslimForm({ ...newMuslimForm, shahadaDate: e.target.value })}
+                                        onChange={(e) => setNewMuslimForm((prev) => ({ ...prev, shahadaDate: e.target.value }))}
                                     />
                                 </div>
                             </div>
@@ -959,7 +882,7 @@ const DawaDashboard = () => {
                                 <Input
                                     placeholder="Mentor Name"
                                     value={newMuslimForm.mentor}
-                                    onChange={(e) => setNewMuslimForm({ ...newMuslimForm, mentor: e.target.value })}
+                                    onChange={(e) => setNewMuslimForm((prev) => ({ ...prev, mentor: e.target.value }))}
                                 />
                             </div>
                             <div>
@@ -967,7 +890,7 @@ const DawaDashboard = () => {
                                 <Input
                                     type="number"
                                     value={newMuslimForm.progress}
-                                    onChange={(e) => setNewMuslimForm({ ...newMuslimForm, progress: parseInt(e.target.value) || 0 })}
+                                    onChange={(e) => setNewMuslimForm((prev) => ({ ...prev, progress: parseInt(e.target.value) || 0 }))}
                                 />
                             </div>
                         </div>

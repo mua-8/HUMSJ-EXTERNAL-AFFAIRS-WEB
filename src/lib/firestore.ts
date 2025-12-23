@@ -18,6 +18,7 @@ export interface FirestoreEvent {
   title: string;
   description: string;
   date: string;
+  time?: string;
   location?: string;
   venue?: string;
   type?: string;
@@ -244,6 +245,10 @@ export const addCompetition = async (comp: Omit<FirestoreCompetition, "id" | "cr
 };
 
 export const deleteCompetition = async (id: string) => await deleteDoc(doc(db, "competitions", id));
+
+export const updateCompetition = async (id: string, updates: Partial<FirestoreCompetition>) => {
+  await updateDoc(doc(db, "competitions", id), { ...updates });
+};
 
 // --- Distributions ---
 export interface FirestoreDistribution {

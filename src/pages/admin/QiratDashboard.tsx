@@ -69,18 +69,21 @@ import {
   deleteProgram,
   subscribeToResources,
   addResource,
+  updateResource,
   deleteResource,
   subscribeToCompetitions,
   addCompetition,
+  updateCompetition,
   deleteCompetition,
   FirestoreStudent as QiratStudent,
   FirestoreProgram as Activity,
   FirestoreResource as Resource,
   FirestoreCompetition as Competition
 } from "@/lib/firestore";
+import EventsManager from "@/components/admin/EventsManager";
 import { Label } from "@/components/ui/label";
 
-type ActiveTab = "overview" | "students" | "enrollments" | "activities" | "resources" | "competitions" | "reports";
+type ActiveTab = "overview" | "students" | "enrollments" | "activities" | "events" | "resources" | "competitions" | "reports";
 
 // Types
 // Sample data removed for live implementation
@@ -100,6 +103,14 @@ const QiratDashboard = () => {
   const [isAddActivityOpen, setIsAddActivityOpen] = useState(false);
   const [isAddResourceOpen, setIsAddResourceOpen] = useState(false);
   const [isAddCompetitionOpen, setIsAddCompetitionOpen] = useState(false);
+  const [isEditStudentOpen, setIsEditStudentOpen] = useState(false);
+  const [isEditActivityOpen, setIsEditActivityOpen] = useState(false);
+  const [isEditResourceOpen, setIsEditResourceOpen] = useState(false);
+  const [isEditCompetitionOpen, setIsEditCompetitionOpen] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<QiratStudent | null>(null);
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [editingResource, setEditingResource] = useState<Resource | null>(null);
+  const [editingCompetition, setEditingCompetition] = useState<Competition | null>(null);
 
   // Form states
   const [studentForm, setStudentForm] = useState({ name: "", phone: "", level: "beginner" as const, program: "Hifz Program", instructor: "", juzCompleted: 0, status: "active" as const });
@@ -217,6 +228,135 @@ const QiratDashboard = () => {
     if (!confirm("Delete competition?")) return;
     await deleteCompetition(id);
   };
+
+  // Edit Handlers
+  const handleEditStudent = (student: QiratStudent) => {
+    setEditingStudent(student);
+    setStudentForm({
+      name: student.name,
+      phone: student.phone,
+      level: student.level as any,
+      program: student.program,
+      instructor: student.instructor,
+      juzCompleted: student.juzCompleted || 0,
+      status: student.status as any
+    });
+    setIsEditStudentOpen(true);
+  };
+
+  const handleUpdateStudent = async () => {
+    if (!editingStudent?.id) return;
+    try {
+      await updateStudent(editingStudent.id, {
+        name: studentForm.name,
+        phone: studentForm.phone,
+        level: studentForm.level,
+        program: studentForm.program,
+        instructor: studentForm.instructor,
+        juzCompleted: studentForm.juzCompleted,
+        progress: (studentForm.juzCompleted / 30) * 100,
+        status: studentForm.status
+      });
+      toast({ title: "Student Updated", description: "Student information has been updated." });
+      setIsEditStudentOpen(false);
+      setEditingStudent(null);
+      setStudentForm({ name: "", phone: "", level: "beginner", program: "Hifz Program", instructor: "", juzCompleted: 0, status: "active" });
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to update student.", variant: "destructive" });
+    }
+  };
+
+  const handleEditActivity = (activity: Activity) => {
+    setEditingActivity(activity);
+    setActivityForm({
+      name: activity.name,
+      type: activity.type,
+      day: activity.day,
+      time: activity.time,
+      status: activity.status as any,
+      description: activity.description || ""
+    });
+    setIsEditActivityOpen(true);
+  };
+
+  const handleUpdateActivity = async () => {
+    if (!editingActivity?.id) return;
+    try {
+      await updateProgram(editingActivity.id, {
+        name: activityForm.name,
+        type: activityForm.type,
+        day: activityForm.day,
+        time: activityForm.time,
+        status: activityForm.status,
+        description: activityForm.description
+      });
+      toast({ title: "Activity Updated", description: "Activity has been updated." });
+      setIsEditActivityOpen(false);
+      setEditingActivity(null);
+      setActivityForm({ name: "", type: "recitation", day: "", time: "", status: "upcoming", description: "" });
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to update activity.", variant: "destructive" });
+    }
+  };
+
+  const handleEditResource = (resource: Resource) => {
+    setEditingResource(resource);
+    setResourceForm({
+      title: resource.title,
+      type: resource.type as any,
+      category: resource.category
+    });
+    setIsEditResourceOpen(true);
+  };
+
+  const handleUpdateResource = async () => {
+    if (!editingResource?.id) return;
+    try {
+      await updateResource(editingResource.id, {
+        title: resourceForm.title,
+        type: resourceForm.type,
+        category: resourceForm.category
+      });
+      toast({ title: "Resource Updated", description: "Resource has been updated." });
+      setIsEditResourceOpen(false);
+      setEditingResource(null);
+      setResourceForm({ title: "", type: "document", category: "Tajweed" });
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to update resource.", variant: "destructive" });
+    }
+  };
+
+  const handleEditCompetition = (competition: Competition) => {
+    setEditingCompetition(competition);
+    setCompetitionForm({
+      title: competition.title,
+      date: competition.date,
+      prize: competition.prize,
+      category: competition.category,
+      status: competition.status as any
+    });
+    setIsEditCompetitionOpen(true);
+  };
+
+  const handleUpdateCompetition = async () => {
+    if (!editingCompetition?.id) return;
+    try {
+      await updateCompetition(editingCompetition.id, {
+        title: competitionForm.title,
+        date: competitionForm.date,
+        prize: competitionForm.prize,
+        category: competitionForm.category,
+        status: competitionForm.status
+      });
+      toast({ title: "Competition Updated", description: "Competition has been updated." });
+      setIsEditCompetitionOpen(false);
+      setEditingCompetition(null);
+      setCompetitionForm({ title: "", date: "", prize: "", category: "Hifz", status: "upcoming" });
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to update competition.", variant: "destructive" });
+    }
+  };
+
   const [isRegLoading, setIsRegLoading] = useState(true);
 
   useEffect(() => {
@@ -257,7 +397,7 @@ const QiratDashboard = () => {
 
   const filteredStudents = students.filter(s =>
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.class.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.program.toLowerCase().includes(searchQuery.toLowerCase()) ||
     s.instructor.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -278,6 +418,7 @@ const QiratDashboard = () => {
     { icon: Mic, label: "Overview", tab: "overview" as const },
     { icon: Users, label: "Students", tab: "students" as const },
     { icon: Calendar, label: "Activities", tab: "activities" as const },
+    { icon: Calendar, label: "Events", tab: "events" as const },
     { icon: BookOpen, label: "Resources", tab: "resources" as const },
     { icon: Trophy, label: "Competitions", tab: "competitions" as const },
     { icon: UserCheck, label: "Enrollments", tab: "enrollments" as const, badge: stats.pendingRegistrations > 0 ? stats.pendingRegistrations : undefined },
@@ -413,7 +554,7 @@ const QiratDashboard = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {["Hifz Program", "Tajweed Basics", "Qirat Styles", "Tarteel Class"].map((cls, index) => {
-                      const count = students.filter(s => s.class === cls && s.status === "active").length;
+                      const count = students.filter(s => s.program === cls && s.status === "active").length;
                       return (
                         <div key={cls} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                           <div className="flex items-center gap-3">
@@ -587,7 +728,12 @@ const QiratDashboard = () => {
                               <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                                 <Eye size={16} />
                               </Button>
-                              <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
+                              <Button 
+                                size="icon" 
+                                variant="ghost" 
+                                className="h-8 w-8 text-gray-500"
+                                onClick={() => handleEditStudent(student)}
+                              >
                                 <Edit size={16} />
                               </Button>
                               <Button
@@ -782,6 +928,14 @@ const QiratDashboard = () => {
                               <Button
                                 size="icon"
                                 variant="ghost"
+                                className="h-8 w-8 text-gray-500"
+                                onClick={() => handleEditActivity(activity)}
+                              >
+                                <Edit size={16} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
                                 className="h-8 w-8 text-red-500 hover:bg-red-50"
                                 onClick={() => handleDeleteActivity(activity.id!)}
                               >
@@ -797,6 +951,11 @@ const QiratDashboard = () => {
               </CardContent>
             </Card>
           </div>
+        )}
+
+        {/* Events Tab */}
+        {activeTab === "events" && (
+          <EventsManager sector="qirat" title="Qirat Events" />
         )}
 
         {/* Resources Tab */}
@@ -878,6 +1037,14 @@ const QiratDashboard = () => {
                               <Button
                                 size="icon"
                                 variant="ghost"
+                                className="h-8 w-8 text-gray-500"
+                                onClick={() => handleEditResource(resource)}
+                              >
+                                <Edit size={16} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
                                 className="h-8 w-8 text-red-500 hover:bg-red-50"
                                 onClick={() => handleDeleteResource(resource.id!)}
                               >
@@ -901,7 +1068,7 @@ const QiratDashboard = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Quran Competitions</CardTitle>
-                <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]">
+                <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddCompetitionOpen(true)}>
                   <Plus size={16} className="mr-2" />
                   Add Competition
                 </Button>
@@ -940,8 +1107,21 @@ const QiratDashboard = () => {
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                             <Eye size={16} />
                           </Button>
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500">
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className="h-8 w-8 text-gray-500"
+                            onClick={() => handleEditCompetition(comp)}
+                          >
                             <Edit size={16} />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-red-500 hover:bg-red-50"
+                            onClick={() => handleDeleteCompetition(comp.id!)}
+                          >
+                            <Trash2 size={16} />
                           </Button>
                         </div>
                       </TableCell>
@@ -1042,7 +1222,7 @@ const QiratDashboard = () => {
                 <Input
                   placeholder="Full Name"
                   value={studentForm.name}
-                  onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
@@ -1050,14 +1230,14 @@ const QiratDashboard = () => {
                 <Input
                   placeholder="Phone Number"
                   value={studentForm.phone}
-                  onChange={(e) => setStudentForm({ ...studentForm, phone: e.target.value })}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, phone: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Class/Program</Label>
                 <Select
                   value={studentForm.program}
-                  onValueChange={(value) => setStudentForm({ ...studentForm, program: value })}
+                  onValueChange={(value) => setStudentForm((prev) => ({ ...prev, program: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Class" />
@@ -1075,7 +1255,7 @@ const QiratDashboard = () => {
                   <Label>Level</Label>
                   <Select
                     value={studentForm.level}
-                    onValueChange={(value: any) => setStudentForm({ ...studentForm, level: value })}
+                    onValueChange={(value: any) => setStudentForm((prev) => ({ ...prev, level: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Level" />
@@ -1095,7 +1275,7 @@ const QiratDashboard = () => {
                     min="0"
                     max="30"
                     value={studentForm.juzCompleted}
-                    onChange={(e) => setStudentForm({ ...studentForm, juzCompleted: parseInt(e.target.value) || 0 })}
+                    onChange={(e) => setStudentForm((prev) => ({ ...prev, juzCompleted: parseInt(e.target.value) || 0 }))}
                   />
                 </div>
               </div>
@@ -1104,7 +1284,7 @@ const QiratDashboard = () => {
                 <Input
                   placeholder="Instructor Name"
                   value={studentForm.instructor}
-                  onChange={(e) => setStudentForm({ ...studentForm, instructor: e.target.value })}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, instructor: e.target.value }))}
                 />
               </div>
             </div>
@@ -1133,7 +1313,7 @@ const QiratDashboard = () => {
                 <Input
                   placeholder="Activity Title"
                   value={activityForm.name}
-                  onChange={(e) => setActivityForm({ ...activityForm, name: e.target.value })}
+                  onChange={(e) => setActivityForm((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -1141,7 +1321,7 @@ const QiratDashboard = () => {
                   <Label>Type</Label>
                   <Select
                     value={activityForm.type}
-                    onValueChange={(value: any) => setActivityForm({ ...activityForm, type: value })}
+                    onValueChange={(value: any) => setActivityForm((prev) => ({ ...prev, type: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Type" />
@@ -1158,7 +1338,7 @@ const QiratDashboard = () => {
                   <Label>Status</Label>
                   <Select
                     value={activityForm.status}
-                    onValueChange={(value: any) => setActivityForm({ ...activityForm, status: value })}
+                    onValueChange={(value: any) => setActivityForm((prev) => ({ ...prev, status: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Status" />
@@ -1177,7 +1357,7 @@ const QiratDashboard = () => {
                   <Input
                     placeholder="e.g., Every Friday"
                     value={activityForm.day}
-                    onChange={(e) => setActivityForm({ ...activityForm, day: e.target.value })}
+                    onChange={(e) => setActivityForm((prev) => ({ ...prev, day: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
@@ -1185,7 +1365,7 @@ const QiratDashboard = () => {
                   <Input
                     placeholder="e.g., 4:00 PM"
                     value={activityForm.time}
-                    onChange={(e) => setActivityForm({ ...activityForm, time: e.target.value })}
+                    onChange={(e) => setActivityForm((prev) => ({ ...prev, time: e.target.value }))}
                   />
                 </div>
               </div>
@@ -1194,7 +1374,7 @@ const QiratDashboard = () => {
                 <Textarea
                   placeholder="Activity details..."
                   value={activityForm.description}
-                  onChange={(e) => setActivityForm({ ...activityForm, description: e.target.value })}
+                  onChange={(e) => setActivityForm((prev) => ({ ...prev, description: e.target.value }))}
                 />
               </div>
             </div>
@@ -1223,7 +1403,7 @@ const QiratDashboard = () => {
                 <Input
                   placeholder="e.g., Tajweed Rules PDF"
                   value={resourceForm.title}
-                  onChange={(e) => setResourceForm({ ...resourceForm, title: e.target.value })}
+                  onChange={(e) => setResourceForm((prev) => ({ ...prev, title: e.target.value }))}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -1231,7 +1411,7 @@ const QiratDashboard = () => {
                   <Label>Type</Label>
                   <Select
                     value={resourceForm.type}
-                    onValueChange={(value: any) => setResourceForm({ ...resourceForm, type: value })}
+                    onValueChange={(value: any) => setResourceForm((prev) => ({ ...prev, type: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Type" />
@@ -1248,7 +1428,7 @@ const QiratDashboard = () => {
                   <Label>Category</Label>
                   <Select
                     value={resourceForm.category}
-                    onValueChange={(value: any) => setResourceForm({ ...resourceForm, category: value })}
+                    onValueChange={(value: any) => setResourceForm((prev) => ({ ...prev, category: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Category" />
@@ -1289,7 +1469,7 @@ const QiratDashboard = () => {
                 <Input
                   placeholder="e.g., Ramadan Quran Contest"
                   value={competitionForm.title}
-                  onChange={(e) => setCompetitionForm({ ...competitionForm, title: e.target.value })}
+                  onChange={(e) => setCompetitionForm((prev) => ({ ...prev, title: e.target.value }))}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -1298,14 +1478,14 @@ const QiratDashboard = () => {
                   <Input
                     type="date"
                     value={competitionForm.date}
-                    onChange={(e) => setCompetitionForm({ ...competitionForm, date: e.target.value })}
+                    onChange={(e) => setCompetitionForm((prev) => ({ ...prev, date: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Category</Label>
                   <Select
                     value={competitionForm.category}
-                    onValueChange={(value) => setCompetitionForm({ ...competitionForm, category: value })}
+                    onValueChange={(value) => setCompetitionForm((prev) => ({ ...prev, category: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Category" />
@@ -1323,7 +1503,7 @@ const QiratDashboard = () => {
                 <Input
                   placeholder="e.g., 10,000 ETB + Trophy"
                   value={competitionForm.prize}
-                  onChange={(e) => setCompetitionForm({ ...competitionForm, prize: e.target.value })}
+                  onChange={(e) => setCompetitionForm((prev) => ({ ...prev, prize: e.target.value }))}
                 />
               </div>
             </div>
@@ -1335,6 +1515,347 @@ const QiratDashboard = () => {
                 disabled={!competitionForm.title || !competitionForm.date}
               >
                 Schedule Competition
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Student Dialog */}
+        <Dialog open={isEditStudentOpen} onOpenChange={setIsEditStudentOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Qirat Student</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Full Name</Label>
+                <Input
+                  placeholder="Full Name"
+                  value={studentForm.name}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Phone Number</Label>
+                <Input
+                  placeholder="Phone Number"
+                  value={studentForm.phone}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, phone: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Class/Program</Label>
+                <Select
+                  value={studentForm.program}
+                  onValueChange={(value) => setStudentForm((prev) => ({ ...prev, program: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Hifz Program">Hifz Program</SelectItem>
+                    <SelectItem value="Tajweed Basics">Tajweed Basics</SelectItem>
+                    <SelectItem value="Qirat Styles">Qirat Styles</SelectItem>
+                    <SelectItem value="Tarteel Class">Tarteel Class</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Level</Label>
+                  <Select
+                    value={studentForm.level}
+                    onValueChange={(value: any) => setStudentForm((prev) => ({ ...prev, level: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Beginner</SelectItem>
+                      <SelectItem value="intermediate">Intermediate</SelectItem>
+                      <SelectItem value="advanced">Advanced</SelectItem>
+                      <SelectItem value="hafiz">Hafiz</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Juz Completed</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="30"
+                    value={studentForm.juzCompleted}
+                    onChange={(e) => setStudentForm((prev) => ({ ...prev, juzCompleted: parseInt(e.target.value) || 0 }))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select
+                  value={studentForm.status}
+                  onValueChange={(value: any) => setStudentForm((prev) => ({ ...prev, status: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="graduated">Graduated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Instructor</Label>
+                <Input
+                  placeholder="Instructor Name"
+                  value={studentForm.instructor}
+                  onChange={(e) => setStudentForm((prev) => ({ ...prev, instructor: e.target.value }))}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditStudentOpen(false)}>Cancel</Button>
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                onClick={handleUpdateStudent}
+                disabled={!studentForm.name || !studentForm.phone}
+              >
+                Update Student
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Activity Dialog */}
+        <Dialog open={isEditActivityOpen} onOpenChange={setIsEditActivityOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Activity</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Activity Title</Label>
+                <Input
+                  placeholder="Activity Title"
+                  value={activityForm.name}
+                  onChange={(e) => setActivityForm((prev) => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Type</Label>
+                  <Select
+                    value={activityForm.type}
+                    onValueChange={(value: any) => setActivityForm((prev) => ({ ...prev, type: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="recitation">Recitation Circle</SelectItem>
+                      <SelectItem value="competition">Competition</SelectItem>
+                      <SelectItem value="exam">Exam</SelectItem>
+                      <SelectItem value="event">Event</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <Select
+                    value={activityForm.status}
+                    onValueChange={(value: any) => setActivityForm((prev) => ({ ...prev, status: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="upcoming">Upcoming</SelectItem>
+                      <SelectItem value="active">Active/Ongoing</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Day/Date</Label>
+                  <Input
+                    placeholder="e.g., Every Friday"
+                    value={activityForm.day}
+                    onChange={(e) => setActivityForm((prev) => ({ ...prev, day: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Time</Label>
+                  <Input
+                    placeholder="e.g., 4:00 PM"
+                    value={activityForm.time}
+                    onChange={(e) => setActivityForm((prev) => ({ ...prev, time: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  placeholder="Activity details..."
+                  value={activityForm.description}
+                  onChange={(e) => setActivityForm((prev) => ({ ...prev, description: e.target.value }))}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditActivityOpen(false)}>Cancel</Button>
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                onClick={handleUpdateActivity}
+                disabled={!activityForm.name}
+              >
+                Update Activity
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Resource Dialog */}
+        <Dialog open={isEditResourceOpen} onOpenChange={setIsEditResourceOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Resource</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Resource Title</Label>
+                <Input
+                  placeholder="e.g., Tajweed Rules PDF"
+                  value={resourceForm.title}
+                  onChange={(e) => setResourceForm((prev) => ({ ...prev, title: e.target.value }))}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Type</Label>
+                  <Select
+                    value={resourceForm.type}
+                    onValueChange={(value: any) => setResourceForm((prev) => ({ ...prev, type: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="audio">Audio</SelectItem>
+                      <SelectItem value="video">Video</SelectItem>
+                      <SelectItem value="document">Document</SelectItem>
+                      <SelectItem value="book">Book</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <Select
+                    value={resourceForm.category}
+                    onValueChange={(value: any) => setResourceForm((prev) => ({ ...prev, category: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Tajweed">Tajweed</SelectItem>
+                      <SelectItem value="Recitation">Recitation</SelectItem>
+                      <SelectItem value="Memorization">Memorization</SelectItem>
+                      <SelectItem value="Qirat">Qirat Styles</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditResourceOpen(false)}>Cancel</Button>
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                onClick={handleUpdateResource}
+                disabled={!resourceForm.title}
+              >
+                Update Resource
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Competition Dialog */}
+        <Dialog open={isEditCompetitionOpen} onOpenChange={setIsEditCompetitionOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Competition</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Competition Title</Label>
+                <Input
+                  placeholder="e.g., Ramadan Quran Contest"
+                  value={competitionForm.title}
+                  onChange={(e) => setCompetitionForm((prev) => ({ ...prev, title: e.target.value }))}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Date</Label>
+                  <Input
+                    type="date"
+                    value={competitionForm.date}
+                    onChange={(e) => setCompetitionForm((prev) => ({ ...prev, date: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <Select
+                    value={competitionForm.category}
+                    onValueChange={(value) => setCompetitionForm((prev) => ({ ...prev, category: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Hifz">Hifz</SelectItem>
+                      <SelectItem value="Tajweed">Tajweed</SelectItem>
+                      <SelectItem value="Recitation">Recitation</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select
+                  value={competitionForm.status}
+                  onValueChange={(value: any) => setCompetitionForm((prev) => ({ ...prev, status: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="upcoming">Upcoming</SelectItem>
+                    <SelectItem value="ongoing">Ongoing</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Prize Details</Label>
+                <Input
+                  placeholder="e.g., 10,000 ETB + Trophy"
+                  value={competitionForm.prize}
+                  onChange={(e) => setCompetitionForm((prev) => ({ ...prev, prize: e.target.value }))}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditCompetitionOpen(false)}>Cancel</Button>
+              <Button
+                className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+                onClick={handleUpdateCompetition}
+                disabled={!competitionForm.title || !competitionForm.date}
+              >
+                Update Competition
               </Button>
             </DialogFooter>
           </DialogContent>

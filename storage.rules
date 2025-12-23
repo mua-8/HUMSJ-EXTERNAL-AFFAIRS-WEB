@@ -1,0 +1,22 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Events images - allow all read/write for development
+    match /events/{allPaths=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // Gallery images
+    match /gallery/{allPaths=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // General uploads
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}

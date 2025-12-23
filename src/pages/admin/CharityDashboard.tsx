@@ -8,6 +8,7 @@ import {
   Check,
   X,
   Eye,
+  Edit,
   Trash2,
   LogOut,
   Filter,
@@ -19,6 +20,7 @@ import {
   CreditCard,
   BarChart3,
   PieChart,
+  Plus,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,6 +72,7 @@ import {
 } from "@/lib/firestore";
 import { Label } from "@/components/ui/label";
 import humjsLogo from "@/assets/humjs-logo.png";
+import EventsManager from "@/components/admin/EventsManager";
 
 type ActiveTab = "donations" | "distributions" | "events" | "reports" | "payment-methods";
 
@@ -86,6 +89,8 @@ const CharityDashboard = () => {
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isAddDistributionOpen, setIsAddDistributionOpen] = useState(false);
+  const [isEditDistributionOpen, setIsEditDistributionOpen] = useState(false);
+  const [editingDistribution, setEditingDistribution] = useState<FirestoreDistribution | null>(null);
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
   const [distributionForm, setDistributionForm] = useState({ title: "", description: "", date: "", items: "", beneficiaries: 0, status: "planned" as "planned" | "ongoing" | "completed" });
   const [eventForm, setEventForm] = useState({ title: "", description: "", date: "", location: "", type: "event" as any, sector: "charity" as any });
@@ -161,6 +166,39 @@ const CharityDashboard = () => {
     if (!confirm("Delete distribution record?")) return;
     await deleteDistribution(id);
     toast({ title: "Deleted", description: "Distribution record removed." });
+  };
+
+  const handleEditDistribution = (dist: FirestoreDistribution) => {
+    setEditingDistribution(dist);
+    setDistributionForm({
+      title: dist.title,
+      description: dist.description || "",
+      date: dist.date,
+      items: (dist.items || []).join(", "),
+      beneficiaries: dist.beneficiaries || 0,
+      status: dist.status
+    });
+    setIsEditDistributionOpen(true);
+  };
+
+  const handleUpdateDistribution = async () => {
+    if (!editingDistribution?.id) return;
+    try {
+      await updateDistribution(editingDistribution.id, {
+        title: distributionForm.title,
+        description: distributionForm.description,
+        date: distributionForm.date,
+        items: distributionForm.items.split(",").map(i => i.trim()),
+        beneficiaries: distributionForm.beneficiaries,
+        status: distributionForm.status
+      });
+      toast({ title: "Distribution Updated", description: "Distribution record has been updated." });
+      setIsEditDistributionOpen(false);
+      setEditingDistribution(null);
+      setDistributionForm({ title: "", description: "", date: "", items: "", beneficiaries: 0, status: "planned" });
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to update distribution.", variant: "destructive" });
+    }
   };
 
   const handleAddEvent = async () => {
@@ -669,7 +707,7 @@ const CharityDashboard = () => {
                           <TableCell>{new Date(dist.date).toLocaleDateString()}</TableCell>
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
-                              {dist.items.map((item, i) => (
+                              {(dist.items || []).map((item, i) => (
                                 <Badge key={i} variant="outline" className="text-[10px]">{item}</Badge>
                               ))}
                             </div>
@@ -688,6 +726,14 @@ const CharityDashboard = () => {
                             <div className="flex justify-end gap-1">
                               <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
                                 <Eye size={16} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-gray-500"
+                                onClick={() => handleEditDistribution(dist)}
+                              >
+                                <Edit size={16} />
                               </Button>
                               <Button
                                 size="icon"
@@ -711,68 +757,7 @@ const CharityDashboard = () => {
 
         {/* Events Tab */}
         {activeTab === "events" && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Charity Events & Programs</CardTitle>
-                    <p className="text-sm text-gray-500 mt-1">Manage fundraising and awareness events</p>
-                  </div>
-                  <Button className="bg-[#25A7A1] hover:bg-[#1F8B86]" onClick={() => setIsAddEventOpen(true)}>
-                    <Plus size={16} className="mr-2" />
-                    Create Event
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Event Name</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {events.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No events found.</TableCell>
-                      </TableRow>
-                    ) : (
-                      events.map((event) => (
-                        <TableRow key={event.id} className="hover:bg-gray-50">
-                          <TableCell className="font-medium">{event.title}</TableCell>
-                          <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
-                          <TableCell>{event.location}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="capitalize">{event.type}</Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-1">
-                              <Button size="icon" variant="ghost" className="h-8 w-8 text-[#25A7A1]">
-                                <Eye size={16} />
-                              </Button>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 text-red-500 hover:bg-red-50"
-                                onClick={() => handleDeleteEvent(event.id!)}
-                              >
-                                <Trash2 size={16} />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
+          <EventsManager sector="charity" title="Charity Events & Programs" />
         )}
 
         {/* Reports Tab */}
@@ -1067,7 +1052,7 @@ const CharityDashboard = () => {
               <Input
                 placeholder="e.g., Monthly Food Aid"
                 value={distributionForm.title}
-                onChange={(e) => setDistributionForm({ ...distributionForm, title: e.target.value })}
+                onChange={(e) => setDistributionForm((prev) => ({ ...prev, title: e.target.value }))}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -1076,14 +1061,14 @@ const CharityDashboard = () => {
                 <Input
                   type="date"
                   value={distributionForm.date}
-                  onChange={(e) => setDistributionForm({ ...distributionForm, date: e.target.value })}
+                  onChange={(e) => setDistributionForm((prev) => ({ ...prev, date: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Status</Label>
                 <Select
                   value={distributionForm.status}
-                  onValueChange={(v: any) => setDistributionForm({ ...distributionForm, status: v })}
+                  onValueChange={(v: any) => setDistributionForm((prev) => ({ ...prev, status: v }))}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1101,7 +1086,7 @@ const CharityDashboard = () => {
               <Input
                 placeholder="e.g., Rice, Oil, Sugar"
                 value={distributionForm.items}
-                onChange={(e) => setDistributionForm({ ...distributionForm, items: e.target.value })}
+                onChange={(e) => setDistributionForm((prev) => ({ ...prev, items: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -1109,7 +1094,7 @@ const CharityDashboard = () => {
               <Input
                 type="number"
                 value={distributionForm.beneficiaries}
-                onChange={(e) => setDistributionForm({ ...distributionForm, beneficiaries: parseInt(e.target.value) || 0 })}
+                onChange={(e) => setDistributionForm((prev) => ({ ...prev, beneficiaries: parseInt(e.target.value) || 0 }))}
               />
             </div>
             <div className="space-y-2">
@@ -1117,7 +1102,7 @@ const CharityDashboard = () => {
               <Textarea
                 placeholder="Details of the distribution..."
                 value={distributionForm.description}
-                onChange={(e) => setDistributionForm({ ...distributionForm, description: e.target.value })}
+                onChange={(e) => setDistributionForm((prev) => ({ ...prev, description: e.target.value }))}
               />
             </div>
           </div>
@@ -1129,6 +1114,85 @@ const CharityDashboard = () => {
               disabled={!distributionForm.title || !distributionForm.date}
             >
               Record Distribution
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Distribution Dialog */}
+      <Dialog open={isEditDistributionOpen} onOpenChange={setIsEditDistributionOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Distribution</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Distribution Title</Label>
+              <Input
+                placeholder="e.g., Monthly Food Aid"
+                value={distributionForm.title}
+                onChange={(e) => setDistributionForm((prev) => ({ ...prev, title: e.target.value }))}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Date</Label>
+                <Input
+                  type="date"
+                  value={distributionForm.date}
+                  onChange={(e) => setDistributionForm((prev) => ({ ...prev, date: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select
+                  value={distributionForm.status}
+                  onValueChange={(v: any) => setDistributionForm((prev) => ({ ...prev, status: v }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="planned">Planned</SelectItem>
+                    <SelectItem value="ongoing">Ongoing</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Items (comma separated)</Label>
+              <Input
+                placeholder="e.g., Rice, Oil, Sugar"
+                value={distributionForm.items}
+                onChange={(e) => setDistributionForm((prev) => ({ ...prev, items: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Number of Beneficiaries</Label>
+              <Input
+                type="number"
+                value={distributionForm.beneficiaries}
+                onChange={(e) => setDistributionForm((prev) => ({ ...prev, beneficiaries: parseInt(e.target.value) || 0 }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                placeholder="Details of the distribution..."
+                value={distributionForm.description}
+                onChange={(e) => setDistributionForm((prev) => ({ ...prev, description: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDistributionOpen(false)}>Cancel</Button>
+            <Button
+              className="bg-[#25A7A1] hover:bg-[#1F8B86] text-white"
+              onClick={handleUpdateDistribution}
+              disabled={!distributionForm.title || !distributionForm.date}
+            >
+              Update Distribution
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1146,7 +1210,7 @@ const CharityDashboard = () => {
               <Input
                 placeholder="Event Title"
                 value={eventForm.title}
-                onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+                onChange={(e) => setEventForm((prev) => ({ ...prev, title: e.target.value }))}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -1155,14 +1219,14 @@ const CharityDashboard = () => {
                 <Input
                   type="date"
                   value={eventForm.date}
-                  onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
+                  onChange={(e) => setEventForm((prev) => ({ ...prev, date: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Event Type</Label>
                 <Select
                   value={eventForm.type}
-                  onValueChange={(v: any) => setEventForm({ ...eventForm, type: v })}
+                  onValueChange={(v: any) => setEventForm((prev) => ({ ...prev, type: v }))}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1180,7 +1244,7 @@ const CharityDashboard = () => {
               <Input
                 placeholder="Venue location"
                 value={eventForm.location}
-                onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
+                onChange={(e) => setEventForm((prev) => ({ ...prev, location: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -1188,7 +1252,7 @@ const CharityDashboard = () => {
               <Textarea
                 placeholder="Event details..."
                 value={eventForm.description}
-                onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                onChange={(e) => setEventForm((prev) => ({ ...prev, description: e.target.value }))}
               />
             </div>
           </div>
