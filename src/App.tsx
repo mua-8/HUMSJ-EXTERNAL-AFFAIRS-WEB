@@ -60,11 +60,11 @@ const App = () => (
             {/* Secret Admin Login - Not linked anywhere on the site */}
             <Route path="/humsj-admin-portal" element={<AdminLogin />} />
 
-            {/* Protected Admin Dashboard - Super Admin */}
+            {/* Protected Admin Dashboard - Super Admin Only */}
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["super_admin"]}>
                   <SuperAdminDashboard />
                 </ProtectedRoute>
               }
@@ -74,17 +74,17 @@ const App = () => (
             <Route
               path="/admin/events"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["super_admin"]}>
                   <Admin />
                 </ProtectedRoute>
               }
             />
 
-            {/* Sector Dashboards */}
+            {/* Sector Dashboards - Role Restricted */}
             <Route
               path="/admin/charity"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["super_admin", "charity_amir"]}>
                   <CharityDashboard />
                 </ProtectedRoute>
               }
@@ -93,7 +93,7 @@ const App = () => (
             <Route
               path="/admin/academic"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["super_admin", "academic_amir"]}>
                   <AcademicDashboard />
                 </ProtectedRoute>
               }
@@ -102,7 +102,7 @@ const App = () => (
             <Route
               path="/admin/qirat"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["super_admin", "qirat_amir"]}>
                   <QiratDashboard />
                 </ProtectedRoute>
               }
@@ -111,7 +111,7 @@ const App = () => (
             <Route
               path="/admin/dawa"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["super_admin", "dawa_amir"]}>
                   <DawaDashboard />
                 </ProtectedRoute>
               }

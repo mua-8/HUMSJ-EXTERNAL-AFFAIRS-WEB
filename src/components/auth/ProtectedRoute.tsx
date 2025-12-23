@@ -18,6 +18,8 @@ const getDefaultRouteForRole = (role: UserRole): string => {
       return "/admin/academic";
     case "qirat_amir":
       return "/admin/qirat";
+    case "dawa_amir":
+      return "/admin/dawa";
     default:
       return "/";
   }

@@ -8,7 +8,7 @@ import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 // User roles
-export type UserRole = "super_admin" | "charity_amir" | "academic_amir" | "qirat_amir" | "user";
+export type UserRole = "super_admin" | "charity_amir" | "academic_amir" | "qirat_amir" | "dawa_amir" | "user";
 
 interface AuthContextType {
   user: User | null;
@@ -42,9 +42,10 @@ const getRoleByEmail = (email: string | null): UserRole => {
     "charity@humsj.org": "charity_amir",
     "academic@humsj.org": "academic_amir",
     "qirat@humsj.org": "qirat_amir",
+    "dawa@humsj.org": "dawa_amir",
   };
 
-  return roleMap[email.toLowerCase()] || "super_admin"; // Default authenticated users to super_admin for now
+  return roleMap[email.toLowerCase()] || "user"; // Default to user, not super_admin
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {

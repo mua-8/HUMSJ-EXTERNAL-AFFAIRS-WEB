@@ -318,7 +318,20 @@ const AdminLogin = () => {
                     navigate("/admin/qirat");
                   }}
                 >
-                  🟠 Qirat
+                  🟣 Qirat
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-xs border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white col-span-2"
+                  onClick={() => {
+                    localStorage.setItem("devAuth", JSON.stringify({ role: "dawa_amir", email: "dawa@humsj.org" }));
+                    toast({ title: "Dev Login", description: "Logged in as Dawa Amir" });
+                    navigate("/admin/dawa");
+                  }}
+                >
+                  🟡 Dawa
                 </Button>
               </div>
             </div>
