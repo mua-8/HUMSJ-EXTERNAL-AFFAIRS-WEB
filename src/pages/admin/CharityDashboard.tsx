@@ -73,6 +73,7 @@ import {
 import { Label } from "@/components/ui/label";
 import humjsLogo from "@/assets/humjs-logo.png";
 import EventsManager from "@/components/admin/EventsManager";
+import MobileNav from "@/components/admin/MobileNav";
 
 type ActiveTab = "donations" | "distributions" | "events" | "reports" | "payment-methods";
 
@@ -393,6 +394,22 @@ const CharityDashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
+      {/* Mobile Navigation */}
+      <MobileNav
+        title="Charity Sector"
+        navItems={[
+          { icon: Heart, label: "Donations", section: "donations" },
+          { icon: PieChart, label: "Distributions", section: "distributions" },
+          { icon: Calendar, label: "Events", section: "events" },
+          { icon: BarChart3, label: "Reports", section: "reports" },
+          { icon: CreditCard, label: "Payment Methods", section: "payment-methods" },
+        ]}
+        activeSection={activeTab}
+        onSectionChange={(section) => setActiveTab(section as ActiveTab)}
+        onSignOut={signOut}
+        userEmail={user?.email}
+      />
+
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#25A7A1] to-[#1F8B86] p-6 hidden lg:flex flex-col shadow-xl">
         <div className="flex items-center gap-3 mb-8">

@@ -60,6 +60,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import EventsManager from "@/components/admin/EventsManager";
+import MobileNav from "@/components/admin/MobileNav";
 
 type ActiveTab = "overview" | "students" | "programs" | "events" | "reports";
 
@@ -255,6 +256,16 @@ const AcademicDashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex">
+      {/* Mobile Navigation */}
+      <MobileNav
+        title="Academic Sector"
+        navItems={navItems.map(item => ({ icon: item.icon, label: item.label, section: item.tab }))}
+        activeSection={activeTab}
+        onSectionChange={(section) => setActiveTab(section as ActiveTab)}
+        onSignOut={signOut}
+        userEmail={user?.email}
+      />
+
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#25A7A1] to-[#1F8B86] p-6 hidden lg:flex flex-col z-50 shadow-xl">
         <div className="flex items-center gap-3 mb-8">

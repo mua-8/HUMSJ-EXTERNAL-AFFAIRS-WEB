@@ -66,6 +66,7 @@ import {
 import humjsLogo from "@/assets/humjs-logo.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import EventsManager from "@/components/admin/EventsManager";
+import MobileNav from "@/components/admin/MobileNav";
 
 type ActiveSection = "overview" | "charity" | "academic" | "qirat" | "events" | "distributions" | "settings";
 
@@ -270,6 +271,19 @@ const SuperAdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex">
+      {/* Mobile Navigation */}
+      <MobileNav
+        title="Super Admin"
+        navItems={navItems}
+        activeSection={activeSection}
+        onSectionChange={(section) => {
+          setActiveSection(section as ActiveSection);
+          setSearchParams({ section });
+        }}
+        onSignOut={signOut}
+        userEmail={user?.email}
+      />
+
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#25A7A1] to-[#1F8B86] p-6 hidden lg:flex flex-col shadow-xl">
         <div className="flex items-center gap-3 mb-8">

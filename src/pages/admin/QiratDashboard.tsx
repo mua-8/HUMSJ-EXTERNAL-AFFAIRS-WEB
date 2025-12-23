@@ -81,6 +81,7 @@ import {
   FirestoreCompetition as Competition
 } from "@/lib/firestore";
 import EventsManager from "@/components/admin/EventsManager";
+import MobileNav from "@/components/admin/MobileNav";
 import { Label } from "@/components/ui/label";
 
 type ActiveTab = "overview" | "students" | "enrollments" | "activities" | "events" | "resources" | "competitions" | "reports";
@@ -437,6 +438,16 @@ const QiratDashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex">
+      {/* Mobile Navigation */}
+      <MobileNav
+        title="Qirat Sector"
+        navItems={navItems.map(item => ({ icon: item.icon, label: item.label, section: item.tab }))}
+        activeSection={activeTab}
+        onSectionChange={(section) => setActiveTab(section as ActiveTab)}
+        onSignOut={signOut}
+        userEmail={user?.email}
+      />
+
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#25A7A1] to-[#1F8B86] p-6 hidden lg:flex flex-col z-50 shadow-xl">
         <div className="flex items-center gap-3 mb-8">
