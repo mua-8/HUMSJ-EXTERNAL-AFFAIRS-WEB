@@ -37,6 +37,13 @@ const getRoleByEmail = (email: string | null): UserRole => {
   if (!email) return "user";
 
   const roleMap: Record<string, UserRole> = {
+    // Gmail accounts
+    "humsjadmin@gmail.com": "super_admin",
+    "humsjcharity@gmail.com": "charity_amir",
+    "humsjacademic@gmail.com": "academic_amir",
+    "humsjqirat@gmail.com": "qirat_amir",
+    "humsjdawa@gmail.com": "dawa_amir",
+    // Original emails (backup)
     "admin@humsj.org": "super_admin",
     "superadmin@humsj.org": "super_admin",
     "charity@humsj.org": "charity_amir",
@@ -45,7 +52,7 @@ const getRoleByEmail = (email: string | null): UserRole => {
     "dawa@humsj.org": "dawa_amir",
   };
 
-  return roleMap[email.toLowerCase()] || "user"; // Default to user, not super_admin
+  return roleMap[email.toLowerCase()] || "user";
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {

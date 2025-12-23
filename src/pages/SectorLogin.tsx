@@ -19,7 +19,7 @@ const sectorConfig = {
     color: "from-[#1a8a85] to-[#29b6b0]",
     badge: "🔐 Super Admin Access",
     role: "super_admin" as UserRole,
-    email: "admin@humsj.org",
+    email: "humsjadmin@gmail.com",
     redirect: "/admin",
   },
   charity: {
@@ -27,7 +27,7 @@ const sectorConfig = {
     color: "from-green-600 to-green-500",
     badge: "🟢 Charity Admin",
     role: "charity_amir" as UserRole,
-    email: "charity@humsj.org",
+    email: "humsjcharity@gmail.com",
     redirect: "/admin/charity",
   },
   academic: {
@@ -35,7 +35,7 @@ const sectorConfig = {
     color: "from-blue-600 to-blue-500",
     badge: "🔵 Academic Admin",
     role: "academic_amir" as UserRole,
-    email: "academic@humsj.org",
+    email: "humsjacademic@gmail.com",
     redirect: "/admin/academic",
   },
   qirat: {
@@ -43,7 +43,7 @@ const sectorConfig = {
     color: "from-purple-600 to-purple-500",
     badge: "🟣 Qirat Admin",
     role: "qirat_amir" as UserRole,
-    email: "qirat@humsj.org",
+    email: "humsjqirat@gmail.com",
     redirect: "/admin/qirat",
   },
   dawa: {
@@ -51,7 +51,7 @@ const sectorConfig = {
     color: "from-amber-600 to-amber-500",
     badge: "🟡 Dawa Admin",
     role: "dawa_amir" as UserRole,
-    email: "dawa@humsj.org",
+    email: "humsjdawa@gmail.com",
     redirect: "/admin/dawa",
   },
 };
