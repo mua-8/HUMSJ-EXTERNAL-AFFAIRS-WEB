@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 
 // Admin Pages (Secret)
 import AdminLogin from "./pages/AdminLogin";
+import SectorLogin from "./pages/SectorLogin";
 import Admin from "./pages/Admin";
 import CharityDashboard from "./pages/admin/CharityDashboard";
 import AcademicDashboard from "./pages/admin/AcademicDashboard";
@@ -57,8 +58,13 @@ const App = () => (
             <Route path="/student-sadaqah" element={<StudentSadaqah />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
 
-            {/* Secret Admin Login - Not linked anywhere on the site */}
+            {/* Secret Admin Login URLs - Each sector has its own */}
             <Route path="/humsj-admin-portal" element={<AdminLogin />} />
+            <Route path="/humsj-super-admin" element={<SectorLogin sector="super_admin" />} />
+            <Route path="/humsj-charity-portal" element={<SectorLogin sector="charity" />} />
+            <Route path="/humsj-academic-portal" element={<SectorLogin sector="academic" />} />
+            <Route path="/humsj-qirat-portal" element={<SectorLogin sector="qirat" />} />
+            <Route path="/humsj-dawa-portal" element={<SectorLogin sector="dawa" />} />
 
             {/* Protected Admin Dashboard - Super Admin Only */}
             <Route
