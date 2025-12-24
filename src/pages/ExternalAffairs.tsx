@@ -6,36 +6,36 @@ import { Button } from "@/components/ui/button";
 import RegistrationModal, { RegistrationType } from "@/components/external-affairs/RegistrationModal";
 import { useState } from "react";
 
-// Leadership data - Social Affairs Sector
+// Leadership data - Social Affairs Sector (External Affairs Amir)
 const sectorHead = {
-  name: "Mahdi Jamal",
-  title: "Head of Social Affairs Sector",
-  year: "4th Year Law Student",
-  phone: "+251 91 XXX XXXX",
+  name: "Mehadi Jemal",
+  title: "Head of External Affairs Sector",
+  year: "University Student",
+  phone: "+251 938 979 492",
   email: "socialaffairs@humsj.org",
 };
 
 // Leadership data for each sub-sector
 const sectorLeadership = {
   qirat: {
-    amir: "Mohammed Ahmed",
+    amir: "Mohammed Ahmadu",
     title: "Head of Qirat Sub-Sector",
-    year: "3rd Year Computer Science Student",
-    phone: "+251 91 XXX XXXX",
+    year: "University Student",
+    phone: "+251 929 230 120",
     email: "qirat@humsj.org",
   },
   charity: {
     amir: "Muhajir Mohammed",
     title: "Head of Charity Sub-Sector",
-    year: "3rd Year Economics Student",
-    phone: "+251 91 XXX XXXX",
+    year: "University Student",
+    phone: "+251 964 544 620",
     email: "charity@humsj.org",
   },
   dawa: {
-    amir: "Ramadan Aliyi",
+    amir: "Ramadan Aliyii",
     title: "Head of Dawa Sub-Sector",
-    year: "3rd Year Computer Science Student",
-    phone: "+251 91 XXX XXXX",
+    year: "University Student",
+    phone: "+251 975 309 779",
     email: "dawa@humsj.org",
   },
 };

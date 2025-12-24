@@ -16,10 +16,10 @@ const getDashboardByRole = (role: UserRole): string => {
       return "/admin";
     case "charity_amir":
       return "/admin/charity";
-    case "academic_amir":
-      return "/admin/academic";
     case "qirat_amir":
       return "/admin/qirat";
+    case "dawa_amir":
+      return "/admin/dawa";
     default:
       return "/";
   }
@@ -93,12 +93,12 @@ const AdminLogin = () => {
       } else if (email === "humsjcharity@gmail.com" || email === "charity@humsj.org") {
         dashboardPath = "/admin/charity";
         roleName = "Charity Admin";
-      } else if (email === "humsjacademic@gmail.com" || email === "academic@humsj.org") {
-        dashboardPath = "/admin/academic";
-        roleName = "Academic Admin";
       } else if (email === "humsjqirat@gmail.com" || email === "qirat@humsj.org") {
         dashboardPath = "/admin/qirat";
-        roleName = "Qirat & Dawa Admin";
+        roleName = "Qirat Admin";
+      } else if (email === "humsjdawa@gmail.com" || email === "dawa@humsj.org") {
+        dashboardPath = "/admin/dawa";
+        roleName = "Dawa Admin";
       }
 
       toast({

@@ -34,10 +34,10 @@ const dawaEventImages = [
 
 // Leadership
 const leadership = {
-    amir: "Ramadan Aliyi",
+    amir: "Ramadan Aliyii",
     title: "Head of Dawa Sub-Sector",
-    year: "3rd Year Computer Science Student",
-    phone: "+251 91 XXX XXXX",
+    year: "University Student",
+    phone: "+251 975 309 779",
     email: "dawa@humsj.org",
 };
 

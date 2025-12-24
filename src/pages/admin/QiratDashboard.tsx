@@ -443,7 +443,7 @@ const QiratDashboard = () => {
     <div className="min-h-screen bg-[#f8f9fa] flex">
       {/* Mobile Navigation */}
       <MobileNav
-        title="Qirat & Dawa"
+        title="Qirat Sector"
         navItems={navItems.map(item => ({ icon: item.icon, label: item.label, section: item.tab }))}
         activeSection={activeTab}
         onSectionChange={(section) => setActiveTab(section as ActiveTab)}
@@ -457,7 +457,7 @@ const QiratDashboard = () => {
           <img src={humjsLogo} alt="HUMSJ" className="h-10 w-auto" />
           <div>
             <h2 className="font-serif font-bold text-white">HUMSJ</h2>
-            <p className="text-xs text-white/80">🟣 Qirat & Dawa</p>
+            <p className="text-xs text-white/80">🟣 Qirat Sector</p>
           </div>
         </div>
 
@@ -502,9 +502,9 @@ const QiratDashboard = () => {
       <main className="lg:ml-64 flex-1 p-6 lg:p-8">
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">
-            🟣 Qirat & Dawa Dashboard
+            🟣 Qirat Sector Dashboard
           </h1>
-          <p className="text-[#64748b]">Manage Quran recitation and Dawa programs</p>
+          <p className="text-[#64748b]">Manage Quran recitation programs</p>
         </div>
 
         {/* Overview */}
@@ -544,10 +544,10 @@ const QiratDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-l-4 border-l-amber-500 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveTab("enrollments")}>
+              <Card className="border-l-4 border-l-[#25A7A1] hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveTab("enrollments")}>
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                    <UserPlus size={24} className="text-amber-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <UserPlus size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{stats.pendingRegistrations}</p>
@@ -591,7 +591,7 @@ const QiratDashboard = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Trophy size={20} className="text-amber-500" />
+                    <Trophy size={20} className="text-[#25A7A1]" />
                     Upcoming Competitions
                   </CardTitle>
                 </CardHeader>
@@ -994,9 +994,9 @@ const QiratDashboard = () => {
                   <p className="text-3xl font-bold">{resources.filter(r => r.type === "audio").length}</p>
                 </CardContent>
               </Card>
-              <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+              <Card className="bg-gradient-to-br from-[#25A7A1] to-[#1F8B86] text-white">
                 <CardContent className="pt-6">
-                  <p className="text-amber-100">Documents</p>
+                  <p className="text-white/80">Documents</p>
                   <p className="text-3xl font-bold">{resources.filter(r => r.type === "document").length}</p>
                 </CardContent>
               </Card>

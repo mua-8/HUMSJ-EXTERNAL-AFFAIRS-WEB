@@ -15,7 +15,6 @@ import SubmitEvent from "./pages/SubmitEvent";
 import ExternalAffairs from "./pages/ExternalAffairs";
 import CharitySector from "./pages/CharitySector";
 import QiratSector from "./pages/QiratSector";
-import AcademicSector from "./pages/AcademicSector";
 import DawaSector from "./pages/DawaSector";
 import Donate from "./pages/Donate";
 import StudentSadaqah from "./pages/StudentSadaqah";
@@ -25,8 +24,8 @@ import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
 import CharityDashboard from "./pages/admin/CharityDashboard";
-import AcademicDashboard from "./pages/admin/AcademicDashboard";
 import QiratDashboard from "./pages/admin/QiratDashboard";
+import DawaDashboard from "./pages/admin/DawaDashboard";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 
 const queryClient = new QueryClient();
@@ -45,11 +44,10 @@ const App = () => (
             <Route path="/external-affairs" element={<ExternalAffairs />} />
             <Route path="/external-affairs/charity" element={<CharitySector />} />
             <Route path="/external-affairs/qirat" element={<QiratSector />} />
-            <Route path="/external-affairs/academic" element={<AcademicSector />} />
             <Route path="/external-affairs/dawa" element={<DawaSector />} />
             <Route path="/charity-sector" element={<CharitySector />} />
             <Route path="/qirat-sector" element={<QiratSector />} />
-            <Route path="/academic-sector" element={<AcademicSector />} />
+            <Route path="/dawa-sector" element={<DawaSector />} />
             <Route path="/events" element={<Events />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/donate" element={<Donate />} />
@@ -90,19 +88,19 @@ const App = () => (
             />
 
             <Route
-              path="/admin/academic"
+              path="/admin/qirat"
               element={
-                <ProtectedRoute allowedRoles={["super_admin", "academic_amir"]}>
-                  <AcademicDashboard />
+                <ProtectedRoute allowedRoles={["super_admin", "qirat_amir"]}>
+                  <QiratDashboard />
                 </ProtectedRoute>
               }
             />
 
             <Route
-              path="/admin/qirat"
+              path="/admin/dawa"
               element={
-                <ProtectedRoute allowedRoles={["super_admin", "qirat_amir"]}>
-                  <QiratDashboard />
+                <ProtectedRoute allowedRoles={["super_admin", "dawa_amir"]}>
+                  <DawaDashboard />
                 </ProtectedRoute>
               }
             />

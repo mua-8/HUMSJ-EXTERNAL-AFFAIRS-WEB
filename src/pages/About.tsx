@@ -5,8 +5,8 @@ import humjsLogo from "@/assets/humjs-logo.png";
 
 const leadershipTeam = [
   {
-    name: "Uztaz Musab",
-    role: "President",
+    name: "Musab Abdurahman",
+    role: "General Amir (President)",
     image: "/images/leadership/musab.png",
   },
   {
@@ -15,7 +15,7 @@ const leadershipTeam = [
     image: "/images/leadership/yuusuf.png",
   },
   {
-    name: "Uztaz Mahadi",
+    name: "Mehadi Jemal",
     role: "Head of External Affairs",
     image: "/images/leadership/mahadi.png",
   },

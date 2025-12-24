@@ -3,8 +3,8 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   LayoutDashboard,
   Heart,
-  BookOpen,
   Mic,
+  MessageCircle,
   Users,
   DollarSign,
   TrendingUp,
@@ -22,6 +22,7 @@ import {
   Plus,
   Loader2,
   Edit,
+  BookOpen,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -69,7 +70,7 @@ import EventsManager from "@/components/admin/EventsManager";
 import MobileNav from "@/components/admin/MobileNav";
 import AdminSettings from "@/components/admin/AdminSettings";
 
-type ActiveSection = "overview" | "charity" | "academic" | "qirat" | "events" | "distributions" | "settings";
+type ActiveSection = "overview" | "charity" | "qirat" | "dawa" | "events" | "distributions" | "settings";
 
 const SuperAdminDashboard = () => {
   const { toast } = useToast();
@@ -263,8 +264,8 @@ const SuperAdminDashboard = () => {
   const navItems = [
     { icon: LayoutDashboard, label: "Overview", section: "overview" as const },
     { icon: Heart, label: "Charity Sector", section: "charity" as const },
-    { icon: BookOpen, label: "Academic Sector", section: "academic" as const },
     { icon: Mic, label: "Qirat Sector", section: "qirat" as const },
+    { icon: MessageCircle, label: "Dawa Sector", section: "dawa" as const },
     { icon: Calendar, label: "Events", section: "events" as const },
     { icon: Truck, label: "Distributions", section: "distributions" as const },
     { icon: Settings, label: "Settings", section: "settings" as const },
@@ -376,10 +377,10 @@ const SuperAdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="border-l-4 border-l-amber-500">
+              <Card className="border-l-4 border-l-[#25A7A1]">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                    <TrendingUp size={24} className="text-amber-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <TrendingUp size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-[#1e293b]">{stats.pendingDonations}</p>
@@ -388,10 +389,10 @@ const SuperAdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="border-l-4 border-l-purple-500">
+              <Card className="border-l-4 border-l-[#25A7A1]">
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                    <Calendar size={24} className="text-purple-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Calendar size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-[#1e293b]">{stats.totalEvents}</p>
@@ -432,26 +433,26 @@ const SuperAdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection("academic")}>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection("dawa")}>
                 <CardHeader className="bg-[#29b6b0] text-white rounded-t-lg">
                   <CardTitle className="flex items-center gap-2">
-                    <BookOpen size={20} />
-                    Academic Sector
+                    <MessageCircle size={20} />
+                    Dawa Sector
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Study Circles</span>
-                      <span className="font-semibold">12</span>
+                      <span className="text-sm text-gray-500">Programs</span>
+                      <span className="font-semibold">8</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Workshops</span>
-                      <span className="font-semibold">5</span>
+                      <span className="text-sm text-gray-500">Activities</span>
+                      <span className="font-semibold">15</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Students Enrolled</span>
-                      <span className="font-semibold">250+</span>
+                      <span className="text-sm text-gray-500">Participants</span>
+                      <span className="font-semibold">200+</span>
                     </div>
                   </div>
                   <Button variant="ghost" className="w-full mt-4 text-[#29b6b0]">
@@ -638,19 +639,129 @@ const SuperAdminDashboard = () => {
           </>
         )}
 
-        {/* Academic Section */}
-        {activeSection === "academic" && (
+        {/* Dawa Section */}
+        {activeSection === "dawa" && (
           <>
             <div className="mb-8">
-              <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">Academic Sector</h1>
-              <p className="text-[#64748b]">Manage Islamic education programs and study circles</p>
+              <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#1e293b]">Dawa Sector Operations</h1>
+              <p className="text-[#64748b]">Manage volunteers, programs, and registrations for the Dawa sector.</p>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+              <Card>
+                <CardContent className="flex items-center gap-4 pt-6">
+                  <div className="w-12 h-12 rounded-xl bg-[#29b6b0]/10 flex items-center justify-center">
+                    <Users size={24} className="text-[#29b6b0]" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{registrations.filter(r => r.sector === "dawa").length}</p>
+                    <p className="text-sm text-gray-500">Total Dawa Registrations</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center gap-4 pt-6">
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <MessageCircle size={24} className="text-[#25A7A1]" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{registrations.filter(r => r.sector === "dawa" && r.type === "volunteer").length}</p>
+                    <p className="text-sm text-gray-500">Dawa Volunteers</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center gap-4 pt-6">
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <TrendingUp size={24} className="text-[#25A7A1]" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{registrations.filter(r => r.sector === "dawa" && r.status === "pending").length}</p>
+                    <p className="text-sm text-gray-500">Pending Approval</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
-              <CardContent className="py-12 text-center">
-                <BookOpen size={48} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">Academic Sector Management</h3>
-                <p className="text-gray-500">Study circles, workshops, and educational programs will be managed here.</p>
-                <p className="text-sm text-[#29b6b0] mt-4">Coming Soon</p>
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <CardTitle>Dawa Registrations</CardTitle>
+                  <div className="flex gap-3">
+                    <Input
+                      placeholder="Search registrations..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-64"
+                    />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {isLoadingReg ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-[#29b6b0]" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Department/Program</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {registrations.filter(r =>
+                          r.sector === "dawa" &&
+                          (r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            r.type.toLowerCase().includes(searchQuery.toLowerCase()))
+                        ).length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                              No Dawa registrations found
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          registrations.filter(r =>
+                            r.sector === "dawa" &&
+                            (r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              r.type.toLowerCase().includes(searchQuery.toLowerCase()))
+                          ).map((reg) => (
+                            <TableRow key={reg.id}>
+                              <TableCell className="font-medium">{reg.name}</TableCell>
+                              <TableCell className="capitalize">{reg.type}</TableCell>
+                              <TableCell>{reg.department || reg.program || "N/A"}</TableCell>
+                              <TableCell>
+                                <Badge className={
+                                  reg.status === "approved" ? "bg-green-100 text-green-600" :
+                                    reg.status === "rejected" ? "bg-red-100 text-red-600" :
+                                      "bg-amber-100 text-amber-600"
+                                }>
+                                  {reg.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-1">
+                                  {reg.status === "pending" && (
+                                    <>
+                                      <button onClick={() => handleApproveRegistration(reg.id!)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg"><Check size={16} /></button>
+                                      <button onClick={() => handleRejectRegistration(reg.id!)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><X size={16} /></button>
+                                    </>
+                                  )}
+                                  <button onClick={() => handleDeleteRegistration(reg.id!)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </>
@@ -678,8 +789,8 @@ const SuperAdminDashboard = () => {
               </Card>
               <Card>
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                    <BookOpen size={24} className="text-purple-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <BookOpen size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{registrations.filter(r => r.sector === "qirat" && r.type === "student").length}</p>
@@ -689,8 +800,8 @@ const SuperAdminDashboard = () => {
               </Card>
               <Card>
                 <CardContent className="flex items-center gap-4 pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
-                    <Users size={24} className="text-orange-500" />
+                  <div className="w-12 h-12 rounded-xl bg-[#25A7A1]/10 flex items-center justify-center">
+                    <Users size={24} className="text-[#25A7A1]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{registrations.filter(r => r.sector === "qirat" && r.type === "teacher").length}</p>

@@ -90,10 +90,10 @@ const QiratSector = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Head of Qirat Sub-Sector</p>
-                  <p className="text-xl font-serif font-bold text-gray-800">Mohammed Ahmed</p>
-                  <p className="text-sm text-[#25A7A1] font-medium">3rd Year Computer Science Student</p>
+                  <p className="text-xl font-serif font-bold text-gray-800">Mohammed Ahmadu</p>
+                  <p className="text-sm text-[#25A7A1] font-medium">University Student</p>
                   <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
-                    <span className="flex items-center gap-1">📞 +251 91 XXX XXXX</span>
+                    <span className="flex items-center gap-1">📞 +251 929 230 120</span>
                     <span className="flex items-center gap-1">✉️ qirat@humsj.org</span>
                   </div>
                 </div>
