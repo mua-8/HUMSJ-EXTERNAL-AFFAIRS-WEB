@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import RegistrationModal, { RegistrationType } from "@/components/external-affairs/RegistrationModal";
 import { useState } from "react";
 
-// Leadership data - Social Affairs Sector (External Affairs Amir)
+// Leadership data - External Affairs Sector
 const sectorHead = {
   name: "Mehadi Jemal",
   title: "Head of External Affairs Sector",
@@ -128,11 +128,11 @@ const SocialAffairs = () => {
         <div className="container mx-auto px-4 py-24 text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25A7A1]/10 border border-[#25A7A1]/20 text-[#25A7A1] mb-6 animate-fade-in">
             <Globe size={16} />
-            <span className="text-sm font-medium">HUMSJ Social Affairs Sector</span>
+            <span className="text-sm font-medium">HUMSJ External Affairs Sector</span>
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-[#1f2937] mb-6 animate-fade-in-up">
-            Social Affairs <span className="text-[#25A7A1]">Sector</span>
+            External Affairs <span className="text-[#25A7A1]">Sector</span>
           </h1>
 
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8 animate-fade-in-up delay-100">
@@ -159,7 +159,7 @@ const SocialAffairs = () => {
         </div>
       </section>
 
-      {/* About HUMSJ & Social Affairs Sector */}
+      {/* About HUMSJ & External Affairs Sector */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
@@ -181,14 +181,14 @@ const SocialAffairs = () => {
               <p className="text-muted-foreground text-lg leading-relaxed mt-4">
                 Muslim students at this university have their own union called <strong>"Haramaya University Muslim Students' Jeme'a" (HUMSJ)</strong>.
                 The HUMSJ has 6 main sectors: Dawa and Irshad, Ashob-Ashura sector, Academic Sector, Information Sector,
-                <strong> Social Affairs Sector</strong>, and Baytul-Mai Sector.
+                <strong> External Affairs Sector</strong>, and Baytul-Mai Sector.
               </p>
               <p className="text-muted-foreground text-lg leading-relaxed mt-4">
                 The entire Union, as well as all sectors, are led by students elected from the Union.
                 Currently, the President of the Union is <strong>"Musab Abdurrahman"</strong>, a 4th year Management student at this university.
               </p>
               <p className="text-muted-foreground text-lg leading-relaxed mt-4">
-                The <strong>Social Affairs Sector</strong> is one of the key sectors of HUMSJ. Its main objective is to strengthen the
+                The <strong>External Affairs Sector</strong> is one of the key sectors of HUMSJ. Its main objective is to strengthen the
                 relationship between HUMSJ (the Union) and the society through three different ways: <strong>Charity</strong> (helping orphans,
                 poor, and needy people), <strong>Dawa</strong> (Islamic outreach and education), and <strong>Qirat</strong> (Quranic education).
               </p>
@@ -202,7 +202,7 @@ const SocialAffairs = () => {
                     <Building className="w-10 h-10 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Head of Social Affairs Sector</p>
+                    <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Head of External Affairs Sector</p>
                     <p className="text-2xl font-serif font-bold text-gray-800">{sectorHead.name}</p>
                     <p className="text-sm text-[#25A7A1] font-medium">{sectorHead.year}</p>
                     <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
@@ -262,7 +262,7 @@ const SocialAffairs = () => {
               Our Three Sub-Sectors
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              The Social Affairs Sector operates through three specialized sub-sectors, each dedicated to a unique aspect of community service.
+              The External Affairs Sector operates through three specialized sub-sectors, each dedicated to a unique aspect of community service.
             </p>
           </div>
 
@@ -501,7 +501,7 @@ const SocialAffairs = () => {
               Past Years' Events
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A look back at the significant events and programs organized by our Social Affairs sector.
+              A look back at the significant events and programs organized by our External Affairs sector.
             </p>
           </div>
 

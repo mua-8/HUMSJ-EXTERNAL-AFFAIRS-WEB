@@ -74,7 +74,7 @@ const CharitySector = () => {
               <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1f2937]">
                 Charity Sub-Sector
               </h1>
-              <p className="text-gray-500">Social Affairs Sector - HUMSJ</p>
+              <p className="text-gray-500">External Affairs Sector - HUMSJ</p>
             </div>
           </div>
 
@@ -97,10 +97,10 @@ const CharitySector = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Head of Charity Sub-Sector</p>
-                  <p className="text-xl font-serif font-bold text-gray-800">Muha</p>
-                  <p className="text-sm text-[#29b6b0] font-medium">3rd Year Economics Student</p>
+                  <p className="text-xl font-serif font-bold text-gray-800">Muhajir Mohammed</p>
+                  <p className="text-sm text-[#29b6b0] font-medium">University Student</p>
                   <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
-                    <span className="flex items-center gap-1">📞 +251 91 XXX XXXX</span>
+                    <span className="flex items-center gap-1">📞 +251 964 544 620</span>
                     <span className="flex items-center gap-1">✉️ charity@humsj.org</span>
                   </div>
                 </div>

@@ -69,7 +69,7 @@ const HeroSection = () => {
             />
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2">
               <span className="text-white text-sm font-semibold tracking-wide">
-                Social Affairs Sector • HUMSJ • Haramaya University
+                External Affairs Sector • HUMSJ • Haramaya University
               </span>
             </div>
           </div>

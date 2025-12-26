@@ -18,7 +18,7 @@ const Footer = () => {
               <img
                 src={humjsLogo}
                 alt="HUMSJ Logo"
-                className="h-12 w-auto brightness-0 invert"
+                className="h-12 w-auto"
               />
               <div>
                 <h3 className="font-serif font-semibold text-white">HUMSJ</h3>

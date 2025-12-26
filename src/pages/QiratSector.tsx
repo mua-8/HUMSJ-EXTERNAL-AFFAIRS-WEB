@@ -67,7 +67,7 @@ const QiratSector = () => {
               <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1f2937]">
                 Qirat Sub-Sector
               </h1>
-              <p className="text-gray-500">Social Affairs Sector - HUMSJ</p>
+              <p className="text-gray-500">External Affairs Sector - HUMSJ</p>
             </div>
           </div>
 

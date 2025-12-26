@@ -9,7 +9,7 @@ import humjsLogo from "@/assets/humjs-logo.png";
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "About Us", path: "/about" },
-  { name: "Social Affairs", path: "/external-affairs" },
+  { name: "External Affairs", path: "/external-affairs" },
   { name: "Events", path: "/events" },
   { name: "Donate", path: "/student-sadaqah" },
   { name: "Contact", path: "/contact" },

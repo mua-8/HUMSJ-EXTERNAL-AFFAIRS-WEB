@@ -25,11 +25,10 @@ import EventGallery from "@/components/ui/EventGallery";
 import RegistrationModal, { RegistrationType } from "@/components/external-affairs/RegistrationModal";
 import { useState } from "react";
 
-// Dawa event images - add images to public/images/events/dawa/
+// Dawa event images - using qirat images temporarily
 const dawaEventImages = [
-    { src: "/images/events/dawa/dawa1.jpg", alt: "Islamic awareness seminar" },
-    { src: "/images/events/dawa/dawa2.jpg", alt: "Community lecture event" },
-    { src: "/images/events/dawa/dawa3.jpg", alt: "Youth mentorship program" },
+    { src: "/images/events/qirat/qiraty.jpg", alt: "Islamic awareness seminar" },
+    { src: "/images/events/qirat/qiraty1.jpg", alt: "Community lecture event" },
 ];
 
 // Leadership
@@ -144,7 +143,7 @@ const DawaSector = () => {
                             <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1f2937]">
                                 Dawa Sub-Sector
                             </h1>
-                            <p className="text-gray-500">Social Affairs Sector - HUMSJ</p>
+                            <p className="text-gray-500">External Affairs Sector - HUMSJ</p>
                         </div>
                     </div>
 

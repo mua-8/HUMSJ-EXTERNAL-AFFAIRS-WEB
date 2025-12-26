@@ -112,9 +112,9 @@
   --dawa-gradient-from: #25A7A1;
   --dawa-gradient-to: #1F8B86;
   
-  /* Social Affairs - Main Teal (same as Charity/Primary) */
-  --social-affairs-primary: #25A7A1;
-  --social-affairs-secondary: #1F8B86;
+  /* External Affairs - Main Teal (same as Charity/Primary) */
+  --external-affairs-primary: #25A7A1;
+  --external-affairs-secondary: #1F8B86;
 }
 
 * {
